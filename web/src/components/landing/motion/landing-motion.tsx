@@ -130,7 +130,10 @@ export function LandingMotion() {
       mm.add("(min-width: 768px)", () => {
         const sectionsPin = document.querySelector<HTMLElement>("[data-sections-pin]");
         const sectionsTrack = document.querySelector<HTMLElement>("[data-sections-track]");
+        const header = document.querySelector<HTMLElement>("[data-landing-header]");
         if (!sectionsPin || !sectionsTrack) return;
+
+        const headerOffset = () => Math.ceil(header?.getBoundingClientRect().height ?? 72) + 16;
 
         const getScroll = () =>
           Math.max(0, sectionsTrack.scrollWidth - window.innerWidth + 32);
@@ -140,7 +143,7 @@ export function LandingMotion() {
           ease: "none",
           scrollTrigger: {
             trigger: sectionsPin,
-            start: "top top",
+            start: () => `top top+=${headerOffset()}`,
             end: () => `+=${getScroll()}`,
             pin: true,
             scrub: 1.1,

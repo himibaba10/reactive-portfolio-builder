@@ -22,14 +22,14 @@ export function SectionsGallery() {
         </p>
       </div>
 
-      <div data-sections-pin className="relative">
+      <div data-sections-pin className="relative md:pt-2">
         <div
           data-sections-viewport
           className="snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] md:snap-none md:overflow-hidden [&::-webkit-scrollbar]:hidden"
         >
           <ul
             data-sections-track
-            className="flex w-max gap-5 px-5 will-change-transform md:gap-6 md:px-8"
+            className="flex w-max gap-5 px-5 pb-2 will-change-transform md:gap-6 md:px-8"
           >
             {sectionTypes.map((section, index) => (
               <li

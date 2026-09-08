@@ -5,10 +5,13 @@ export function SiteHeader() {
   return (
     <header
       data-landing-header
-      className="pointer-events-none fixed inset-x-0 top-0 z-40 opacity-0"
+      className="pointer-events-none fixed inset-x-0 top-0 z-50 opacity-0"
     >
-      <div className="border-b border-[color:var(--line)] bg-[color-mix(in_oklab,var(--ink)_82%,transparent)] backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 px-5 py-3 md:px-8 md:py-5">
+      <div className="border-b border-[color:var(--line)] bg-[var(--ink)]/95 backdrop-blur-md">
+        <div
+          data-landing-header-inner
+          className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 px-5 py-3 md:px-8 md:py-4"
+        >
           <div className="flex items-center justify-between gap-3">
             <a
               href="#top"
