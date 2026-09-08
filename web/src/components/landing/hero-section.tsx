@@ -49,7 +49,7 @@ export function HeroSection() {
           >
             {site.description}
           </p>
-          <div data-hero-cta className="flex flex-wrap gap-3 opacity-0">
+          <div data-hero-cta className="flex w-full flex-col gap-3 opacity-0 sm:w-auto sm:flex-row">
             <ButtonLink href="/signup" data-magnetic>
               Start free
             </ButtonLink>

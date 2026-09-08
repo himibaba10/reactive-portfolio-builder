@@ -17,6 +17,7 @@ export function LandingMotion() {
       if (!ready) return;
 
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const mm = gsap.matchMedia();
 
       gsap.to("[data-landing-header]", {
         opacity: 1,
@@ -125,13 +126,16 @@ export function LandingMotion() {
         },
       });
 
-      const sectionsPin = document.querySelector<HTMLElement>("[data-sections-pin]");
-      const sectionsTrack = document.querySelector<HTMLElement>("[data-sections-track]");
-      if (sectionsPin && sectionsTrack) {
+      // Desktop only: pinned horizontal scrub (mobile uses native swipe)
+      mm.add("(min-width: 768px)", () => {
+        const sectionsPin = document.querySelector<HTMLElement>("[data-sections-pin]");
+        const sectionsTrack = document.querySelector<HTMLElement>("[data-sections-track]");
+        if (!sectionsPin || !sectionsTrack) return;
+
         const getScroll = () =>
           Math.max(0, sectionsTrack.scrollWidth - window.innerWidth + 32);
 
-        gsap.to(sectionsTrack, {
+        const tween = gsap.to(sectionsTrack, {
           x: () => -getScroll(),
           ease: "none",
           scrollTrigger: {
@@ -144,7 +148,13 @@ export function LandingMotion() {
             invalidateOnRefresh: true,
           },
         });
-      }
+
+        return () => {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+          gsap.set(sectionsTrack, { clearProps: "transform" });
+        };
+      });
 
       gsap.from("[data-palette-card]", {
         opacity: 0,
@@ -185,37 +195,42 @@ export function LandingMotion() {
           "-=0.45",
         );
 
-      const magnetics = gsap.utils.toArray<HTMLElement>("[data-magnetic]");
-      const cleanups = magnetics.map((el) => {
-        const onMove = (event: MouseEvent) => {
-          const rect = el.getBoundingClientRect();
-          const x = event.clientX - rect.left - rect.width / 2;
-          const y = event.clientY - rect.top - rect.height / 2;
-          gsap.to(el, {
-            x: x * 0.28,
-            y: y * 0.28,
-            duration: 0.35,
-            ease: "power3.out",
-          });
-        };
-        const onLeave = () => {
-          gsap.to(el, {
-            x: 0,
-            y: 0,
-            duration: 0.55,
-            ease: "elastic.out(1, 0.4)",
-          });
-        };
-        el.addEventListener("mousemove", onMove);
-        el.addEventListener("mouseleave", onLeave);
-        return () => {
-          el.removeEventListener("mousemove", onMove);
-          el.removeEventListener("mouseleave", onLeave);
-        };
+      // Magnetic only on fine pointers (skip touch)
+      mm.add("(hover: hover) and (pointer: fine)", () => {
+        const magnetics = gsap.utils.toArray<HTMLElement>("[data-magnetic]");
+        const cleanups = magnetics.map((el) => {
+          const onMove = (event: MouseEvent) => {
+            const rect = el.getBoundingClientRect();
+            const x = event.clientX - rect.left - rect.width / 2;
+            const y = event.clientY - rect.top - rect.height / 2;
+            gsap.to(el, {
+              x: x * 0.28,
+              y: y * 0.28,
+              duration: 0.35,
+              ease: "power3.out",
+            });
+          };
+          const onLeave = () => {
+            gsap.to(el, {
+              x: 0,
+              y: 0,
+              duration: 0.55,
+              ease: "elastic.out(1, 0.4)",
+            });
+          };
+          el.addEventListener("mousemove", onMove);
+          el.addEventListener("mouseleave", onLeave);
+          return () => {
+            el.removeEventListener("mousemove", onMove);
+            el.removeEventListener("mouseleave", onLeave);
+          };
+        });
+
+        return () => cleanups.forEach((fn) => fn());
       });
 
       return () => {
-        cleanups.forEach((fn) => fn());
+        mm.revert();
       };
     },
     { dependencies: [ready] },
