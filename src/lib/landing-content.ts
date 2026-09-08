@@ -43,42 +43,52 @@ export const sectionTypes = [
   {
     type: "Header",
     hint: "Fixed · logo left, section nav right",
+    image: "/landing/sections/header.webp",
   },
   {
     type: "Hero",
     hint: "Six layouts · name, tagline, photo, optional CTA",
+    image: "/landing/sections/hero.webp",
   },
   {
     type: "About",
     hint: "Six layouts · eyebrow, headline, bio, portrait",
+    image: "/landing/sections/about.webp",
   },
   {
     type: "Skills",
     hint: "Six layouts · tags, chips, marquee",
+    image: "/landing/sections/skills.webp",
   },
   {
     type: "Portfolio",
     hint: "Six layouts · cards, featured, mosaic",
+    image: "/landing/sections/portfolio.webp",
   },
   {
     type: "CTA",
     hint: "Six layouts · stage, banner, cinematic",
+    image: "/landing/sections/cta.webp",
   },
   {
     type: "Experience",
     hint: "Six layouts · timeline, cards, rows",
+    image: "/landing/sections/experience.webp",
   },
   {
     type: "Education",
     hint: "Six layouts · cards, timeline, diploma",
+    image: "/landing/sections/education.webp",
   },
   {
     type: "Contact",
     hint: "Six layouts · email, socials, portrait",
+    image: "/landing/sections/contact.webp",
   },
   {
     type: "Footer",
     hint: "Fixed · centered copyright",
+    image: "/landing/sections/footer.webp",
   },
 ] as const;
 

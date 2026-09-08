@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { sectionTypes } from "@/lib/landing-content";
 
 export function SectionsGallery() {
@@ -15,9 +16,13 @@ export function SectionsGallery() {
           Prebuilt blocks. Pick a layout. Ship.
         </h2>
         <p className="mt-5 max-w-xl text-base text-muted">
-          <span className="md:hidden">Swipe through section types — most offer six layouts you choose in the editor.</span>
+          <span className="md:hidden">
+            Swipe through section types — most offer six layouts you choose in the
+            editor.
+          </span>
           <span className="hidden md:inline">
-            Scroll through the section types you can ship — most offer six layouts you choose in the editor.
+            Scroll through the section types you can ship — most offer six layouts
+            you choose in the editor.
           </span>
         </p>
       </div>
@@ -35,16 +40,31 @@ export function SectionsGallery() {
               <li
                 key={section.type}
                 data-section-card
-                className="relative flex h-100 w-[min(78vw,320px)] shrink-0 snap-center flex-col justify-between overflow-hidden rounded-3xl border border-line bg-ink p-6 md:h-130 md:w-95 md:p-9"
+                className="relative flex h-100 w-[min(78vw,320px)] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-line bg-ink md:h-130 md:w-95"
               >
-                <div
-                  aria-hidden
-                  className="absolute inset-0 opacity-60"
-                  style={{
-                    background: `linear-gradient(160deg, rgba(214,255,63,${0.08 + (index % 3) * 0.04}) 0%, transparent 42%), linear-gradient(340deg, rgba(91,140,255,${0.1 + (index % 4) * 0.03}) 0%, transparent 50%)`,
-                  }}
-                />
-                <div className="relative z-10 flex items-start justify-between gap-3">
+                <div className="absolute inset-0">
+                  <Image
+                    src={section.image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 78vw, 380px"
+                    className="object-cover"
+                    priority={index < 2}
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,11,13,0.55)_0%,rgba(10,11,13,0.2)_38%,rgba(10,11,13,0.88)_72%,rgba(10,11,13,0.98)_100%)]"
+                  />
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 opacity-50"
+                    style={{
+                      background: `linear-gradient(160deg, rgba(214,255,63,${0.08 + (index % 3) * 0.04}) 0%, transparent 42%), linear-gradient(340deg, rgba(91,140,255,${0.1 + (index % 4) * 0.03}) 0%, transparent 50%)`,
+                    }}
+                  />
+                </div>
+
+                <div className="relative z-10 flex items-start justify-between gap-3 p-6 md:p-9">
                   <span className="font-display text-xs tracking-[0.24em] text-signal">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -52,7 +72,8 @@ export function SectionsGallery() {
                     Block
                   </span>
                 </div>
-                <div className="relative z-10">
+
+                <div className="relative z-10 mt-auto p-6 pt-0 md:p-9 md:pt-0">
                   <h3 className="font-display text-3xl tracking-[-0.04em] text-foam md:text-5xl">
                     {section.type}
                   </h3>
