@@ -32,6 +32,7 @@ import { SlugField } from "@/components/ui/slug-field";
 import { PalettePicker } from "@/components/ui/palette-picker";
 import { ImageField } from "@/components/ui/image-field";
 import { HeroLayoutPicker } from "@/components/editor/hero-layout-picker";
+import { AboutLayoutPicker } from "@/components/editor/about-layout-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -406,6 +407,15 @@ export function EditorClient() {
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
+                ) : active.type === "About" ? (
+                  <AboutLayoutPicker
+                    section={active}
+                    paletteId={paletteId}
+                    portfolioTitle={title || "Portfolio"}
+                    portfolioSlug={slug || "your-slug"}
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
                 ) : isVariantSectionType(active.type) ? (
                   <LayoutPicker
                     value={active.variant}
@@ -692,32 +702,76 @@ function SectionFields({
   }
 
   if (section.type === "About") {
+    const showEyebrow = data.showEyebrow !== false;
+    const showHeadline = data.showHeadline !== false;
+    const showBody = data.showBody !== false;
+    const showImage = data.showImage !== false;
+
     return (
       <>
-        <ImageField
+        <OptionalField
           label="Portrait"
-          valueUrl={String(data.imageUrl || "")}
-          valuePublicId={String(data.imagePublicId || "")}
-          onChange={(img) =>
-            onChange({
-              ...data,
-              imageUrl: img?.url || "",
-              imagePublicId: img?.publicId || "",
-            })
-          }
-        />
-        <Field label="Image alt">
-          <FormInput
-            value={String(data.imageAlt || "")}
-            onChange={(e) => onChange({ ...data, imageAlt: e.target.value })}
+          enabled={showImage}
+          onEnabledChange={(v) => onChange({ ...data, showImage: v })}
+        >
+          <ImageField
+            label=""
+            valueUrl={String(data.imageUrl || "")}
+            valuePublicId={String(data.imagePublicId || "")}
+            onChange={(img) =>
+              onChange({
+                ...data,
+                imageUrl: img?.url || "",
+                imagePublicId: img?.publicId || "",
+              })
+            }
           />
-        </Field>
-        <Field label="Bio">
+          <div className="mt-3">
+            <Field label="Image alt">
+              <FormInput
+                value={String(data.imageAlt || "")}
+                onChange={(e) =>
+                  onChange({ ...data, imageAlt: e.target.value })
+                }
+                disabled={!showImage}
+              />
+            </Field>
+          </div>
+        </OptionalField>
+        <OptionalField
+          label="Eyebrow"
+          enabled={showEyebrow}
+          onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
+        >
+          <FormInput
+            value={String(data.eyebrow || "")}
+            onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
+            disabled={!showEyebrow}
+            placeholder="About"
+          />
+        </OptionalField>
+        <OptionalField
+          label="Headline"
+          enabled={showHeadline}
+          onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
+        >
+          <FormInput
+            value={String(data.headline || "")}
+            onChange={(e) => onChange({ ...data, headline: e.target.value })}
+            disabled={!showHeadline}
+          />
+        </OptionalField>
+        <OptionalField
+          label="Bio"
+          enabled={showBody}
+          onEnabledChange={(v) => onChange({ ...data, showBody: v })}
+        >
           <FormTextarea
             value={String(data.body || "")}
             onChange={(e) => onChange({ ...data, body: e.target.value })}
+            disabled={!showBody}
           />
-        </Field>
+        </OptionalField>
       </>
     );
   }

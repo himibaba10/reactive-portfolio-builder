@@ -36,7 +36,7 @@ export function PublicPortfolioView({
     <main
       style={style}
       data-portfolio-root
-      className="relative flex min-h-svh flex-col overflow-x-hidden bg-(--p-secondary) text-(--p-text-light)"
+      className="relative flex min-h-svh flex-col overflow-x-clip bg-(--p-secondary) text-(--p-text-light)"
     >
       <PortfolioMotion />
       <div
@@ -62,7 +62,7 @@ export function PublicPortfolioView({
             ) : null}
             <div
               data-portfolio-body
-              className="mx-auto flex w-full flex-1 flex-col gap-16 px-5 py-16 md:gap-20 md:px-8 md:py-24"
+              className="mx-auto flex w-full max-w-[1270px] flex-1 flex-col gap-16 px-5 py-16 md:gap-20 md:px-8 md:py-24"
             >
               {body.map((section) => (
                 <div key={section.id} data-reveal>

@@ -13,7 +13,7 @@ Read this file first in every new chat. It is the source of truth for product, a
 
 1. Auth: email + password only; email verification before publish; password reset; account soft-delete
 2. Exactly **one portfolio** per user (second create → 409)
-3. Sections: **prebuilt only** (Header, Hero, About, Skills, Projects/Portfolio, CTA, Experience, Education, Contact, Footer) — no custom section types; each type at most once; reorder + hide allowed. Hero offers **6 layout variants**; About/Skills/Projects/CTA offer **5**; Header is fixed (logo + section nav); Footer is fixed (centered copyright). Header & Footer are pinned.
+3. Sections: **prebuilt only** (Header, Hero, About, Skills, Projects/Portfolio, CTA, Experience, Education, Contact, Footer) — no custom section types; each type at most once; reorder + hide allowed. Hero and About offer **6 layout variants**; Skills/Projects/CTA offer **5**; Header is fixed (logo + section nav); Footer is fixed (centered copyright). Header & Footer are pinned.
 4. Public URL: `/{slug}` on the same Next.js host (e.g. `…/daniel-portfolio`)
 5. One-page public portfolios only
 6. Themes: **strict presets** with exactly 5 tokens — `primary`, `secondary`, `accent`, `textDark`, `textLight` (no custom hex in MVP)

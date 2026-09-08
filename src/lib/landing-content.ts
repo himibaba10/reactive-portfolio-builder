@@ -50,7 +50,7 @@ export const sectionTypes = [
   },
   {
     type: "About",
-    hint: "Five layouts · short bio",
+    hint: "Six layouts · eyebrow, headline, bio, portrait",
   },
   {
     type: "Skills",

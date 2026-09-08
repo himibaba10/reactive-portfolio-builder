@@ -75,9 +75,9 @@ export type PaletteId = (typeof PALETTE_IDS)[number];
 
 export const sectionVariantSchema = z.number().int().min(1).max(6);
 
-/** Hero has 6 layouts; other variant sections stay at 5. */
+/** Hero and About have 6 layouts; other variant sections stay at 5. */
 export function sectionVariantCount(type: SectionType): number {
-  if (type === "Hero") return 6;
+  if (type === "Hero" || type === "About") return 6;
   if (isVariantSectionType(type)) return 5;
   return 1;
 }
@@ -117,10 +117,16 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       };
     case "About":
       return {
+        eyebrow: "About",
+        headline: "A bit about me",
         body: "A short bio about what you build and why it matters.",
         imageUrl: "",
         imagePublicId: "",
         imageAlt: "",
+        showEyebrow: true,
+        showHeadline: true,
+        showBody: true,
+        showImage: true,
       };
     case "Skills":
       return { items: ["React", "Design systems", "Product"] };
