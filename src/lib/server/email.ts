@@ -1,10 +1,36 @@
 import "server-only";
+import path from "path";
+import ejs from "ejs";
 import { Resend } from "resend";
 import { serverConfig } from "@/lib/server/config";
 
 function getResend() {
   if (!serverConfig.resendApiKey) return null;
   return new Resend(serverConfig.resendApiKey);
+}
+
+const layoutPath = path.join(
+  process.cwd(),
+  "src",
+  "emails",
+  "layouts",
+  "transactional.ejs",
+);
+
+async function renderTransactionalEmail(data: {
+  subject: string;
+  eyebrow: string;
+  heading: string;
+  body: string;
+  actionUrl: string;
+  actionLabel: string;
+  footnote: string;
+}) {
+  return ejs.renderFile(layoutPath, {
+    appUrl: serverConfig.appUrl,
+    logoUrl: `${serverConfig.appUrl}/brand/logo.webp`,
+    ...data,
+  });
 }
 
 export async function sendTransactionalEmail({
@@ -42,33 +68,42 @@ export async function sendTransactionalEmail({
 }
 
 export async function sendVerificationEmail(to: string, verifyUrl: string) {
+  const subject = "Verify your Reactive account";
+  const html = await renderTransactionalEmail({
+    subject,
+    eyebrow: "Verify",
+    heading: "Confirm your email",
+    body: "Verify once so you can publish your portfolio on Reactive. This link expires in 24 hours.",
+    actionUrl: verifyUrl,
+    actionLabel: "Verify email",
+    footnote: "If you did not create an account, you can ignore this message.",
+  });
+
   return sendTransactionalEmail({
     to,
-    subject: "Verify your Reactive account",
+    subject,
+    html,
     text: `Verify your email to publish portfolios:\n\n${verifyUrl}\n\nThis link expires in 24 hours.`,
-    html: `
-      <div style="font-family:sans-serif;line-height:1.5;color:#0a0b0d">
-        <h1 style="font-size:20px">Verify your email</h1>
-        <p>Confirm your address so you can publish on Reactive.</p>
-        <p><a href="${verifyUrl}" style="display:inline-block;background:#d6ff3f;color:#0a0b0d;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600">Verify email</a></p>
-        <p style="color:#666;font-size:13px">Or open: ${verifyUrl}</p>
-      </div>
-    `,
   });
 }
 
 export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  const subject = "Reset your Reactive password";
+  const html = await renderTransactionalEmail({
+    subject,
+    eyebrow: "Security",
+    heading: "Reset your password",
+    body: "Choose a new password for your Reactive account. This link expires in 1 hour.",
+    actionUrl: resetUrl,
+    actionLabel: "Reset password",
+    footnote:
+      "If you did not request a reset, you can ignore this email — your password will stay the same.",
+  });
+
   return sendTransactionalEmail({
     to,
-    subject: "Reset your Reactive password",
+    subject,
+    html,
     text: `Reset your password:\n\n${resetUrl}\n\nThis link expires in 1 hour. If you did not request this, ignore the email.`,
-    html: `
-      <div style="font-family:sans-serif;line-height:1.5;color:#0a0b0d">
-        <h1 style="font-size:20px">Reset password</h1>
-        <p>Use the button below to choose a new password.</p>
-        <p><a href="${resetUrl}" style="display:inline-block;background:#d6ff3f;color:#0a0b0d;padding:12px 18px;border-radius:999px;text-decoration:none;font-weight:600">Reset password</a></p>
-        <p style="color:#666;font-size:13px">Or open: ${resetUrl}</p>
-      </div>
-    `,
   });
 }
