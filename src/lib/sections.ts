@@ -147,6 +147,13 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       };
     case "Projects":
       return {
+        eyebrow: "Portfolio",
+        headline: "Selected work",
+        showEyebrow: true,
+        showHeadline: true,
+        showImages: true,
+        showDescriptions: true,
+        showLinks: true,
         items: [
           {
             title: "Featured project",

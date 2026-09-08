@@ -58,7 +58,7 @@ export const sectionTypes = [
   },
   {
     type: "Portfolio",
-    hint: "Five layouts · projects with links",
+    hint: "Six layouts · cards, featured, mosaic",
   },
   {
     type: "CTA",
