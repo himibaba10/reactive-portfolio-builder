@@ -35,6 +35,7 @@ Without Resend, verify/reset links are logged to the server console and returned
    - `NEXT_PUBLIC_APP_URL`
    - `RESEND_API_KEY` + `EMAIL_FROM` (recommended)
    - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (recommended)
+   - `CLOUDINARY_CLOUD_NAME` + `CLOUDINARY_API_KEY` + `CLOUDINARY_API_SECRET` (for section images)
 4. Deploy, then smoke: signup → verify → create → publish → `/{slug}`
 
 ## Product rules (locked)

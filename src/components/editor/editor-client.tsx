@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import { SlugField } from "@/components/ui/slug-field";
 import { PalettePicker } from "@/components/ui/palette-picker";
+import { ImageField } from "@/components/ui/image-field";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -477,6 +478,18 @@ function SectionFields({
   if (section.type === "Header") {
     return (
       <>
+        <ImageField
+          label="Logo"
+          valueUrl={String(data.logoUrl || "")}
+          valuePublicId={String(data.logoPublicId || "")}
+          onChange={(img) =>
+            onChange({
+              ...data,
+              logoUrl: img?.url || "",
+              logoPublicId: img?.publicId || "",
+            })
+          }
+        />
         <Field label="Tagline" hint="Optional line under the portfolio title">
           <FormInput
             value={String(data.tagline || "")}
@@ -500,6 +513,24 @@ function SectionFields({
   if (section.type === "Hero") {
     return (
       <>
+        <ImageField
+          label="Photo"
+          valueUrl={String(data.imageUrl || "")}
+          valuePublicId={String(data.imagePublicId || "")}
+          onChange={(img) =>
+            onChange({
+              ...data,
+              imageUrl: img?.url || "",
+              imagePublicId: img?.publicId || "",
+            })
+          }
+        />
+        <Field label="Image alt">
+          <FormInput
+            value={String(data.imageAlt || "")}
+            onChange={(e) => onChange({ ...data, imageAlt: e.target.value })}
+          />
+        </Field>
         <Field label="Name">
           <FormInput
             value={String(data.name || "")}
@@ -530,12 +561,32 @@ function SectionFields({
 
   if (section.type === "About") {
     return (
-      <Field label="Bio">
-        <FormTextarea
-          value={String(data.body || "")}
-          onChange={(e) => onChange({ ...data, body: e.target.value })}
+      <>
+        <ImageField
+          label="Portrait"
+          valueUrl={String(data.imageUrl || "")}
+          valuePublicId={String(data.imagePublicId || "")}
+          onChange={(img) =>
+            onChange({
+              ...data,
+              imageUrl: img?.url || "",
+              imagePublicId: img?.publicId || "",
+            })
+          }
         />
-      </Field>
+        <Field label="Image alt">
+          <FormInput
+            value={String(data.imageAlt || "")}
+            onChange={(e) => onChange({ ...data, imageAlt: e.target.value })}
+          />
+        </Field>
+        <Field label="Bio">
+          <FormTextarea
+            value={String(data.body || "")}
+            onChange={(e) => onChange({ ...data, body: e.target.value })}
+          />
+        </Field>
+      </>
     );
   }
 
@@ -562,6 +613,18 @@ function SectionFields({
   if (section.type === "CTA") {
     return (
       <>
+        <ImageField
+          label="Image"
+          valueUrl={String(data.imageUrl || "")}
+          valuePublicId={String(data.imagePublicId || "")}
+          onChange={(img) =>
+            onChange({
+              ...data,
+              imageUrl: img?.url || "",
+              imagePublicId: img?.publicId || "",
+            })
+          }
+        />
         <Field label="Headline">
           <FormInput
             value={String(data.headline || "")}
@@ -617,6 +680,18 @@ function SectionFields({
     const socials = (data.socials || {}) as Record<string, string>;
     return (
       <>
+        <ImageField
+          label="Avatar"
+          valueUrl={String(data.imageUrl || "")}
+          valuePublicId={String(data.imagePublicId || "")}
+          onChange={(img) =>
+            onChange({
+              ...data,
+              imageUrl: img?.url || "",
+              imagePublicId: img?.publicId || "",
+            })
+          }
+        />
         <Field label="Email">
           <FormInput
             value={String(data.email || "")}
@@ -647,7 +722,21 @@ function SectionFields({
     return (
       <div className="flex flex-col gap-4">
         {items.map((item, index) => (
-          <div key={index} className="rounded-xl border border-line p-4">
+          <div key={index} className="flex flex-col gap-3 rounded-xl border border-line p-4">
+            <ImageField
+              label="Cover"
+              valueUrl={String(item.imageUrl || "")}
+              valuePublicId={String(item.imagePublicId || "")}
+              onChange={(img) => {
+                const next = [...items];
+                next[index] = {
+                  ...item,
+                  imageUrl: img?.url || "",
+                  imagePublicId: img?.publicId || "",
+                };
+                onChange({ ...data, items: next });
+              }}
+            />
             <Field label="Title">
               <FormInput
                 value={String(item.title || "")}
@@ -688,7 +777,14 @@ function SectionFields({
               ...data,
               items: [
                 ...items,
-                { title: "New project", description: "", url: "", tags: [] },
+                {
+                  title: "New project",
+                  description: "",
+                  url: "",
+                  tags: [],
+                  imageUrl: "",
+                  imagePublicId: "",
+                },
               ],
             })
           }
@@ -710,6 +806,22 @@ function SectionFields({
             key={index}
             className="grid gap-3 rounded-xl border border-line p-4 md:grid-cols-2"
           >
+            <div className="md:col-span-2">
+              <ImageField
+                label="Company mark"
+                valueUrl={String(item.imageUrl || "")}
+                valuePublicId={String(item.imagePublicId || "")}
+                onChange={(img) => {
+                  const next = [...items];
+                  next[index] = {
+                    ...item,
+                    imageUrl: img?.url || "",
+                    imagePublicId: img?.publicId || "",
+                  };
+                  onChange({ ...data, items: next });
+                }}
+              />
+            </div>
             {(["role", "company", "period", "description"] as const).map(
               (key) => (
                 <Field key={key} label={key}>
@@ -739,6 +851,8 @@ function SectionFields({
                   company: "Company",
                   period: "",
                   description: "",
+                  imageUrl: "",
+                  imagePublicId: "",
                 },
               ],
             })
@@ -761,6 +875,22 @@ function SectionFields({
             key={index}
             className="grid gap-3 rounded-xl border border-line p-4 md:grid-cols-3"
           >
+            <div className="md:col-span-3">
+              <ImageField
+                label="School mark"
+                valueUrl={String(item.imageUrl || "")}
+                valuePublicId={String(item.imagePublicId || "")}
+                onChange={(img) => {
+                  const next = [...items];
+                  next[index] = {
+                    ...item,
+                    imageUrl: img?.url || "",
+                    imagePublicId: img?.publicId || "",
+                  };
+                  onChange({ ...data, items: next });
+                }}
+              />
+            </div>
             {(["school", "degree", "period"] as const).map((key) => (
               <Field key={key} label={key}>
                 <FormInput
@@ -783,7 +913,13 @@ function SectionFields({
               ...data,
               items: [
                 ...items,
-                { school: "School", degree: "Degree", period: "" },
+                {
+                  school: "School",
+                  degree: "Degree",
+                  period: "",
+                  imageUrl: "",
+                  imagePublicId: "",
+                },
               ],
             })
           }

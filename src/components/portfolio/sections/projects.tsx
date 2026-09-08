@@ -1,4 +1,30 @@
 import { SectionEyebrow, asRecordArray, type SectionProps } from "./shared";
+import { PortfolioImage } from "./portfolio-image";
+
+function ProjectCover({
+  url,
+  title,
+  className = "aspect-video",
+}: {
+  url: unknown;
+  title: unknown;
+  className?: string;
+}) {
+  const src = String(url || "");
+  if (!src) return null;
+  return (
+    <div
+      className={`mb-4 overflow-hidden rounded-xl border border-white/10 bg-black/20 ${className}`}
+    >
+      <PortfolioImage
+        src={src}
+        alt={String(title || "Project")}
+        className="h-full w-full object-cover"
+        sizes="(max-width: 768px) 100vw, 420px"
+      />
+    </div>
+  );
+}
 
 export function ProjectsSection({ section }: SectionProps) {
   const items = asRecordArray(section.data.items);
@@ -21,6 +47,7 @@ export function ProjectsSection({ section }: SectionProps) {
                 className="flex flex-col justify-between rounded-2xl border border-white/10 bg-black/20 p-5"
               >
                 <div>
+                  <ProjectCover url={item.imageUrl} title={item.title} />
                   <h3 className="font-display text-xl tracking-[-0.03em]">
                     {String(item.title || "")}
                   </h3>
@@ -55,11 +82,23 @@ export function ProjectsSection({ section }: SectionProps) {
             {items.map((item, i) => (
               <article
                 key={i}
-                className="flex flex-col gap-2 py-5 md:flex-row md:items-baseline md:justify-between md:gap-8"
+                className="flex flex-col gap-4 py-5 md:flex-row md:items-center md:justify-between md:gap-8"
               >
-                <h3 className="font-display text-2xl tracking-[-0.03em]">
-                  {String(item.title || "")}
-                </h3>
+                <div className="flex min-w-0 flex-1 items-center gap-4">
+                  {item.imageUrl ? (
+                    <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-white/10">
+                      <PortfolioImage
+                        src={String(item.imageUrl)}
+                        alt={String(item.title || "")}
+                        className="h-full w-full object-cover"
+                        sizes="96px"
+                      />
+                    </div>
+                  ) : null}
+                  <h3 className="font-display text-2xl tracking-[-0.03em]">
+                    {String(item.title || "")}
+                  </h3>
+                </div>
                 <div className="max-w-md md:text-right">
                   <p className="text-sm text-white/70">
                     {String(item.description || "")}
@@ -94,6 +133,7 @@ export function ProjectsSection({ section }: SectionProps) {
                 key={i}
                 className="relative overflow-hidden rounded-2xl bg-(--p-primary)/20 p-6 ring-1 ring-white/10"
               >
+                <ProjectCover url={item.imageUrl} title={item.title} />
                 <span className="text-xs tracking-[0.2em] text-(--p-accent) uppercase">
                   {String(i + 1).padStart(2, "0")}
                 </span>
@@ -130,6 +170,11 @@ export function ProjectsSection({ section }: SectionProps) {
           <div className="space-y-4">
             {featured ? (
               <article className="rounded-3xl border border-white/15 bg-black/30 p-6 md:p-8">
+                <ProjectCover
+                  url={featured.imageUrl}
+                  title={featured.title}
+                  className="aspect-21/9"
+                />
                 <p className="text-xs tracking-[0.24em] text-(--p-accent) uppercase">
                   Featured
                 </p>
@@ -158,6 +203,7 @@ export function ProjectsSection({ section }: SectionProps) {
                     key={i}
                     className="rounded-2xl border border-white/10 p-4"
                   >
+                    <ProjectCover url={item.imageUrl} title={item.title} />
                     <h3 className="font-display text-lg">
                       {String(item.title || "")}
                     </h3>
@@ -194,6 +240,7 @@ export function ProjectsSection({ section }: SectionProps) {
               key={i}
               className="rounded-2xl border border-white/10 bg-black/25 p-5 backdrop-blur-sm transition hover:border-white/20"
             >
+              <ProjectCover url={item.imageUrl} title={item.title} />
               <h3 className="font-display text-2xl tracking-[-0.03em]">
                 {String(item.title || "")}
               </h3>

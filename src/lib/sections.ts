@@ -78,6 +78,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       return {
         showSlug: true,
         tagline: "",
+        logoUrl: "",
+        logoPublicId: "",
       };
     case "Hero":
       return {
@@ -85,10 +87,16 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         tagline: "Maker · designer · builder",
         ctaLabel: "See work",
         ctaHref: "#projects",
+        imageUrl: "",
+        imagePublicId: "",
+        imageAlt: "",
       };
     case "About":
       return {
         body: "A short bio about what you build and why it matters.",
+        imageUrl: "",
+        imagePublicId: "",
+        imageAlt: "",
       };
     case "Skills":
       return { items: ["React", "Design systems", "Product"] };
@@ -100,6 +108,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
             description: "One-line outcome.",
             url: "",
             tags: ["Web"],
+            imageUrl: "",
+            imagePublicId: "",
           },
         ],
       };
@@ -109,6 +119,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         body: "Open to collaborations, product roles, and sharp briefs.",
         ctaLabel: "Get in touch",
         ctaHref: "#contact",
+        imageUrl: "",
+        imagePublicId: "",
       };
     case "Experience":
       return {
@@ -118,6 +130,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
             company: "Company",
             period: "2024 — Present",
             description: "What you shipped.",
+            imageUrl: "",
+            imagePublicId: "",
           },
         ],
       };
@@ -128,12 +142,16 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
             school: "School",
             degree: "Degree",
             period: "2020 — 2024",
+            imageUrl: "",
+            imagePublicId: "",
           },
         ],
       };
     case "Contact":
       return {
         email: "you@example.com",
+        imageUrl: "",
+        imagePublicId: "",
         socials: {
           github: "",
           linkedin: "",

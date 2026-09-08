@@ -15,4 +15,7 @@ export const serverConfig = {
     "Reactive <noreply@reactiveferdous.com>",
   upstashRedisUrl: process.env.UPSTASH_REDIS_REST_URL || "",
   upstashRedisToken: process.env.UPSTASH_REDIS_REST_TOKEN || "",
+  cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+  cloudinaryApiKey: process.env.CLOUDINARY_API_KEY || "",
+  cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET || "",
 };
