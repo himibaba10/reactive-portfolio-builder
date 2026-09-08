@@ -75,9 +75,17 @@ export type PaletteId = (typeof PALETTE_IDS)[number];
 
 export const sectionVariantSchema = z.number().int().min(1).max(6);
 
-/** Hero and About have 6 layouts; other variant sections stay at 5. */
+/** Hero, About, Skills, Projects, CTA have 6 layouts. */
 export function sectionVariantCount(type: SectionType): number {
-  if (type === "Hero" || type === "About") return 6;
+  if (
+    type === "Hero" ||
+    type === "About" ||
+    type === "Skills" ||
+    type === "Projects" ||
+    type === "CTA"
+  ) {
+    return 6;
+  }
   if (isVariantSectionType(type)) return 5;
   return 1;
 }
@@ -129,7 +137,14 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         showImage: true,
       };
     case "Skills":
-      return { items: ["React", "Design systems", "Product"] };
+      return {
+        eyebrow: "Skills",
+        headline: "What I work with",
+        items: ["React", "Design systems", "Product"],
+        showEyebrow: true,
+        showHeadline: true,
+        showItems: true,
+      };
     case "Projects":
       return {
         items: [

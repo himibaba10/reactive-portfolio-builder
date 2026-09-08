@@ -15,7 +15,7 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 - One portfolio per user (unique `userId`); reject a second create
 - Prebuilt section types only: Header, Hero, About, Skills, Projects (UI: Portfolio), CTA, Experience, Education, Contact, Footer
 - Each section type at most once; allow reorder + visibility toggle (Header/Footer pinned)
-- Layout variants: Hero/About 1–6; Skills/Projects/CTA 1–5; Header is fixed (logo + section nav); Footer is fixed (centered copyright); Experience/Education/Contact stay single-layout
+- Layout variants: Hero/About/Skills/Projects/CTA 1–6; Header is fixed (logo + section nav); Footer is fixed (centered copyright); Experience/Education/Contact stay single-layout
 - All section layouts must use the five palette CSS tokens only
 - Public portfolios are one page at `/{slug}`
 - Palette presets only; each preset has exactly: primary, secondary, accent, textDark, textLight

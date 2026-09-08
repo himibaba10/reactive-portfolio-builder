@@ -1,18 +1,81 @@
 import { SectionEyebrow, asStringArray, type SectionProps } from "./shared";
 
+type SkillsFlags = {
+  eyebrow: string;
+  headline: string;
+  items: string[];
+  showEyebrow: boolean;
+  showHeadline: boolean;
+  showItems: boolean;
+};
+
+function readSkills(data: Record<string, unknown>): SkillsFlags {
+  return {
+    eyebrow: String(data.eyebrow || "Skills"),
+    headline: String(data.headline || ""),
+    items: asStringArray(data.items),
+    showEyebrow: data.showEyebrow !== false,
+    showHeadline: data.showHeadline !== false,
+    showItems: data.showItems !== false,
+  };
+}
+
+function SkillsHeader({ skills }: { skills: SkillsFlags }) {
+  return (
+    <div className="space-y-3">
+      {skills.showEyebrow && skills.eyebrow ? (
+        <SectionEyebrow>{skills.eyebrow}</SectionEyebrow>
+      ) : null}
+      {skills.showHeadline && skills.headline ? (
+        <h3 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] leading-[0.95] tracking-[-0.04em]">
+          {skills.headline}
+        </h3>
+      ) : null}
+    </div>
+  );
+}
+
+function SkillsEmpty() {
+  return <p className="text-sm text-white/50">No skills listed.</p>;
+}
+
 export function SkillsSection({ section }: SectionProps) {
-  const items = asStringArray(section.data.items);
+  const skills = readSkills(section.data);
   const variant = section.variant;
+  const items = skills.showItems ? skills.items : [];
+  const empty = items.length === 0;
 
-  const empty = items.length === 0 ? (
-    <p className="text-sm text-white/50">No skills listed.</p>
-  ) : null;
+  // 1 — Soft pill cloud
+  if (variant === 1) {
+    return (
+      <section id="skills" className="space-y-6">
+        <SkillsHeader skills={skills} />
+        {empty ? (
+          <SkillsEmpty />
+        ) : (
+          <div className="flex flex-wrap gap-2.5">
+            {items.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/85"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+    );
+  }
 
+  // 2 — Underline rows (2-col list)
   if (variant === 2) {
     return (
-      <section id="skills" className="space-y-5">
-        <SectionEyebrow>Skills</SectionEyebrow>
-        {empty || (
+      <section id="skills" className="space-y-6">
+        <SkillsHeader skills={skills} />
+        {empty ? (
+          <SkillsEmpty />
+        ) : (
           <ul className="grid gap-3 sm:grid-cols-2">
             {items.map((item) => (
               <li
@@ -28,16 +91,19 @@ export function SkillsSection({ section }: SectionProps) {
     );
   }
 
+  // 3 — Solid primary chips
   if (variant === 3) {
     return (
-      <section id="skills" className="space-y-5">
-        <SectionEyebrow>Skills</SectionEyebrow>
-        {empty || (
+      <section id="skills" className="space-y-6">
+        <SkillsHeader skills={skills} />
+        {empty ? (
+          <SkillsEmpty />
+        ) : (
           <div className="flex flex-wrap gap-3">
             {items.map((item) => (
               <span
                 key={item}
-                className="rounded-xl bg-(--p-primary) px-4 py-2 text-sm font-medium text-(--p-text-dark)"
+                className="rounded-xl bg-(--p-primary) px-4 py-2.5 text-sm font-medium text-(--p-text-dark)"
               >
                 {item}
               </span>
@@ -48,11 +114,14 @@ export function SkillsSection({ section }: SectionProps) {
     );
   }
 
+  // 4 — Numbered index
   if (variant === 4) {
     return (
-      <section id="skills" className="space-y-5">
-        <SectionEyebrow>Skills</SectionEyebrow>
-        {empty || (
+      <section id="skills" className="space-y-6">
+        <SkillsHeader skills={skills} />
+        {empty ? (
+          <SkillsEmpty />
+        ) : (
           <ol className="space-y-3">
             {items.map((item, i) => (
               <li key={item} className="flex items-baseline gap-4">
@@ -68,19 +137,24 @@ export function SkillsSection({ section }: SectionProps) {
     );
   }
 
+  // 5 — Bento tile panel
   if (variant === 5) {
     return (
       <section
         id="skills"
-        className="rounded-3xl border border-white/10 px-5 py-7 md:px-7"
+        className="rounded-[1.75rem] border border-white/10 px-5 py-7 md:px-8 md:py-9"
       >
-        <SectionEyebrow>Skills</SectionEyebrow>
-        {empty || (
-          <div className="mt-5 grid gap-2 sm:grid-cols-3">
+        <SkillsHeader skills={skills} />
+        {empty ? (
+          <div className="mt-5">
+            <SkillsEmpty />
+          </div>
+        ) : (
+          <div className="mt-6 grid gap-2.5 sm:grid-cols-2 md:grid-cols-3">
             {items.map((item) => (
               <div
                 key={item}
-                className="rounded-2xl bg-black/25 px-4 py-4 text-center text-sm text-white/80"
+                className="rounded-2xl bg-black/25 px-4 py-5 text-center text-sm text-white/80 ring-1 ring-white/5"
               >
                 {item}
               </div>
@@ -91,19 +165,25 @@ export function SkillsSection({ section }: SectionProps) {
     );
   }
 
+  // 6 — Marquee strip (CSS loop; static wrap when reduced motion)
+  const loop = [...items, ...items];
   return (
-    <section id="skills" className="space-y-5">
-      <SectionEyebrow>Skills</SectionEyebrow>
-      {empty || (
-        <div className="flex flex-wrap gap-2">
-          {items.map((item) => (
-            <span
-              key={item}
-              className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm"
-            >
-              {item}
-            </span>
-          ))}
+    <section id="skills" className="space-y-6">
+      <SkillsHeader skills={skills} />
+      {empty ? (
+        <SkillsEmpty />
+      ) : (
+        <div className="relative overflow-x-clip mask-[linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
+          <div className="portfolio-marquee-track flex w-max gap-3 py-1 motion-reduce:w-full motion-reduce:flex-wrap motion-reduce:justify-start">
+            {(items.length ? loop : items).map((item, i) => (
+              <span
+                key={`${item}-${i}`}
+                className="shrink-0 rounded-full border border-white/15 bg-white/5 px-5 py-2.5 text-sm tracking-wide text-white/85"
+              >
+                {item}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </section>

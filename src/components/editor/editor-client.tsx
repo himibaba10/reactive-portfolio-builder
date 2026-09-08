@@ -33,6 +33,7 @@ import { PalettePicker } from "@/components/ui/palette-picker";
 import { ImageField } from "@/components/ui/image-field";
 import { HeroLayoutPicker } from "@/components/editor/hero-layout-picker";
 import { AboutLayoutPicker } from "@/components/editor/about-layout-picker";
+import { SkillsLayoutPicker } from "@/components/editor/skills-layout-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -416,6 +417,15 @@ export function EditorClient() {
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
+                ) : active.type === "Skills" ? (
+                  <SkillsLayoutPicker
+                    section={active}
+                    paletteId={paletteId}
+                    portfolioTitle={title || "Portfolio"}
+                    portfolioSlug={slug || "your-slug"}
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
                 ) : isVariantSectionType(active.type) ? (
                   <LayoutPicker
                     value={active.variant}
@@ -778,21 +788,57 @@ function SectionFields({
 
   if (section.type === "Skills") {
     const items = Array.isArray(data.items) ? (data.items as string[]) : [];
+    const showEyebrow = data.showEyebrow !== false;
+    const showHeadline = data.showHeadline !== false;
+    const showItems = data.showItems !== false;
+
     return (
-      <Field label="Skills" hint="Comma-separated">
-        <FormInput
-          value={items.join(", ")}
-          onChange={(e) =>
-            onChange({
-              ...data,
-              items: e.target.value
-                .split(",")
-                .map((s) => s.trim())
-                .filter(Boolean),
-            })
-          }
-        />
-      </Field>
+      <>
+        <OptionalField
+          label="Eyebrow"
+          enabled={showEyebrow}
+          onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
+        >
+          <FormInput
+            value={String(data.eyebrow || "")}
+            onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
+            disabled={!showEyebrow}
+            placeholder="Skills"
+          />
+        </OptionalField>
+        <OptionalField
+          label="Headline"
+          enabled={showHeadline}
+          onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
+        >
+          <FormInput
+            value={String(data.headline || "")}
+            onChange={(e) => onChange({ ...data, headline: e.target.value })}
+            disabled={!showHeadline}
+          />
+        </OptionalField>
+        <OptionalField
+          label="Skills"
+          enabled={showItems}
+          onEnabledChange={(v) => onChange({ ...data, showItems: v })}
+        >
+          <FormInput
+            value={items.join(", ")}
+            onChange={(e) =>
+              onChange({
+                ...data,
+                items: e.target.value
+                  .split(",")
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              })
+            }
+            disabled={!showItems}
+            placeholder="React, Design systems, Product"
+          />
+          <p className="mt-1 text-xs text-muted">Comma-separated</p>
+        </OptionalField>
+      </>
     );
   }
 

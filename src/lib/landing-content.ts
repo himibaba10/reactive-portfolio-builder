@@ -54,7 +54,7 @@ export const sectionTypes = [
   },
   {
     type: "Skills",
-    hint: "Five layouts · craft tags",
+    hint: "Six layouts · tags, chips, marquee",
   },
   {
     type: "Portfolio",
