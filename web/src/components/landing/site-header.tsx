@@ -1,4 +1,5 @@
-import { site, navLinks } from "@/lib/landing-content";
+import { navLinks } from "@/lib/landing-content";
+import { BrandLogo } from "@/components/brand-logo";
 import { ButtonLink } from "@/components/ui/button-link";
 
 export function SiteHeader() {
@@ -13,11 +14,8 @@ export function SiteHeader() {
           className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 px-5 py-3 md:px-8 md:py-4"
         >
           <div className="flex items-center justify-between gap-3">
-            <a
-              href="#top"
-              className="pointer-events-auto shrink-0 font-[family-name:var(--font-display)] text-sm font-semibold tracking-[0.18em] text-[var(--foam)] uppercase"
-            >
-              {site.shortName}
+            <a href="#top" className="pointer-events-auto shrink-0">
+              <BrandLogo className="h-7 w-auto md:h-8" sizes="160px" />
             </a>
             <nav className="pointer-events-auto hidden items-center gap-8 md:flex">
               {navLinks.map((link) => (

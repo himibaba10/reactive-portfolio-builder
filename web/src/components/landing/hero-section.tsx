@@ -1,4 +1,5 @@
 import { site } from "@/lib/landing-content";
+import { BrandLogo } from "@/components/brand-logo";
 import { ButtonLink } from "@/components/ui/button-link";
 
 export function HeroSection() {
@@ -24,23 +25,14 @@ export function HeroSection() {
       />
 
       <div className="relative z-10 mx-auto w-full max-w-[1400px]">
-        <p
-          data-hero-eyebrow
-          className="mb-6 max-w-xl text-xs tracking-[0.28em] text-[var(--signal)] uppercase opacity-0"
-        >
-          Portfolio infrastructure for makers
-        </p>
-
-        <h1 className="font-[family-name:var(--font-display)] text-[clamp(2.6rem,9.5vw,7rem)] leading-[0.9] font-semibold tracking-[-0.04em] text-[var(--foam)]">
-          <span data-hero-line className="block overflow-hidden">
-            <span className="inline-block translate-y-[110%]">Reactive</span>
-          </span>
-          <span data-hero-line className="block overflow-hidden">
-            <span className="inline-block translate-y-[110%]">
-              Portfolio <span className="text-[var(--signal)]">Builder</span>
-            </span>
-          </span>
-        </h1>
+        <h1 className="sr-only">{site.name}</h1>
+        <div data-hero-brand className="overflow-hidden opacity-0">
+          <BrandLogo
+            priority
+            className="h-auto w-[min(100%,28rem)] md:w-[min(100%,36rem)] lg:w-[min(100%,42rem)]"
+            sizes="(max-width: 768px) 90vw, 672px"
+          />
+        </div>
 
         <div className="mt-8 flex max-w-3xl flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
           <p

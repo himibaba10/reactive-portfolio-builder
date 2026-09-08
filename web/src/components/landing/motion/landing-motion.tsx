@@ -28,8 +28,7 @@ export function LandingMotion() {
       if (reduced) {
         gsap.set(
           [
-            "[data-hero-line] > span",
-            "[data-hero-eyebrow]",
+            "[data-hero-brand]",
             "[data-hero-copy]",
             "[data-hero-cta]",
             "[data-process-card]",
@@ -44,7 +43,7 @@ export function LandingMotion() {
         return;
       }
 
-      gsap.set(["[data-hero-eyebrow]", "[data-hero-copy]", "[data-hero-cta]"], {
+      gsap.set(["[data-hero-brand]", "[data-hero-copy]", "[data-hero-cta]"], {
         y: 28,
       });
       gsap.set(["[data-cta-eyebrow]", "[data-cta-copy]", "[data-cta-actions]"], {
@@ -53,20 +52,11 @@ export function LandingMotion() {
 
       const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
       heroTl
-        .to("[data-hero-line] > span", {
+        .to("[data-hero-brand]", {
+          opacity: 1,
           y: 0,
-          duration: 1.15,
-          stagger: 0.12,
+          duration: 1.05,
         })
-        .to(
-          "[data-hero-eyebrow]",
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.6,
-          },
-          "-=0.55",
-        )
         .to(
           ["[data-hero-copy]", "[data-hero-cta]"],
           {
