@@ -11,7 +11,6 @@ import {
   type SectionType,
   type User,
 } from "@/lib/api-client";
-import { palettes } from "@/lib/landing-content";
 import {
   clampSectionVariant,
   defaultSectionData,
@@ -29,6 +28,7 @@ import {
   FormTextarea,
 } from "@/components/ui/form";
 import { SlugField } from "@/components/ui/slug-field";
+import { PalettePicker } from "@/components/ui/palette-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -285,19 +285,12 @@ export function EditorClient() {
             onChange={setSlug}
             excludeCurrent={portfolio?.slug}
           />
-          <Field label="Palette">
-            <select
-              value={paletteId}
-              onChange={(e) => setPaletteId(e.target.value)}
-              className="w-full rounded-xl border border-line bg-ink px-4 py-3"
-            >
-              {palettes.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </Field>
+          <div className="flex w-full flex-col gap-2 text-left md:col-span-3">
+            <span className="text-xs tracking-[0.18em] text-muted uppercase">
+              Palette
+            </span>
+            <PalettePicker value={paletteId} onChange={setPaletteId} />
+          </div>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, ApiError, type Portfolio, type User } from "@/lib/api-client";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
-import { palettes } from "@/lib/landing-content";
 import { AppChrome } from "@/components/app/app-chrome";
 import {
   Field,
@@ -15,18 +14,34 @@ import {
   useFormSubmit,
 } from "@/components/ui/form";
 import { SlugField } from "@/components/ui/slug-field";
+import { PalettePicker } from "@/components/ui/palette-picker";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
+  const [createTitle, setCreateTitle] = useState("");
   const [createSlug, setCreateSlug] = useState("");
+  const [slugEdited, setSlugEdited] = useState(false);
+  const [createPaletteId, setCreatePaletteId] = useState("signal");
   const [verifyUrl, setVerifyUrl] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return sessionStorage.getItem("reactive_verify_url");
   });
   const [banner, setBanner] = useState<string | null>(null);
+
+  function handleTitleChange(next: string) {
+    setCreateTitle(next);
+    if (!slugEdited) {
+      setCreateSlug(normalizeSlug(next));
+    }
+  }
+
+  function handleSlugChange(next: string) {
+    setSlugEdited(true);
+    setCreateSlug(next);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -65,29 +80,26 @@ export default function DashboardPage() {
     };
   }, [router]);
 
-  const createForm = useFormSubmit(async (form) => {
-    const data = new FormData(form);
-    const slug = normalizeSlug(String(data.get("slug") || ""));
+  const createForm = useFormSubmit(async (_form) => {
+    const slug = normalizeSlug(createSlug);
     if (!isValidSlug(slug)) {
       throw new Error("Slug must be lowercase, hyphenated, and not reserved.");
+    }
+    const title = createTitle.trim();
+    if (!title) {
+      throw new Error("Title is required.");
     }
     const result = await api<{ portfolio: Portfolio }>("/portfolios/me", {
       method: "POST",
       body: {
-        title: String(data.get("title") || ""),
+        title,
         slug,
-        paletteId: String(data.get("paletteId") || "signal"),
+        paletteId: createPaletteId || "signal",
       },
     });
     setPortfolio(result.portfolio);
     router.push("/editor");
   });
-
-  async function logout() {
-    await api("/auth/logout", { method: "POST" });
-    router.push("/");
-    router.refresh();
-  }
 
   async function resendVerification() {
     const result = await api<{ verifyUrl?: string }>(
@@ -130,19 +142,6 @@ export default function DashboardPage() {
     setBanner("Portfolio deleted.");
   }
 
-  async function deleteAccount() {
-    if (
-      !confirm(
-        "Soft-delete your account? Your portfolio will be removed and you cannot log in.",
-      )
-    ) {
-      return;
-    }
-    await api("/auth/account", { method: "DELETE" });
-    router.push("/");
-    router.refresh();
-  }
-
   if (loading) {
     return (
       <AppChrome>
@@ -176,22 +175,13 @@ export default function DashboardPage() {
   return (
     <AppChrome email={user?.email}>
       <div className="flex flex-col gap-8">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs tracking-[0.2em] text-signal uppercase">
-              Dashboard
-            </p>
-            <h1 className="mt-2 font-display text-4xl tracking-[-0.04em]">
-              Your portfolio
-            </h1>
-          </div>
-          <button
-            type="button"
-            onClick={() => void logout()}
-            className="text-sm text-muted hover:text-foam"
-          >
-            Log out
-          </button>
+        <div>
+          <p className="text-xs tracking-[0.2em] text-signal uppercase">
+            {portfolio ? "Dashboard" : "Get started"}
+          </p>
+          <h1 className="mt-2 font-display text-4xl tracking-[-0.04em]">
+            {portfolio ? "Your portfolio" : "Create your portfolio"}
+          </h1>
         </div>
 
         {banner ? (
@@ -286,59 +276,57 @@ export default function DashboardPage() {
         ) : (
           <div className="rounded-2xl border border-line bg-panel p-6">
             <h2 className="font-display text-2xl tracking-[-0.03em]">
-              Create your one portfolio
+              Title, slug, palette
             </h2>
             <p className="mt-2 max-w-xl text-sm text-muted">
-              Title, slug, and a five-token palette. You can only create one.
+              Five-token presets only. You can create exactly one portfolio.
             </p>
             <form
               onSubmit={createForm.onSubmit}
-              className="mt-6 grid max-w-xl gap-4"
+              className="mt-6 grid gap-4 md:grid-cols-2"
             >
-              <FormError message={createForm.error} />
+              {createForm.error ? (
+                <div className="md:col-span-2">
+                  <FormError message={createForm.error} />
+                </div>
+              ) : null}
               <Field label="Title">
                 <FormInput
                   name="title"
                   required
                   maxLength={80}
+                  value={createTitle}
+                  onChange={(e) => handleTitleChange(e.target.value)}
                   placeholder="Daniel · Product designer"
                 />
               </Field>
               <SlugField
                 value={createSlug}
-                onChange={setCreateSlug}
+                onChange={handleSlugChange}
                 required
-                hint="yoursite.com/your-slug"
+                hint="Auto-filled from title — edit anytime"
               />
-              <Field label="Palette">
-                <select
+              <div className="flex w-full flex-col gap-2 text-left md:col-span-2">
+                <span className="text-xs tracking-[0.18em] text-muted uppercase">
+                  Palette
+                </span>
+                <PalettePicker
                   name="paletteId"
-                  defaultValue="signal"
-                  className="w-full rounded-xl border border-line bg-ink px-4 py-3"
-                >
-                  {palettes.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <SubmitButton pending={createForm.pending}>
-                Create portfolio
-              </SubmitButton>
+                  value={createPaletteId}
+                  onChange={setCreatePaletteId}
+                />
+                <span className="text-xs text-muted">
+                  Pick by color — five tokens each
+                </span>
+              </div>
+              <div className="md:col-span-2">
+                <SubmitButton pending={createForm.pending}>
+                  Create portfolio
+                </SubmitButton>
+              </div>
             </form>
           </div>
         )}
-
-        <div className="border-t border-line pt-8">
-          <button
-            type="button"
-            onClick={() => void deleteAccount()}
-            className="text-sm text-red-300/80 hover:text-red-200"
-          >
-            Soft-delete account
-          </button>
-        </div>
       </div>
     </AppChrome>
   );

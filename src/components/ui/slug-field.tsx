@@ -5,6 +5,15 @@ import { api } from "@/lib/api-client";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 import { FormInput } from "@/components/ui/form";
 
+const DEBOUNCE_MS = 600;
+
+type RemoteStatus = {
+  slug: string;
+  status: "checking" | "available" | "taken";
+};
+
+type LocalStatus = "idle" | "available" | "invalid";
+
 type SlugFieldProps = {
   value: string;
   onChange: (value: string) => void;
@@ -23,38 +32,39 @@ export function SlugField({
   excludeCurrent,
 }: SlugFieldProps) {
   const normalized = normalizeSlug(value);
-  const localStatus = !normalized
-    ? ("idle" as const)
+  const localStatus: LocalStatus | null = !normalized
+    ? "idle"
     : excludeCurrent && normalized === excludeCurrent
-      ? ("available" as const)
+      ? "available"
       : !isValidSlug(normalized)
-        ? ("invalid" as const)
+        ? "invalid"
         : null;
 
-  const [remote, setRemote] = useState<"checking" | "available" | "taken" | null>(
-    null,
-  );
+  const [remote, setRemote] = useState<RemoteStatus | null>(null);
 
   useEffect(() => {
-    if (localStatus !== null) {
-      return;
-    }
+    if (localStatus !== null) return;
 
     let cancelled = false;
     const handle = window.setTimeout(() => {
       void (async () => {
-        setRemote("checking");
+        setRemote({ slug: normalized, status: "checking" });
         try {
           const result = await api<{ available: boolean }>(
             `/portfolios/slug-available?slug=${encodeURIComponent(normalized)}`,
           );
           if (cancelled) return;
-          setRemote(result.available ? "available" : "taken");
+          setRemote({
+            slug: normalized,
+            status: result.available ? "available" : "taken",
+          });
         } catch {
-          if (!cancelled) setRemote(null);
+          if (!cancelled) {
+            setRemote(null);
+          }
         }
       })();
-    }, 350);
+    }, DEBOUNCE_MS);
 
     return () => {
       cancelled = true;
@@ -62,7 +72,10 @@ export function SlugField({
     };
   }, [localStatus, normalized]);
 
-  const status = localStatus ?? remote ?? "idle";
+  const remoteForCurrent =
+    remote && remote.slug === normalized ? remote.status : null;
+  const status = localStatus ?? remoteForCurrent ?? "idle";
+
   const message =
     status === "checking"
       ? "Checking…"
@@ -92,6 +105,8 @@ export function SlugField({
         required={required}
         placeholder="daniel-portfolio"
         onChange={(e) => onChange(e.target.value)}
+        autoComplete="off"
+        spellCheck={false}
       />
       <span className={`text-xs ${tone}`}>{message}</span>
     </label>
