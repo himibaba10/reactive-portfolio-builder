@@ -6,8 +6,8 @@ import type { PortfolioSection } from '@/lib/api-client';
 import { getPalette } from '@/lib/palette';
 
 const EXPERIENCE_LAYOUTS = [
-  { id: 1, name: 'Timeline', blurb: 'Rail with accent dots' },
-  { id: 2, name: 'Cards', blurb: 'Stacked role cards' },
+  { id: 1, name: 'Timeline', blurb: 'Vertical rail' },
+  { id: 2, name: 'Horizontal', blurb: 'Scrollable rail' },
   { id: 3, name: 'Split', blurb: 'Role left, meta right' },
   { id: 4, name: 'Compact', blurb: 'Dense underline rows' },
   { id: 5, name: 'Indexed', blurb: 'Numbered experience list' },
@@ -21,9 +21,20 @@ function Mini({ className = '' }: { className?: string }) {
 function ExperienceSketch({ id }: { id: number }) {
   if (id === 2) {
     return (
-      <div className='flex h-full flex-col gap-1 p-2'>
-        <Mini className='flex-1 rounded-md opacity-45' />
-        <Mini className='flex-1 rounded-md opacity-35' />
+      <div className='flex h-full items-center gap-1 p-2'>
+        {[0, 1, 2].map((n) => (
+          <div key={n} className='flex flex-1 flex-col gap-1'>
+            <div className='flex items-center gap-0.5'>
+              <span className='size-1.5 shrink-0 rounded-full bg-current opacity-80' />
+              {n < 2 ? (
+                <span className='h-px flex-1 bg-current/40' />
+              ) : (
+                <span className='h-px flex-1 opacity-0' />
+              )}
+            </div>
+            <Mini className='h-5 w-full rounded-sm opacity-40' />
+          </div>
+        ))}
       </div>
     );
   }

@@ -967,12 +967,18 @@ function SectionFields({
     );
   }
 
-  if (section.type === 'Footer') {
+  if (section.type === "Footer") {
     return (
-      <p className='text-sm text-muted'>
-        Footer is fixed: centered copyright with your portfolio title. Toggle
-        visibility in the sidebar if you want it hidden.
-      </p>
+      <Field
+        label="Footer text"
+        hint="Leave blank to use © year + portfolio title. “Created by Reactive Ferdous” is always appended."
+      >
+        <FormInput
+          value={String(data.text || "")}
+          onChange={(e) => onChange({ ...data, text: e.target.value })}
+          placeholder={`© ${new Date().getFullYear()} Your portfolio`}
+        />
+      </Field>
     );
   }
 

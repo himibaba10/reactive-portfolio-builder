@@ -25,6 +25,7 @@ export function PublicPortfolioView({
   const header = portfolio.sections.find(
     (s) => s.type === "Header" && s.visible,
   );
+  const footer = portfolio.sections.find((s) => s.type === "Footer");
   const body = portfolio.sections
     .filter((s) => s.visible && s.type !== "Header" && s.type !== "Footer")
     .sort((a, b) => a.order - b.order);
@@ -81,17 +82,21 @@ export function PublicPortfolioView({
                 </div>
               ))}
             </div>
-            <FooterSection
-              section={{
-                id: "footer",
-                type: "Footer",
-                order: 999,
-                visible: true,
-                variant: 1,
-                data: {},
-              }}
-              portfolio={meta}
-            />
+            {footer?.visible !== false ? (
+              <FooterSection
+                section={
+                  footer ?? {
+                    id: "footer",
+                    type: "Footer",
+                    order: 999,
+                    visible: true,
+                    variant: 1,
+                    data: {},
+                  }
+                }
+                portfolio={meta}
+              />
+            ) : null}
           </>
         )}
       </div>

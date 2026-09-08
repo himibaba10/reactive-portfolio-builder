@@ -1,4 +1,13 @@
 import { Building2 } from "lucide-react";
+import {
+  Timeline,
+  TimelineContent,
+  TimelineDescription,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineTitle,
+} from "@/components/ui/timeline";
 import { PortfolioImage } from "./portfolio-image";
 import {
   PeriodBadge,
@@ -84,111 +93,103 @@ export function ExperienceSection({ section }: SectionProps) {
     />
   );
 
-  // 1 — Premium timeline
+  // 1 — Shadcn-style timeline
   if (variant === 1) {
     return (
       <section id="experience" className="space-y-8">
         {header}
         {empty || (
-          <div className="relative ml-2 space-y-0 border-l border-(--p-accent)/35 pl-8 md:ml-3 md:pl-10">
-            <span
-              aria-hidden
-              className="absolute top-0 bottom-0 left-[-1px] w-px bg-linear-to-b from-(--p-accent) via-(--p-accent)/40 to-transparent"
-            />
-            {items.map((item, i) => (
-              <article
-                key={i}
-                data-reveal-item
-                className="relative pb-10 last:pb-0"
-              >
-                <span
-                  aria-hidden
-                  className="absolute top-5 left-[-2.45rem] size-3.5 rounded-full border-2 border-(--p-secondary) bg-(--p-accent) shadow-[0_0_0_4px_color-mix(in_oklab,var(--p-accent)_25%,transparent)] md:left-[-2.95rem]"
-                />
-                <div className="rounded-2xl border border-white/10 bg-black/20 p-5 transition hover:border-white/18 hover:bg-black/30 md:p-6">
-                  <div className="flex items-start gap-4">
-                    <Mark
-                      url={item.imageUrl}
-                      alt={String(item.company || item.role || "")}
-                      enabled={exp.showImages}
-                      className="size-12"
-                    />
-                    <div className="min-w-0 flex-1 space-y-3">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <h3 className="font-display text-xl tracking-[-0.03em] md:text-2xl">
-                            {String(item.role || "")}
-                          </h3>
-                          {item.company ? (
-                            <p className="mt-1 text-sm font-medium text-(--p-accent)">
-                              {String(item.company)}
-                            </p>
-                          ) : null}
-                        </div>
-                        {exp.showPeriod && item.period ? (
-                          <PeriodBadge>{String(item.period)}</PeriodBadge>
+          <Timeline>
+            {items.map((item, i) => {
+              const label = String(item.company || item.role || "");
+              return (
+                <TimelineItem key={i}>
+                  <TimelineIndicator showConnector={i < items.length - 1}>
+                    {exp.showImages && item.imageUrl ? (
+                      <PortfolioImage
+                        src={String(item.imageUrl)}
+                        alt={label}
+                        className="size-full rounded-full object-cover"
+                        sizes="44px"
+                      />
+                    ) : (
+                      <Building2 className="size-4 opacity-90" aria-hidden />
+                    )}
+                  </TimelineIndicator>
+                  <TimelineContent>
+                    <TimelineHeader>
+                      <div>
+                        <TimelineTitle>{String(item.role || "")}</TimelineTitle>
+                        {item.company ? (
+                          <p className="mt-1 text-sm font-medium text-(--p-accent)">
+                            {String(item.company)}
+                          </p>
                         ) : null}
                       </div>
-                      {exp.showDescription && item.description ? (
-                        <p className="max-w-2xl text-sm leading-relaxed text-white/70 md:text-[15px]">
-                          {String(item.description)}
-                        </p>
+                      {exp.showPeriod && item.period ? (
+                        <PeriodBadge>{String(item.period)}</PeriodBadge>
                       ) : null}
-                    </div>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                    </TimelineHeader>
+                    {exp.showDescription && item.description ? (
+                      <TimelineDescription>
+                        {String(item.description)}
+                      </TimelineDescription>
+                    ) : null}
+                  </TimelineContent>
+                </TimelineItem>
+              );
+            })}
+          </Timeline>
         )}
       </section>
     );
   }
 
-  // 2 — Card stack
+  // 2 — Horizontal timeline
   if (variant === 2) {
     return (
       <section id="experience" className="space-y-8">
         {header}
         {empty || (
-          <div className="grid gap-4">
-            {items.map((item, i) => (
-              <article
-                key={i}
-                data-reveal-item
-                className="group rounded-2xl border border-white/10 bg-black/20 p-5 transition hover:border-(--p-accent)/35 hover:bg-black/30 md:p-6"
-              >
-                <div className="flex items-start gap-4">
-                  <Mark
-                    url={item.imageUrl}
-                    alt={String(item.company || item.role || "")}
-                    enabled={exp.showImages}
-                    className="size-14"
-                  />
-                  <div className="min-w-0 flex-1 space-y-3">
-                    <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <h3 className="font-display text-2xl tracking-[-0.03em]">
-                        {String(item.role || "")}
-                      </h3>
-                      {exp.showPeriod && item.period ? (
+          <Timeline orientation="horizontal">
+            {items.map((item, i) => {
+              const label = String(item.company || item.role || "");
+              return (
+                <TimelineItem key={i}>
+                  <TimelineIndicator showConnector={i < items.length - 1}>
+                    {exp.showImages && item.imageUrl ? (
+                      <PortfolioImage
+                        src={String(item.imageUrl)}
+                        alt={label}
+                        className="size-full rounded-full object-cover"
+                        sizes="44px"
+                      />
+                    ) : (
+                      <Building2 className="size-4 opacity-90" aria-hidden />
+                    )}
+                  </TimelineIndicator>
+                  <TimelineContent>
+                    {exp.showPeriod && item.period ? (
+                      <div className="mb-3">
                         <PeriodBadge>{String(item.period)}</PeriodBadge>
-                      ) : null}
-                    </div>
+                      </div>
+                    ) : null}
+                    <TimelineTitle>{String(item.role || "")}</TimelineTitle>
                     {item.company ? (
-                      <p className="text-sm text-(--p-accent)">
+                      <p className="mt-1 text-sm font-medium text-(--p-accent)">
                         {String(item.company)}
                       </p>
                     ) : null}
                     {exp.showDescription && item.description ? (
-                      <p className="text-sm leading-relaxed text-white/70">
+                      <TimelineDescription>
                         {String(item.description)}
-                      </p>
+                      </TimelineDescription>
                     ) : null}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                  </TimelineContent>
+                </TimelineItem>
+              );
+            })}
+          </Timeline>
         )}
       </section>
     );

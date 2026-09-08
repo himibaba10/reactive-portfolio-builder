@@ -242,7 +242,9 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         },
       };
     case "Footer":
-      return {};
+      return {
+        text: "",
+      };
   }
 }
 

@@ -1,11 +1,20 @@
+import { GraduationCap } from "lucide-react";
+import {
+  Timeline,
+  TimelineContent,
+  TimelineDescription,
+  TimelineHeader,
+  TimelineIndicator,
+  TimelineItem,
+  TimelineTitle,
+} from "@/components/ui/timeline";
+import { PortfolioImage } from "./portfolio-image";
 import {
   PeriodBadge,
   SectionHeader,
   asRecordArray,
   type SectionProps,
 } from "./shared";
-import { PortfolioImage } from "./portfolio-image";
-import { GraduationCap } from "lucide-react";
 
 type EduFlags = {
   eyebrow: string;
@@ -153,44 +162,48 @@ export function EducationSection({ section }: SectionProps) {
     );
   }
 
-  // 3 — Timeline
+  // 3 — Shadcn-style timeline
   if (variant === 3) {
     return (
       <section id="education" className="space-y-6">
         {header}
         {empty || (
-          <div className="space-y-6 border-l border-white/15 pl-5">
-            {items.map((item, i) => (
-              <article key={i} className="relative">
-                <span
-                  aria-hidden
-                  className="absolute top-1.5 left-[-1.4rem] h-2.5 w-2.5 rounded-full bg-(--p-accent)"
-                />
-                <div className="flex items-start gap-3">
-                  <SchoolMark
-                    url={item.imageUrl}
-                    alt={String(item.school || "")}
-                    enabled={edu.showImages}
-                  />
-                  <div>
-                    <h3 className="text-lg font-medium">
-                      {String(item.school || "")}
-                    </h3>
-                    {edu.showDegree && item.degree ? (
-                      <p className="text-sm text-white/75">
-                        {String(item.degree)}
-                      </p>
-                    ) : null}
-                    {edu.showPeriod && item.period ? (
-                      <p className="text-sm text-white/45">
-                        {String(item.period)}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <Timeline>
+            {items.map((item, i) => {
+              const school = String(item.school || "");
+              return (
+                <TimelineItem key={i}>
+                  <TimelineIndicator showConnector={i < items.length - 1}>
+                    {edu.showImages && item.imageUrl ? (
+                      <PortfolioImage
+                        src={String(item.imageUrl)}
+                        alt={school}
+                        className="size-full rounded-full object-cover"
+                        sizes="44px"
+                      />
+                    ) : (
+                      <GraduationCap className="size-4 opacity-90" aria-hidden />
+                    )}
+                  </TimelineIndicator>
+                  <TimelineContent>
+                    <TimelineHeader>
+                      <div>
+                        <TimelineTitle>{school}</TimelineTitle>
+                        {edu.showDegree && item.degree ? (
+                          <TimelineDescription className="mt-1">
+                            {String(item.degree)}
+                          </TimelineDescription>
+                        ) : null}
+                      </div>
+                      {edu.showPeriod && item.period ? (
+                        <PeriodBadge>{String(item.period)}</PeriodBadge>
+                      ) : null}
+                    </TimelineHeader>
+                  </TimelineContent>
+                </TimelineItem>
+              );
+            })}
+          </Timeline>
         )}
       </section>
     );
