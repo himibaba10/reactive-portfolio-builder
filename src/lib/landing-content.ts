@@ -66,7 +66,7 @@ export const sectionTypes = [
   },
   {
     type: "Experience",
-    hint: "Role timeline that actually reads",
+    hint: "Six layouts · timeline, cards, rows",
   },
   {
     type: "Education",

@@ -21,6 +21,9 @@ export const VARIANT_SECTION_TYPES = [
   "Skills",
   "Projects",
   "CTA",
+  "Experience",
+  "Education",
+  "Contact",
 ] as const;
 
 export type VariantSectionType = (typeof VARIANT_SECTION_TYPES)[number];
@@ -75,18 +78,9 @@ export type PaletteId = (typeof PALETTE_IDS)[number];
 
 export const sectionVariantSchema = z.number().int().min(1).max(6);
 
-/** Hero, About, Skills, Projects, CTA have 6 layouts. */
+/** Variant body sections have 6 layouts. */
 export function sectionVariantCount(type: SectionType): number {
-  if (
-    type === "Hero" ||
-    type === "About" ||
-    type === "Skills" ||
-    type === "Projects" ||
-    type === "CTA"
-  ) {
-    return 6;
-  }
-  if (isVariantSectionType(type)) return 5;
+  if (isVariantSectionType(type)) return 6;
   return 1;
 }
 
@@ -181,6 +175,13 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       };
     case "Experience":
       return {
+        eyebrow: "Experience",
+        headline: "Where I’ve worked",
+        showEyebrow: true,
+        showHeadline: true,
+        showImages: true,
+        showPeriod: true,
+        showDescription: true,
         items: [
           {
             role: "Role",
@@ -194,6 +195,13 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       };
     case "Education":
       return {
+        eyebrow: "Education",
+        headline: "Studies",
+        showEyebrow: true,
+        showHeadline: true,
+        showImages: true,
+        showDegree: true,
+        showPeriod: true,
         items: [
           {
             school: "School",
@@ -206,9 +214,16 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       };
     case "Contact":
       return {
+        eyebrow: "Contact",
+        headline: "Let’s talk",
         email: "you@example.com",
         imageUrl: "",
         imagePublicId: "",
+        showEyebrow: true,
+        showHeadline: true,
+        showEmail: true,
+        showImage: true,
+        showSocials: true,
         socials: {
           github: "",
           linkedin: "",
