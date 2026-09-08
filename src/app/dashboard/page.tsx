@@ -15,6 +15,10 @@ import {
 } from "@/components/ui/form";
 import { SlugField } from "@/components/ui/slug-field";
 import { PalettePicker } from "@/components/ui/palette-picker";
+import {
+  CUSTOM_PALETTE_ID,
+  DEFAULT_CUSTOM_PALETTE,
+} from "@/lib/palette";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -25,6 +29,9 @@ export default function DashboardPage() {
   const [createSlug, setCreateSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
   const [createPaletteId, setCreatePaletteId] = useState("signal");
+  const [createCustomPalette, setCreateCustomPalette] = useState(
+    () => ({ ...DEFAULT_CUSTOM_PALETTE }),
+  );
   const [verifyUrl, setVerifyUrl] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return sessionStorage.getItem("reactive_verify_url");
@@ -95,6 +102,9 @@ export default function DashboardPage() {
         title,
         slug,
         paletteId: createPaletteId || "signal",
+        ...(createPaletteId === CUSTOM_PALETTE_ID
+          ? { customPalette: createCustomPalette }
+          : {}),
       },
     });
     setPortfolio(result.portfolio);
@@ -279,7 +289,7 @@ export default function DashboardPage() {
               Title, slug, palette
             </h2>
             <p className="mt-2 max-w-xl text-sm text-muted">
-              Five-token presets only. You can create exactly one portfolio.
+              Presets or your own five tokens. You can create exactly one portfolio.
             </p>
             <form
               onSubmit={createForm.onSubmit}
@@ -314,9 +324,11 @@ export default function DashboardPage() {
                   name="paletteId"
                   value={createPaletteId}
                   onChange={setCreatePaletteId}
+                  customValue={createCustomPalette}
+                  onCustomChange={setCreateCustomPalette}
                 />
                 <span className="text-xs text-muted">
-                  Pick by color — five tokens each
+                  Presets or Custom — always exactly five tokens
                 </span>
               </div>
               <div className="md:col-span-2">

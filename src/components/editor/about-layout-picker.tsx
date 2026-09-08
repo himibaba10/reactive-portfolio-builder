@@ -2,7 +2,7 @@
 
 import { AboutSection } from '@/components/portfolio/sections/about';
 import type { PortfolioSection } from '@/lib/api-client';
-import { getPalette } from '@/lib/palette';
+import { getPalette, paletteCssVars, type PaletteTokens } from '@/lib/palette';
 
 const ABOUT_LAYOUTS = [
   {
@@ -124,6 +124,7 @@ function AboutLayoutSketch({ id }: { id: number }) {
 export function AboutLayoutPicker({
   section,
   paletteId,
+  customPalette,
   portfolioTitle,
   portfolioSlug,
   value,
@@ -131,19 +132,14 @@ export function AboutLayoutPicker({
 }: {
   section: PortfolioSection;
   paletteId: string;
+  customPalette?: PaletteTokens | null;
   portfolioTitle: string;
   portfolioSlug: string;
   value: number;
   onChange: (variant: number) => void;
 }) {
-  const palette = getPalette(paletteId);
-  const style = {
-    ['--p-primary' as string]: palette.tokens.primary,
-    ['--p-secondary' as string]: palette.tokens.secondary,
-    ['--p-accent' as string]: palette.tokens.accent,
-    ['--p-text-dark' as string]: palette.tokens.textDark,
-    ['--p-text-light' as string]: palette.tokens.textLight,
-  };
+  const palette = getPalette(paletteId, customPalette);
+  const style = paletteCssVars(palette.tokens);
 
   const previewSection: PortfolioSection = {
     ...section,

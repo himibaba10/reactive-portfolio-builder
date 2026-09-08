@@ -28,6 +28,12 @@ import {
   type User,
 } from '@/lib/api-client';
 import {
+  CUSTOM_PALETTE_ID,
+  DEFAULT_CUSTOM_PALETTE,
+  sanitizePaletteTokens,
+  type PaletteTokens,
+} from '@/lib/palette';
+import {
   clampSectionVariant,
   defaultSectionData,
   isVariantSectionType,
@@ -58,6 +64,9 @@ export function EditorClient() {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [paletteId, setPaletteId] = useState('signal');
+  const [customPalette, setCustomPalette] = useState<PaletteTokens>(() => ({
+    ...DEFAULT_CUSTOM_PALETTE,
+  }));
   const [activeId, setActiveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -74,6 +83,11 @@ export function EditorClient() {
         setTitle(mine.portfolio.title);
         setSlug(mine.portfolio.slug);
         setPaletteId(mine.portfolio.paletteId);
+        setCustomPalette(
+          sanitizePaletteTokens(
+            mine.portfolio.customPalette ?? DEFAULT_CUSTOM_PALETTE,
+          ),
+        );
         const sorted = normalizeSections(mine.portfolio.sections);
         setSections(sorted);
         setActiveId(sorted[0]?.id ?? null);
@@ -164,6 +178,7 @@ export function EditorClient() {
           title,
           slug: normalized,
           paletteId,
+          customPalette,
           sections: sections.map((s, order) => ({
             ...s,
             order,
@@ -173,6 +188,12 @@ export function EditorClient() {
       });
       setPortfolio(result.portfolio);
       setSlug(result.portfolio.slug);
+      setPaletteId(result.portfolio.paletteId);
+      setCustomPalette(
+        sanitizePaletteTokens(
+          result.portfolio.customPalette ?? customPalette,
+        ),
+      );
       setSections(normalizeSections(result.portfolio.sections));
       setMessage('Saved.');
     } catch (err) {
@@ -283,7 +304,12 @@ export function EditorClient() {
             <span className='text-xs tracking-[0.18em] text-muted uppercase'>
               Palette
             </span>
-            <PalettePicker value={paletteId} onChange={setPaletteId} />
+            <PalettePicker
+              value={paletteId}
+              onChange={setPaletteId}
+              customValue={customPalette}
+              onCustomChange={setCustomPalette}
+            />
           </div>
         </div>
 
@@ -347,6 +373,7 @@ export function EditorClient() {
                   <HeroLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -356,6 +383,7 @@ export function EditorClient() {
                   <AboutLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -365,6 +393,7 @@ export function EditorClient() {
                   <SkillsLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -374,6 +403,7 @@ export function EditorClient() {
                   <ProjectsLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -383,6 +413,7 @@ export function EditorClient() {
                   <CtaLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -392,6 +423,7 @@ export function EditorClient() {
                   <ExperienceLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -401,6 +433,7 @@ export function EditorClient() {
                   <EducationLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
@@ -410,6 +443,7 @@ export function EditorClient() {
                   <ContactLayoutPicker
                     section={active}
                     paletteId={paletteId}
+                    customPalette={customPalette}
                     portfolioTitle={title || 'Portfolio'}
                     portfolioSlug={slug || 'your-slug'}
                     value={active.variant}

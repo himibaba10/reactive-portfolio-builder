@@ -16,7 +16,7 @@ Read this file first in every new chat. It is the source of truth for product, a
 3. Sections: **prebuilt only** (Header, Hero, About, Skills, Projects/Portfolio, CTA, Experience, Education, Contact, Footer) — no custom section types; each type at most once; reorder + hide allowed. Hero through Contact offer **6 layout variants**; Header is fixed (logo + section nav); Footer is fixed (centered copyright). Header & Footer are pinned.
 4. Public URL: `/{slug}` on the same Next.js host (e.g. `…/daniel-portfolio`)
 5. One-page public portfolios only
-6. Themes: **strict presets** with exactly 5 tokens — `primary`, `secondary`, `accent`, `textDark`, `textLight` (no custom hex in MVP)
+6. Themes: five-token palettes — presets plus optional **Custom** (`primary`, `secondary`, `accent`, `textDark`, `textLight`)
 7. Out of scope for now: OAuth, billing, custom domains, custom sections, multi-page, admin panel, analytics, contact-form backend, PDF export
 
 ### User journey (target)

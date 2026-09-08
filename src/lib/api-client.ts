@@ -33,6 +33,13 @@ export type Portfolio = {
   slug: string;
   status: "draft" | "published";
   paletteId: string;
+  customPalette?: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    textDark: string;
+    textLight: string;
+  } | null;
   sections: PortfolioSection[];
   publishedAt: string | Date | null;
   createdAt?: string | Date;

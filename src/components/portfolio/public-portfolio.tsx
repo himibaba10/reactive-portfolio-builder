@@ -1,4 +1,4 @@
-import { getPalette } from "@/lib/palette";
+import { getPalette, paletteCssVars } from "@/lib/palette";
 import type { PublicPortfolio } from "@/lib/server/public-portfolio";
 import {
   buildNavItems,
@@ -12,14 +12,8 @@ export function PublicPortfolioView({
 }: {
   portfolio: PublicPortfolio;
 }) {
-  const palette = getPalette(portfolio.paletteId);
-  const style = {
-    ["--p-primary" as string]: palette.tokens.primary,
-    ["--p-secondary" as string]: palette.tokens.secondary,
-    ["--p-accent" as string]: palette.tokens.accent,
-    ["--p-text-dark" as string]: palette.tokens.textDark,
-    ["--p-text-light" as string]: palette.tokens.textLight,
-  };
+  const palette = getPalette(portfolio.paletteId, portfolio.customPalette);
+  const style = paletteCssVars(palette.tokens);
 
   const meta = { title: portfolio.title, slug: portfolio.slug };
   const header = portfolio.sections.find(

@@ -2,12 +2,14 @@ import { connectDb } from "@/lib/db/connect";
 import { Portfolio } from "@/lib/db/models/portfolio";
 import { normalizeSlug } from "@/lib/slug";
 import type { PortfolioSection } from "@/lib/api-client";
+import { sanitizePaletteTokens, type PaletteTokens } from "@/lib/palette";
 import { clampSectionVariant, type SectionType } from "@/lib/sections";
 
 export type PublicPortfolio = {
   title: string;
   slug: string;
   paletteId: string;
+  customPalette: PaletteTokens | null;
   sections: PortfolioSection[];
   publishedAt: Date | string | null;
 };
@@ -41,10 +43,15 @@ export async function getPublishedPortfolio(
       data: (s.data || {}) as Record<string, unknown>,
     })) satisfies PortfolioSection[];
 
+  const customPalette = portfolio.customPalette
+    ? sanitizePaletteTokens(portfolio.customPalette)
+    : null;
+
   return {
     title: portfolio.title,
     slug: portfolio.slug,
     paletteId: portfolio.paletteId,
+    customPalette,
     sections,
     publishedAt: portfolio.publishedAt ?? null,
   };

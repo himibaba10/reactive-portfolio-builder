@@ -3,7 +3,7 @@
 import { SectionLayoutPickerShell } from '@/components/editor/section-layout-picker-shell';
 import { ExperienceSection } from '@/components/portfolio/sections/experience';
 import type { PortfolioSection } from '@/lib/api-client';
-import { getPalette } from '@/lib/palette';
+import { getPalette, paletteCssVars, type PaletteTokens } from '@/lib/palette';
 
 const EXPERIENCE_LAYOUTS = [
   { id: 1, name: 'Timeline', blurb: 'Vertical rail' },
@@ -107,6 +107,7 @@ function ExperienceSketch({ id }: { id: number }) {
 export function ExperienceLayoutPicker({
   section,
   paletteId,
+  customPalette,
   portfolioTitle,
   portfolioSlug,
   value,
@@ -114,19 +115,14 @@ export function ExperienceLayoutPicker({
 }: {
   section: PortfolioSection;
   paletteId: string;
+  customPalette?: PaletteTokens | null;
   portfolioTitle: string;
   portfolioSlug: string;
   value: number;
   onChange: (variant: number) => void;
 }) {
-  const palette = getPalette(paletteId);
-  const style = {
-    ['--p-primary' as string]: palette.tokens.primary,
-    ['--p-secondary' as string]: palette.tokens.secondary,
-    ['--p-accent' as string]: palette.tokens.accent,
-    ['--p-text-dark' as string]: palette.tokens.textDark,
-    ['--p-text-light' as string]: palette.tokens.textLight,
-  };
+  const palette = getPalette(paletteId, customPalette);
+  const style = paletteCssVars(palette.tokens);
 
   return (
     <SectionLayoutPickerShell

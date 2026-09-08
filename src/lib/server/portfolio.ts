@@ -4,6 +4,14 @@ import {
   clampSectionVariant,
   type SectionType,
 } from "@/lib/sections";
+import { sanitizePaletteTokens, type PaletteTokens } from "@/lib/palette";
+
+function serializeCustomPalette(
+  value: PortfolioDocument["customPalette"],
+): PaletteTokens | null {
+  if (!value) return null;
+  return sanitizePaletteTokens(value);
+}
 
 export function serializePortfolio(doc: PortfolioDocument) {
   return {
@@ -13,6 +21,7 @@ export function serializePortfolio(doc: PortfolioDocument) {
     slug: doc.slug,
     status: doc.status,
     paletteId: doc.paletteId,
+    customPalette: serializeCustomPalette(doc.customPalette),
     sections: doc.sections.map((section) => ({
       id: section.id,
       type: section.type,

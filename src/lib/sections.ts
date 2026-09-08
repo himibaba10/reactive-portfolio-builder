@@ -72,6 +72,7 @@ export const PALETTE_IDS = [
   "mono",
   "signal",
   "ink",
+  "custom",
 ] as const;
 
 export type PaletteId = (typeof PALETTE_IDS)[number];
@@ -280,4 +281,14 @@ export function normalizePortfolioSection<T extends {
 export const emailSchema = z.string().email().max(254);
 export const passwordSchema = z.string().min(8).max(128);
 export const paletteIdSchema = z.enum(PALETTE_IDS);
+export const hexColorSchema = z
+  .string()
+  .regex(/^#[0-9A-Fa-f]{6}$/, "Expected #RRGGBB");
+export const customPaletteSchema = z.object({
+  primary: hexColorSchema,
+  secondary: hexColorSchema,
+  accent: hexColorSchema,
+  textDark: hexColorSchema,
+  textLight: hexColorSchema,
+});
 export const sectionTypeSchema = z.enum(SECTION_TYPES);

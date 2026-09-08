@@ -1,6 +1,12 @@
 import "server-only";
 import mongoose, { Schema, type HydratedDocument, type Model } from "mongoose";
-import { PALETTE_IDS, SECTION_TYPES, type SectionType, type PaletteId } from "@/lib/sections";
+import {
+  PALETTE_IDS,
+  SECTION_TYPES,
+  type SectionType,
+  type PaletteId,
+} from "@/lib/sections";
+import type { PaletteTokens } from "@/lib/palette";
 
 export type PortfolioSectionDoc = {
   id: string;
@@ -19,6 +25,17 @@ const sectionSchema = new Schema(
     visible: { type: Boolean, default: true },
     variant: { type: Number, default: 1, min: 1, max: 6 },
     data: { type: Schema.Types.Mixed, default: {} },
+  },
+  { _id: false },
+);
+
+const paletteTokensSchema = new Schema(
+  {
+    primary: { type: String, required: true },
+    secondary: { type: String, required: true },
+    accent: { type: String, required: true },
+    textDark: { type: String, required: true },
+    textLight: { type: String, required: true },
   },
   { _id: false },
 );
@@ -49,6 +66,10 @@ const portfolioSchema = new Schema(
       enum: PALETTE_IDS,
       default: "signal",
     },
+    customPalette: {
+      type: paletteTokensSchema,
+      default: null,
+    },
     sections: { type: [sectionSchema], default: [] },
     publishedAt: { type: Date, default: null },
   },
@@ -61,6 +82,7 @@ export type PortfolioDocument = HydratedDocument<{
   slug: string;
   status: "draft" | "published";
   paletteId: PaletteId;
+  customPalette: PaletteTokens | null;
   sections: PortfolioSectionDoc[];
   publishedAt: Date | null;
   createdAt: Date;

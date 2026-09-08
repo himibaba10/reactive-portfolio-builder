@@ -3,7 +3,7 @@
 import { SectionLayoutPickerShell } from '@/components/editor/section-layout-picker-shell';
 import { ContactSection } from '@/components/portfolio/sections/contact';
 import type { PortfolioSection } from '@/lib/api-client';
-import { getPalette } from '@/lib/palette';
+import { getPalette, paletteCssVars, type PaletteTokens } from '@/lib/palette';
 
 const CONTACT_LAYOUTS = [
   { id: 1, name: 'Classic', blurb: 'Email + socials stack' },
@@ -84,6 +84,7 @@ function ContactSketch({ id }: { id: number }) {
 export function ContactLayoutPicker({
   section,
   paletteId,
+  customPalette,
   portfolioTitle,
   portfolioSlug,
   value,
@@ -91,19 +92,14 @@ export function ContactLayoutPicker({
 }: {
   section: PortfolioSection;
   paletteId: string;
+  customPalette?: PaletteTokens | null;
   portfolioTitle: string;
   portfolioSlug: string;
   value: number;
   onChange: (variant: number) => void;
 }) {
-  const palette = getPalette(paletteId);
-  const style = {
-    ['--p-primary' as string]: palette.tokens.primary,
-    ['--p-secondary' as string]: palette.tokens.secondary,
-    ['--p-accent' as string]: palette.tokens.accent,
-    ['--p-text-dark' as string]: palette.tokens.textDark,
-    ['--p-text-light' as string]: palette.tokens.textLight,
-  };
+  const palette = getPalette(paletteId, customPalette);
+  const style = paletteCssVars(palette.tokens);
 
   return (
     <SectionLayoutPickerShell

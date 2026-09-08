@@ -18,7 +18,7 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 - Layout variants: Hero/About/Skills/Projects/CTA/Experience/Education/Contact 1–6; Header is fixed (logo + section nav); Footer is fixed (centered copyright)
 - All section layouts must use the five palette CSS tokens only
 - Public portfolios are one page at `/{slug}`
-- Palette presets only; each preset has exactly: primary, secondary, accent, textDark, textLight
+- Palettes: five-token presets, plus an optional **Custom** palette with the same five tokens (`primary`, `secondary`, `accent`, `textDark`, `textLight`)
 - Slug: lowercase hyphenated, unique, reserved app routes blocked (`login`, `signup`, `dashboard`, `editor`, `api`, …)
 
 ## Current status

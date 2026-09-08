@@ -3,8 +3,13 @@ import { Portfolio, type PortfolioDocument } from "@/lib/db/models/portfolio";
 import { requireSessionUser } from "@/lib/server/auth";
 import { serializePortfolio } from "@/lib/server/portfolio";
 import {
+  CUSTOM_PALETTE_ID,
+  sanitizePaletteTokens,
+} from "@/lib/palette";
+import {
   clampSectionVariant,
   createDefaultSections,
+  customPaletteSchema,
   paletteIdSchema,
   sectionTypeSchema,
   sectionVariantSchema,
@@ -15,11 +20,22 @@ import { handleRouteError } from "@/lib/server/http";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const createSchema = z.object({
-  title: z.string().trim().min(1).max(80),
-  slug: z.string().trim().min(2).max(48),
-  paletteId: paletteIdSchema.optional(),
-});
+const createSchema = z
+  .object({
+    title: z.string().trim().min(1).max(80),
+    slug: z.string().trim().min(2).max(48),
+    paletteId: paletteIdSchema.optional(),
+    customPalette: customPaletteSchema.optional().nullable(),
+  })
+  .superRefine((body, ctx) => {
+    if (body.paletteId === CUSTOM_PALETTE_ID && !body.customPalette) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Custom palette tokens are required",
+        path: ["customPalette"],
+      });
+    }
+  });
 
 export async function GET() {
   try {
@@ -63,11 +79,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Slug already taken" }, { status: 409 });
     }
 
+    const paletteId = body.paletteId || "signal";
+    const customPalette =
+      paletteId === CUSTOM_PALETTE_ID && body.customPalette
+        ? sanitizePaletteTokens(body.customPalette)
+        : body.customPalette
+          ? sanitizePaletteTokens(body.customPalette)
+          : null;
+
     const portfolio = await Portfolio.create({
       userId: user._id,
       title: body.title,
       slug,
-      paletteId: body.paletteId || "signal",
+      paletteId,
+      customPalette,
       sections: createDefaultSections(),
       status: "draft",
     });
@@ -89,6 +114,7 @@ export async function PATCH(request: Request) {
         title: z.string().trim().min(1).max(80).optional(),
         slug: z.string().trim().min(2).max(48).optional(),
         paletteId: paletteIdSchema.optional(),
+        customPalette: customPaletteSchema.optional().nullable(),
         sections: z
           .array(
             z.object({
@@ -105,6 +131,16 @@ export async function PATCH(request: Request) {
       .refine((v) => Object.keys(v).length > 0, {
         message: "No changes provided",
       })
+      .superRefine((v, ctx) => {
+        const nextId = v.paletteId;
+        if (nextId === CUSTOM_PALETTE_ID && v.customPalette === null) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Custom palette tokens are required",
+            path: ["customPalette"],
+          });
+        }
+      })
       .parse(await request.json());
 
     await connectDb();
@@ -115,6 +151,23 @@ export async function PATCH(request: Request) {
 
     if (body.title !== undefined) portfolio.title = body.title;
     if (body.paletteId !== undefined) portfolio.paletteId = body.paletteId;
+    if (body.customPalette !== undefined) {
+      portfolio.customPalette = body.customPalette
+        ? sanitizePaletteTokens(body.customPalette)
+        : null;
+      portfolio.markModified("customPalette");
+    }
+
+    const effectivePaletteId = body.paletteId ?? portfolio.paletteId;
+    if (
+      effectivePaletteId === CUSTOM_PALETTE_ID &&
+      !portfolio.customPalette
+    ) {
+      return NextResponse.json(
+        { error: "Custom palette tokens are required" },
+        { status: 400 },
+      );
+    }
 
     if (body.slug !== undefined) {
       const slug = normalizeSlug(body.slug);
