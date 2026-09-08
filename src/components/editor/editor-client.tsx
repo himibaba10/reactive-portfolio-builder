@@ -8,6 +8,7 @@ import { EducationLayoutPicker } from '@/components/editor/education-layout-pick
 import { ExperienceLayoutPicker } from '@/components/editor/experience-layout-picker';
 import { HeroLayoutPicker } from '@/components/editor/hero-layout-picker';
 import { ProjectsLayoutPicker } from '@/components/editor/projects-layout-picker';
+import { SectionList } from '@/components/editor/section-list';
 import { SkillsLayoutPicker } from '@/components/editor/skills-layout-picker';
 import {
   Field,
@@ -29,7 +30,6 @@ import {
 import {
   clampSectionVariant,
   defaultSectionData,
-  isPinnedSectionType,
   isVariantSectionType,
   SECTION_LABELS,
   SECTION_TYPES,
@@ -115,24 +115,8 @@ export function EditorClient() {
     );
   }
 
-  function move(id: string, dir: -1 | 1) {
-    setSections((prev) => {
-      const sorted = [...prev].sort((a, b) => a.order - b.order);
-      const idx = sorted.findIndex((s) => s.id === id);
-      const swap = idx + dir;
-      if (idx < 0 || swap < 0 || swap >= sorted.length) return prev;
-      const current = sorted[idx];
-      const neighbor = sorted[swap];
-      if (
-        isPinnedSectionType(current.type) ||
-        isPinnedSectionType(neighbor.type)
-      ) {
-        return prev;
-      }
-      const copy = [...sorted];
-      [copy[idx], copy[swap]] = [copy[swap], copy[idx]];
-      return copy.map((s, order) => ({ ...s, order }));
-    });
+  function reorderSections(next: PortfolioSection[]) {
+    setSections(next.map((s, order) => ({ ...s, order })));
   }
 
   function toggleVisible(id: string) {
@@ -308,57 +292,12 @@ export function EditorClient() {
             <p className='mb-3 text-xs tracking-[0.18em] text-muted uppercase'>
               Sections
             </p>
-            <ul className='flex flex-col gap-2'>
-              {[...sections]
-                .sort((a, b) => a.order - b.order)
-                .map((section) => {
-                  const pinned = isPinnedSectionType(section.type);
-                  return (
-                    <li key={section.id}>
-                      <div
-                        className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm ${
-                          activeId === section.id
-                            ? 'bg-ink text-foam'
-                            : 'text-muted'
-                        }`}
-                      >
-                        <button
-                          type='button'
-                          className='flex-1 text-left'
-                          onClick={() => setActiveId(section.id)}
-                        >
-                          {SECTION_LABELS[section.type]}
-                          {!section.visible ? ' · hidden' : ''}
-                        </button>
-                        {!pinned ? (
-                          <span className='flex gap-1 text-xs'>
-                            <button
-                              type='button'
-                              onClick={() => move(section.id, -1)}
-                              className='px-1'
-                              aria-label='Move up'
-                            >
-                              ↑
-                            </button>
-                            <button
-                              type='button'
-                              onClick={() => move(section.id, 1)}
-                              className='px-1'
-                              aria-label='Move down'
-                            >
-                              ↓
-                            </button>
-                          </span>
-                        ) : (
-                          <span className='text-[10px] tracking-wide text-muted uppercase'>
-                            pinned
-                          </span>
-                        )}
-                      </div>
-                    </li>
-                  );
-                })}
-            </ul>
+            <SectionList
+              sections={sections}
+              activeId={activeId}
+              onSelect={setActiveId}
+              onReorder={reorderSections}
+            />
             {missingTypes.length ? (
               <div className='mt-4 border-t border-line pt-4'>
                 <p className='mb-2 text-xs text-muted'>Add section</p>
