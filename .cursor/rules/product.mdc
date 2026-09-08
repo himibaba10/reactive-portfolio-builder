@@ -1,0 +1,28 @@
+---
+description: Product source of truth for Reactive Portfolio Builder — MVP rules, scope, and journey
+alwaysApply: true
+---
+
+# Product rules
+
+You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
+
+## Non-negotiables
+
+- Free only — no billing UI or Stripe until product asks
+- Email/password auth only (when implementing auth)
+- Soft-delete users (`deletedAt`); soft-deleted users cannot log in
+- One portfolio per user (unique `userId`); reject a second create
+- Prebuilt section types only: Hero, About, Skills, Projects, Experience, Education, Contact
+- Each section type at most once; allow reorder + visibility toggle
+- Public portfolios are one page at `/{slug}`
+- Palette presets only; each preset has exactly: primary, secondary, accent, textDark, textLight
+- Slug: lowercase hyphenated, unique, reserved app routes blocked (`login`, `signup`, `dashboard`, `editor`, `api`, …)
+
+## Current status
+
+Landing page shipped. Auth, portfolio CRUD, public SSR pages, MongoDB wiring are **next milestones** — do not pretend they exist.
+
+## Tone / copy
+
+Product voice: sharp, maker-focused, minimal fluff. Brand name must remain hero-level on marketing surfaces.

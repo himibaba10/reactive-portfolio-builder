@@ -1,0 +1,39 @@
+---
+description: Next.js frontend conventions for the web app
+globs: web/**/*.{tsx,ts,css}
+alwaysApply: false
+---
+
+# Frontend (`web/`)
+
+## Stack
+
+Next.js 16 App Router · React 19 · Tailwind 4 · GSAP · `@gsap/react` · shadcn-ready primitives (`web/src/components/ui`)
+
+## Patterns
+
+- Default to **Server Components**
+- `"use client"` only for GSAP, event handlers, browser APIs
+- Compose pages from section components under `web/src/components/landing/`
+- Shared marketing copy/data: `web/src/lib/landing-content.ts`
+- Class merging: `cn()` from `web/src/lib/utils.ts`
+- Keep Next.js version-specific guidance in `web/AGENTS.md` (auto-maintained block)
+
+## GSAP
+
+- Register plugins once; prefer `useGSAP` for cleanup
+- Desktop (≥768px): pinned horizontal sections scrub
+- Mobile (<768px): native horizontal swipe — do **not** pin
+- Magnetic buttons only on `(hover: hover) and (pointer: fine)`
+- Honor `prefers-reduced-motion: reduce`
+
+## Routes today
+
+- `/` — landing
+- `/signup` — placeholder until auth milestone
+
+## Do not
+
+- Add dashboard/editor routes until auth + portfolio CRUD exist
+- Introduce Inter/system fonts or purple SaaS defaults
+- Put heavy animation logic inside Server Components

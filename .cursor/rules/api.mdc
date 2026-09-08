@@ -1,0 +1,34 @@
+---
+description: Express API and MongoDB data model conventions
+globs: api/**/*.{js,ts}
+alwaysApply: false
+---
+
+# API (`api/`)
+
+## Today
+
+Express stub with `GET /health` only (`api/src/index.js`).
+
+## Planned stack
+
+Express + Mongoose + MongoDB Atlas · JWT in httpOnly cookies (prefer Next rewrite proxy for first-party cookies)
+
+## Planned collections
+
+**users:** email (unique), passwordHash, isEmailVerified, verification/reset tokens, deletedAt, timestamps  
+
+**portfolios:** userId (unique), title, slug (unique), status `draft|published`, paletteId, embedded `sections[]` (`id`, `type`, `order`, `visible`, `data`), publishedAt, timestamps
+
+## Planned endpoints (implement when asked)
+
+- Auth: signup, login, logout, verify-email, forgot/reset password, soft-delete account
+- Portfolio: get/create (409 if exists), patch, delete, slug availability/change
+- Public: `GET /public/:slug` (published only)
+
+## Rules
+
+- Validate inputs (Zod preferred when shared schemas land)
+- Rate-limit auth + slug checks
+- Soft-deleted users cannot authenticate; free their slug on account delete
+- One portfolio per user enforced at DB unique index + application layer

@@ -1,0 +1,44 @@
+---
+description: Design system for Reactive product UI (landing and future app chrome)
+globs: web/**/*.{tsx,ts,css}
+alwaysApply: false
+---
+
+# Design system — Reactive
+
+## Direction
+
+Ink + Signal. Dark, technical, motion-led. **Not** purple gradients, cream/terracotta, or broadsheet layouts.
+
+## Tokens (CSS variables in `web/src/app/globals.css`)
+
+| Token | Role | Value |
+| --- | --- | --- |
+| `--ink` | Page background | `#0a0b0d` |
+| `--panel` | Elevated surface | `#12141a` |
+| `--foam` | Primary text | `#f4f5f0` |
+| `--muted` | Secondary text | `#8b909a` |
+| `--signal` | Accent / CTA | `#d6ff3f` |
+| `--signal-soft` | Accent hover | `#e7ff8a` |
+| `--electric` | Secondary accent | `#5b8cff` |
+| `--line` | Hairline borders | `rgba(244,245,240,0.12)` |
+
+## Typography
+
+- Display: **Syne** → `--font-display`
+- Body: **Instrument Sans** → `--font-body`
+- Avoid Inter / Roboto / Arial / system stacks for marketing UI
+
+## Composition rules (landing / promo)
+
+- Brand first: product name is a hero-level signal, not only nav text
+- First viewport: brand + one supporting sentence + CTA group + one dominant visual plane
+- Full-bleed atmospheric hero (gradients/grid/orb) — no inset hero cards
+- No cards in the hero; cards only when they aid interaction (e.g. section gallery, palette swatches)
+- One job per section
+- Prefer composed Server Components; GSAP in client islands only
+- Ship intentional motion (loader, reveals, scroll, hover) — respect `prefers-reduced-motion`
+
+## Portfolio user themes (product feature)
+
+User portfolios use **preset palettes** with five tokens only (`primary`, `secondary`, `accent`, `textDark`, `textLight`). Preset list lives in `web/src/lib/landing-content.ts` (`palettes`).
