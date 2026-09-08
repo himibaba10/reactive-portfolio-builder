@@ -35,6 +35,7 @@ import { HeroLayoutPicker } from "@/components/editor/hero-layout-picker";
 import { AboutLayoutPicker } from "@/components/editor/about-layout-picker";
 import { SkillsLayoutPicker } from "@/components/editor/skills-layout-picker";
 import { ProjectsLayoutPicker } from "@/components/editor/projects-layout-picker";
+import { CtaLayoutPicker } from "@/components/editor/cta-layout-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -429,6 +430,15 @@ export function EditorClient() {
                   />
                 ) : active.type === "Projects" ? (
                   <ProjectsLayoutPicker
+                    section={active}
+                    paletteId={paletteId}
+                    portfolioTitle={title || "Portfolio"}
+                    portfolioSlug={slug || "your-slug"}
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
+                ) : active.type === "CTA" ? (
+                  <CtaLayoutPicker
                     section={active}
                     paletteId={paletteId}
                     portfolioTitle={title || "Portfolio"}
@@ -853,44 +863,77 @@ function SectionFields({
   }
 
   if (section.type === "CTA") {
+    const showHeadline = data.showHeadline !== false;
+    const showBody = data.showBody !== false;
+    const showImage = data.showImage !== false;
+    const showCtaLabel = data.showCtaLabel !== false;
+    const showCtaHref = data.showCtaHref !== false;
+
     return (
       <>
-        <ImageField
+        <OptionalField
           label="Image"
-          valueUrl={String(data.imageUrl || "")}
-          valuePublicId={String(data.imagePublicId || "")}
-          onChange={(img) =>
-            onChange({
-              ...data,
-              imageUrl: img?.url || "",
-              imagePublicId: img?.publicId || "",
-            })
-          }
-        />
-        <Field label="Headline">
+          enabled={showImage}
+          onEnabledChange={(v) => onChange({ ...data, showImage: v })}
+        >
+          <ImageField
+            label=""
+            valueUrl={String(data.imageUrl || "")}
+            valuePublicId={String(data.imagePublicId || "")}
+            onChange={(img) =>
+              onChange({
+                ...data,
+                imageUrl: img?.url || "",
+                imagePublicId: img?.publicId || "",
+              })
+            }
+          />
+        </OptionalField>
+        <OptionalField
+          label="Headline"
+          enabled={showHeadline}
+          onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
+        >
           <FormInput
             value={String(data.headline || "")}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
+            disabled={!showHeadline}
           />
-        </Field>
-        <Field label="Body">
+        </OptionalField>
+        <OptionalField
+          label="Body"
+          enabled={showBody}
+          onEnabledChange={(v) => onChange({ ...data, showBody: v })}
+        >
           <FormTextarea
             value={String(data.body || "")}
             onChange={(e) => onChange({ ...data, body: e.target.value })}
+            disabled={!showBody}
           />
-        </Field>
-        <Field label="CTA label">
+        </OptionalField>
+        <OptionalField
+          label="CTA label"
+          enabled={showCtaLabel}
+          onEnabledChange={(v) => onChange({ ...data, showCtaLabel: v })}
+        >
           <FormInput
             value={String(data.ctaLabel || "")}
             onChange={(e) => onChange({ ...data, ctaLabel: e.target.value })}
+            disabled={!showCtaLabel}
           />
-        </Field>
-        <Field label="CTA href">
+        </OptionalField>
+        <OptionalField
+          label="CTA href"
+          enabled={showCtaHref}
+          onEnabledChange={(v) => onChange({ ...data, showCtaHref: v })}
+        >
           <FormInput
             value={String(data.ctaHref || "")}
             onChange={(e) => onChange({ ...data, ctaHref: e.target.value })}
+            disabled={!showCtaHref}
+            placeholder="#contact"
           />
-        </Field>
+        </OptionalField>
       </>
     );
   }

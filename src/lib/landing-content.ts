@@ -62,7 +62,7 @@ export const sectionTypes = [
   },
   {
     type: "CTA",
-    hint: "Five layouts · headline + action",
+    hint: "Six layouts · stage, banner, cinematic",
   },
   {
     type: "Experience",

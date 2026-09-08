@@ -173,6 +173,11 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         ctaHref: "#contact",
         imageUrl: "",
         imagePublicId: "",
+        showHeadline: true,
+        showBody: true,
+        showImage: true,
+        showCtaLabel: true,
+        showCtaHref: true,
       };
     case "Experience":
       return {
