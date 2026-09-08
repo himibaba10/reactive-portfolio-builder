@@ -15,9 +15,9 @@ alwaysApply: false
 
 ## Today
 
-Landing only. No API routes or DB connection yet.
+Foundations landed: MongoDB connect helper, User/Portfolio models, auth/slug/section server utilities, `GET /api/health`. Auth and portfolio Route Handlers come next.
 
-## Planned stack
+## Stack
 
 Next.js Route Handlers + Mongoose + MongoDB Atlas · JWT in httpOnly cookies
 
