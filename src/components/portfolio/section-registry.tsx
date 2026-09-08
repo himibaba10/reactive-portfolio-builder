@@ -1,5 +1,10 @@
 import type { PortfolioSection } from "@/lib/api-client";
-import { clampSectionVariant, type SectionType } from "@/lib/sections";
+import {
+  clampSectionVariant,
+  SECTION_ANCHORS,
+  SECTION_LABELS,
+  type SectionType,
+} from "@/lib/sections";
 import { AboutSection } from "./sections/about";
 import { ContactSection } from "./sections/contact";
 import { CtaSection } from "./sections/cta";
@@ -10,7 +15,7 @@ import { HeaderSection } from "./sections/header";
 import { HeroSection } from "./sections/hero";
 import { ProjectsSection } from "./sections/projects";
 import { SkillsSection } from "./sections/skills";
-import type { PortfolioMeta, SectionProps } from "./sections/shared";
+import type { NavItem, PortfolioMeta, SectionProps } from "./sections/shared";
 
 const RENDERERS: Record<
   SectionType,
@@ -28,12 +33,25 @@ const RENDERERS: Record<
   Footer: FooterSection,
 };
 
+export function buildNavItems(sections: PortfolioSection[]): NavItem[] {
+  return sections
+    .filter((s) => s.type !== "Header" && s.type !== "Footer")
+    .sort((a, b) => a.order - b.order)
+    .flatMap((s) => {
+      const anchor = SECTION_ANCHORS[s.type];
+      if (!anchor) return [];
+      return [{ href: `#${anchor}`, label: SECTION_LABELS[s.type] }];
+    });
+}
+
 export function RenderPortfolioSection({
   section,
   portfolio,
+  navItems,
 }: {
   section: PortfolioSection;
   portfolio: PortfolioMeta;
+  navItems?: NavItem[];
 }) {
   const normalized: PortfolioSection = {
     ...section,
@@ -41,5 +59,11 @@ export function RenderPortfolioSection({
   };
   const Renderer = RENDERERS[normalized.type];
   if (!Renderer) return null;
-  return <Renderer section={normalized} portfolio={portfolio} />;
+  return (
+    <Renderer
+      section={normalized}
+      portfolio={portfolio}
+      navItems={navItems}
+    />
+  );
 }

@@ -490,22 +490,9 @@ function SectionFields({
             })
           }
         />
-        <Field label="Tagline" hint="Optional line under the portfolio title">
-          <FormInput
-            value={String(data.tagline || "")}
-            onChange={(e) => onChange({ ...data, tagline: e.target.value })}
-          />
-        </Field>
-        <label className="flex items-center gap-2 text-sm text-muted">
-          <input
-            type="checkbox"
-            checked={Boolean(data.showSlug)}
-            onChange={(e) =>
-              onChange({ ...data, showSlug: e.target.checked })
-            }
-          />
-          Show slug
-        </label>
+        <p className="text-xs text-muted">
+          Logo on the left. Visible section names link on the right automatically.
+        </p>
       </>
     );
   }
@@ -655,24 +642,10 @@ function SectionFields({
 
   if (section.type === "Footer") {
     return (
-      <>
-        <Field label="Blurb" hint="Optional footer line">
-          <FormInput
-            value={String(data.blurb || "")}
-            onChange={(e) => onChange({ ...data, blurb: e.target.value })}
-          />
-        </Field>
-        <label className="flex items-center gap-2 text-sm text-muted">
-          <input
-            type="checkbox"
-            checked={data.showBuiltWith !== false}
-            onChange={(e) =>
-              onChange({ ...data, showBuiltWith: e.target.checked })
-            }
-          />
-          Show “Built with Reactive”
-        </label>
-      </>
+      <p className="text-sm text-muted">
+        Footer is fixed: centered copyright with your portfolio title. Toggle
+        visibility in the sidebar if you want it hidden.
+      </p>
     );
   }
 

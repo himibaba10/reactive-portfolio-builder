@@ -5,9 +5,15 @@ export type PortfolioMeta = {
   slug: string;
 };
 
+export type NavItem = {
+  href: string;
+  label: string;
+};
+
 export type SectionProps = {
   section: PortfolioSection;
   portfolio: PortfolioMeta;
+  navItems?: NavItem[];
 };
 
 export function SectionEyebrow({ children }: { children: React.ReactNode }) {

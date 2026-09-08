@@ -16,13 +16,11 @@ export const SECTION_TYPES = [
 export type SectionType = (typeof SECTION_TYPES)[number];
 
 export const VARIANT_SECTION_TYPES = [
-  "Header",
   "Hero",
   "About",
   "Skills",
   "Projects",
   "CTA",
-  "Footer",
 ] as const;
 
 export type VariantSectionType = (typeof VARIANT_SECTION_TYPES)[number];
@@ -38,6 +36,18 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   Education: "Education",
   Contact: "Contact",
   Footer: "Footer",
+};
+
+/** In-page anchors for public nav (Header links). */
+export const SECTION_ANCHORS: Partial<Record<SectionType, string>> = {
+  Hero: "hero",
+  About: "about",
+  Skills: "skills",
+  Projects: "projects",
+  CTA: "cta",
+  Experience: "experience",
+  Education: "education",
+  Contact: "contact",
 };
 
 export const PINNED_SECTION_TYPES = ["Header", "Footer"] as const;
@@ -76,8 +86,6 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
   switch (type) {
     case "Header":
       return {
-        showSlug: true,
-        tagline: "",
         logoUrl: "",
         logoPublicId: "",
       };
@@ -160,10 +168,7 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         },
       };
     case "Footer":
-      return {
-        blurb: "",
-        showBuiltWith: true,
-      };
+      return {};
   }
 }
 

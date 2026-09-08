@@ -1,6 +1,10 @@
 import { getPalette } from "@/lib/palette";
 import type { PublicPortfolio } from "@/lib/server/public-portfolio";
-import { RenderPortfolioSection } from "./section-registry";
+import {
+  buildNavItems,
+  RenderPortfolioSection,
+} from "./section-registry";
+import { FooterSection } from "./sections/footer";
 
 export function PublicPortfolioView({
   portfolio,
@@ -17,18 +21,20 @@ export function PublicPortfolioView({
   };
 
   const meta = { title: portfolio.title, slug: portfolio.slug };
-  const header = portfolio.sections.find((s) => s.type === "Header");
-  const footer = portfolio.sections.find((s) => s.type === "Footer");
+  const header = portfolio.sections.find(
+    (s) => s.type === "Header" && s.visible,
+  );
   const body = portfolio.sections
-    .filter((s) => s.type !== "Header" && s.type !== "Footer")
+    .filter((s) => s.visible && s.type !== "Header" && s.type !== "Footer")
     .sort((a, b) => a.order - b.order);
+  const navItems = buildNavItems(body);
 
-  const hasContent = Boolean(header || footer || body.length);
+  const hasContent = Boolean(header || body.length);
 
   return (
     <main
       style={style}
-      className="relative min-h-svh overflow-hidden bg-(--p-secondary) text-(--p-text-light)"
+      className="relative flex min-h-svh flex-col overflow-hidden bg-(--p-secondary) text-(--p-text-light)"
     >
       <div
         aria-hidden
@@ -39,24 +45,38 @@ export function PublicPortfolioView({
         className="pointer-events-none absolute inset-0 opacity-[0.12] bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-size-[64px_64px] mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
       />
 
-      <div className="relative z-10 mx-auto flex w-full max-w-3xl flex-col gap-20 px-5 py-16 md:px-8 md:py-24">
+      <div className="relative z-10 flex min-h-svh w-full flex-col">
         {!hasContent ? (
-          <p className="text-white/60">No visible sections yet.</p>
+          <p className="px-5 py-10 text-white/60 md:px-8">No visible sections yet.</p>
         ) : (
           <>
             {header ? (
-              <RenderPortfolioSection section={header} portfolio={meta} />
-            ) : null}
-            {body.map((section) => (
               <RenderPortfolioSection
-                key={section.id}
-                section={section}
+                section={header}
                 portfolio={meta}
+                navItems={navItems}
               />
-            ))}
-            {footer ? (
-              <RenderPortfolioSection section={footer} portfolio={meta} />
             ) : null}
+            <div className="mx-auto flex w-full flex-1 flex-col gap-16 px-5 py-16 md:gap-20 md:px-8 md:py-24">
+              {body.map((section) => (
+                <RenderPortfolioSection
+                  key={section.id}
+                  section={section}
+                  portfolio={meta}
+                />
+              ))}
+            </div>
+            <FooterSection
+              section={{
+                id: "footer",
+                type: "Footer",
+                order: 999,
+                visible: true,
+                variant: 1,
+                data: {},
+              }}
+              portfolio={meta}
+            />
           </>
         )}
       </div>
