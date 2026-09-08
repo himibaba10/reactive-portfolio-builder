@@ -133,7 +133,7 @@ export function LandingMotion() {
         const header = document.querySelector<HTMLElement>("[data-landing-header]");
         if (!sectionsPin || !sectionsTrack) return;
 
-        const headerOffset = () => Math.ceil(header?.getBoundingClientRect().height ?? 72) + 16;
+        const headerOffset = () => Math.ceil(header?.getBoundingClientRect().height ?? 72) + 28;
 
         const getScroll = () =>
           Math.max(0, sectionsTrack.scrollWidth - window.innerWidth + 32);

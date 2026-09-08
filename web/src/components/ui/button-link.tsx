@@ -20,18 +20,18 @@ export function ButtonLink({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold tracking-wide no-underline transition-[transform,background-color,color,border-color] duration-300",
+        "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold tracking-wide no-underline transition-[transform,background-color,color,border-color] duration-300",
         variant === "primary" &&
-          "bg-[var(--signal)] text-[#0a0b0d] hover:bg-[var(--signal-soft)] hover:text-[#0a0b0d]",
+          "bg-[var(--signal)] text-[#05060a] hover:bg-[var(--signal-soft)] hover:text-[#05060a]",
         variant === "ghost" &&
           "bg-transparent text-[var(--foam)] hover:text-[var(--signal)]",
         variant === "outline" &&
-          "border border-[color:rgba(244,245,240,0.35)] bg-transparent text-[var(--foam)] hover:border-[var(--signal)] hover:text-[var(--signal)]",
+          "border border-[color:rgba(244,245,240,0.45)] bg-transparent text-[var(--foam)] hover:border-[var(--signal)] hover:text-[var(--signal)]",
         className,
       )}
       style={
         variant === "primary"
-          ? { color: "#0a0b0d", backgroundColor: "var(--signal)" }
+          ? { color: "#05060a", backgroundColor: "var(--signal)" }
           : undefined
       }
       {...rest}

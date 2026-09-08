@@ -24,7 +24,7 @@ export function SiteHeader() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-xs tracking-[0.16em] text-[var(--muted)] uppercase transition-colors hover:text-[var(--foam)]"
+                  className="text-xs tracking-[0.16em] text-[color:rgba(244,245,240,0.72)] uppercase transition-colors hover:text-[var(--foam)]"
                 >
                   {link.label}
                 </a>
