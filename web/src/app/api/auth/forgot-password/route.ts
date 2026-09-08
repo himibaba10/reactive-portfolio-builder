@@ -3,6 +3,7 @@ import { z } from "zod";
 import { connectDb } from "@/lib/db/connect";
 import { User } from "@/lib/db/models/user";
 import { serverConfig } from "@/lib/server/config";
+import { sendPasswordResetEmail } from "@/lib/server/email";
 import {
   createOpaqueToken,
   hashOpaqueToken,
@@ -12,7 +13,11 @@ import { clientIp, handleRouteError, rateLimit } from "@/lib/server/http";
 
 export async function POST(request: Request) {
   try {
-    const limited = rateLimit(`forgot:${clientIp(request)}`, 20, 15 * 60 * 1000);
+    const limited = await rateLimit(
+      `forgot:${clientIp(request)}`,
+      20,
+      15 * 60 * 1000,
+    );
     if (!limited.ok) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -35,11 +40,13 @@ export async function POST(request: Request) {
     await user.save();
 
     const resetUrl = `${serverConfig.appUrl}/reset-password?token=${resetToken}`;
-    console.log(`[reset-password] ${resetUrl}`);
+    await sendPasswordResetEmail(user.email, resetUrl);
 
     return NextResponse.json({
       ok: true,
-      ...(serverConfig.isProd ? {} : { resetUrl }),
+      ...(!serverConfig.isProd || !serverConfig.resendApiKey
+        ? { resetUrl }
+        : {}),
     });
   } catch (err) {
     return handleRouteError(err);

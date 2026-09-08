@@ -13,11 +13,16 @@ import {
   hashOpaqueToken,
 } from "@/lib/server/tokens";
 import { emailSchema, passwordSchema } from "@/lib/sections";
+import { sendVerificationEmail } from "@/lib/server/email";
 import { clientIp, handleRouteError, rateLimit } from "@/lib/server/http";
 
 export async function POST(request: Request) {
   try {
-    const limited = rateLimit(`signup:${clientIp(request)}`, 20, 15 * 60 * 1000);
+    const limited = await rateLimit(
+      `signup:${clientIp(request)}`,
+      20,
+      15 * 60 * 1000,
+    );
     if (!limited.ok) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -48,12 +53,14 @@ export async function POST(request: Request) {
     });
 
     const verifyUrl = `${serverConfig.appUrl}/verify?token=${verifyToken}`;
-    console.log(`[verify-email] ${verifyUrl}`);
+    await sendVerificationEmail(user.email, verifyUrl);
 
     const res = NextResponse.json(
       {
         user: publicUser(user),
-        ...(serverConfig.isProd ? {} : { verifyUrl }),
+        ...(!serverConfig.isProd || !serverConfig.resendApiKey
+          ? { verifyUrl }
+          : {}),
       },
       { status: 201 },
     );

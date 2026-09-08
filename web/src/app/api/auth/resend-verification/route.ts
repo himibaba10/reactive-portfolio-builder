@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireSessionUser } from "@/lib/server/auth";
 import { serverConfig } from "@/lib/server/config";
+import { sendVerificationEmail } from "@/lib/server/email";
 import {
   createOpaqueToken,
   hashOpaqueToken,
@@ -9,7 +10,7 @@ import { clientIp, handleRouteError, rateLimit } from "@/lib/server/http";
 
 export async function POST(request: Request) {
   try {
-    const limited = rateLimit(
+    const limited = await rateLimit(
       `resend-verify:${clientIp(request)}`,
       10,
       15 * 60 * 1000,
@@ -29,11 +30,13 @@ export async function POST(request: Request) {
     await user.save();
 
     const verifyUrl = `${serverConfig.appUrl}/verify?token=${verifyToken}`;
-    console.log(`[verify-email] ${verifyUrl}`);
+    await sendVerificationEmail(user.email, verifyUrl);
 
     return NextResponse.json({
       ok: true,
-      ...(serverConfig.isProd ? {} : { verifyUrl }),
+      ...(!serverConfig.isProd || !serverConfig.resendApiKey
+        ? { verifyUrl }
+        : {}),
     });
   } catch (err) {
     return handleRouteError(err);

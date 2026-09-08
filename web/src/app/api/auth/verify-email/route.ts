@@ -8,7 +8,11 @@ import { clientIp, handleRouteError, rateLimit } from "@/lib/server/http";
 
 export async function POST(request: Request) {
   try {
-    const limited = rateLimit(`verify:${clientIp(request)}`, 30, 15 * 60 * 1000);
+    const limited = await rateLimit(
+      `verify:${clientIp(request)}`,
+      30,
+      15 * 60 * 1000,
+    );
     if (!limited.ok) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

@@ -14,12 +14,14 @@ import {
   SubmitButton,
   useFormSubmit,
 } from "@/components/ui/form";
+import { SlugField } from "@/components/ui/slug-field";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
+  const [createSlug, setCreateSlug] = useState("");
   const [verifyUrl, setVerifyUrl] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
     return sessionStorage.getItem("reactive_verify_url");
@@ -144,7 +146,29 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <AppChrome>
-        <p className="text-muted">Loading…</p>
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 w-28 rounded bg-panel" />
+          <div className="h-10 w-64 rounded bg-panel" />
+          <div className="h-40 rounded-2xl bg-panel" />
+        </div>
+      </AppChrome>
+    );
+  }
+
+  if (!user && banner) {
+    return (
+      <AppChrome>
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
+          <h1 className="font-display text-2xl">Couldn’t load dashboard</h1>
+          <p className="mt-2 text-sm text-red-200">{banner}</p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="mt-4 text-sm text-signal hover:underline"
+          >
+            Retry
+          </button>
+        </div>
       </AppChrome>
     );
   }
@@ -171,7 +195,15 @@ export default function DashboardPage() {
         </div>
 
         {banner ? (
-          <p className="rounded-xl border border-line bg-panel px-4 py-3 text-sm">
+          <p
+            className={`rounded-xl border px-4 py-3 text-sm ${
+              banner.toLowerCase().includes("fail") ||
+              banner.toLowerCase().includes("error") ||
+              banner.toLowerCase().includes("verify your email")
+                ? "border-red-500/30 bg-red-500/10 text-red-100"
+                : "border-line bg-panel"
+            }`}
+          >
             {banner}
           </p>
         ) : null}
@@ -272,13 +304,12 @@ export default function DashboardPage() {
                   placeholder="Daniel · Product designer"
                 />
               </Field>
-              <Field label="Slug" hint="yoursite.com/your-slug">
-                <FormInput
-                  name="slug"
-                  required
-                  placeholder="daniel-portfolio"
-                />
-              </Field>
+              <SlugField
+                value={createSlug}
+                onChange={setCreateSlug}
+                required
+                hint="yoursite.com/your-slug"
+              />
               <Field label="Palette">
                 <select
                   name="paletteId"

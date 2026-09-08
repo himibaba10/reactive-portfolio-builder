@@ -21,6 +21,7 @@ import {
   FormInput,
   FormTextarea,
 } from "@/components/ui/form";
+import { SlugField } from "@/components/ui/slug-field";
 
 export function EditorClient() {
   const router = useRouter();
@@ -165,7 +166,28 @@ export function EditorClient() {
   if (loading) {
     return (
       <AppChrome>
-        <p className="text-muted">Loading editor…</p>
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 w-24 rounded bg-panel" />
+          <div className="h-10 w-48 rounded bg-panel" />
+          <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div className="h-64 rounded-2xl bg-panel" />
+            <div className="h-64 rounded-2xl bg-panel" />
+          </div>
+        </div>
+      </AppChrome>
+    );
+  }
+
+  if (error && !portfolio) {
+    return (
+      <AppChrome>
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
+          <h1 className="font-display text-2xl">Editor unavailable</h1>
+          <p className="mt-2 text-sm text-red-200">{error}</p>
+          <Link href="/dashboard" className="mt-4 inline-block text-signal">
+            Back to dashboard
+          </Link>
+        </div>
       </AppChrome>
     );
   }
@@ -221,9 +243,11 @@ export function EditorClient() {
               onChange={(e) => setTitle(e.target.value)}
             />
           </Field>
-          <Field label="Slug">
-            <FormInput value={slug} onChange={(e) => setSlug(e.target.value)} />
-          </Field>
+          <SlugField
+            value={slug}
+            onChange={setSlug}
+            excludeCurrent={portfolio?.slug}
+          />
           <Field label="Palette">
             <select
               value={paletteId}

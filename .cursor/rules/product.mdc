@@ -23,7 +23,7 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 
 ## Current status
 
-Landing, auth, one-portfolio CRUD, sections editor, and public `/{slug}` are in code. Wire `MONGODB_URI` / `JWT_SECRET` via `web/.env` before local use. Server lives in Next.js only (no Express).
+MVP app is implemented (auth, one portfolio, editor, public `/{slug}`). Ship checklist: set Atlas + JWT locally; for production add Resend + Upstash and deploy `web/` on Vercel. Server lives in Next.js only (no Express).
 
 ## Tone / copy
 

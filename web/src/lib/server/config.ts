@@ -9,4 +9,9 @@ export const serverConfig = {
   isProd: process.env.NODE_ENV === "production",
   cookieName: "reactive_session",
   sessionTtl: "7d" as const,
+  resendApiKey: process.env.RESEND_API_KEY || "",
+  emailFrom:
+    process.env.EMAIL_FROM || "Reactive <onboarding@resend.dev>",
+  upstashRedisUrl: process.env.UPSTASH_REDIS_REST_URL || "",
+  upstashRedisToken: process.env.UPSTASH_REDIS_REST_TOKEN || "",
 };

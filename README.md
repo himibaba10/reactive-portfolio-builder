@@ -2,41 +2,44 @@
 
 Free MVP portfolio builder: one portfolio per user, prebuilt sections, strict five-token palettes, public slug URLs.
 
-## Agent context (important)
-
-This repo is set up for Cursor agents. After `git pull`, open the project in Cursor — new chats should load:
-
-| Path | Purpose |
-| --- | --- |
-| `AGENTS.md` | Product + architecture brief |
-| `.cursor/rules/*.mdc` | Scoped rules (product, design, frontend, api) |
-| `.cursor/agents/*.md` | Specialist subagents (`/landing-motion`, `/frontend-qa`, `/mvp-planner`) |
-
 ## Stack
 
-- **web** — Next.js (App Router) for UI + server (Route Handlers / Server Actions)
-- **db** — MongoDB Atlas (wired in a later milestone)
+- **web** — Next.js (App Router) for UI + server (Route Handlers)
+- **db** — MongoDB Atlas
+- **email** — Resend (optional in local; console fallback)
+- **rate limit** — Upstash Redis (optional in local; memory fallback)
 
-## Apps
+## Local setup
 
 ```bash
 pnpm install
+cp web/.env.example web/.env
+# set MONGODB_URI, JWT_SECRET, NEXT_PUBLIC_APP_URL
 pnpm dev   # http://localhost:3000
 ```
 
-## Current milestone
+Optional in `.env`:
 
-MVP app surface on Next.js only:
+- `RESEND_API_KEY` + `EMAIL_FROM` — real verification/reset emails
+- `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` — serverless rate limits
 
-- Landing + GSAP motion
-- Auth (signup/login/verify/reset/soft-delete)
-- One portfolio · editor · publish
-- Public `/{slug}`
-- Copy `web/.env.example` → `web/.env` and set MongoDB + JWT
+Without Resend, verify/reset links are logged to the server console and returned in non-prod API responses.
+
+## Deploy (Vercel)
+
+1. Import the GitHub repo in Vercel
+2. Set **Root Directory** to `web`
+3. Add env vars:
+   - `MONGODB_URI`
+   - `JWT_SECRET` (long random string)
+   - `NEXT_PUBLIC_APP_URL` (your production URL, e.g. `https://your-app.vercel.app`)
+   - `RESEND_API_KEY` + `EMAIL_FROM` (recommended in prod)
+   - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (recommended in prod)
+4. Deploy, then smoke: signup → verify → create → publish → `/{slug}`
 
 ## Product rules (locked)
 
-- Email/password auth (later)
+- Email/password auth
 - Soft-delete accounts
 - Exactly one portfolio per user
 - Prebuilt sections only
