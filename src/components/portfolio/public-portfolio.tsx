@@ -5,6 +5,7 @@ import {
   RenderPortfolioSection,
 } from "./section-registry";
 import { FooterSection } from "./sections/footer";
+import { PortfolioMotion } from "./motion/portfolio-motion";
 
 export function PublicPortfolioView({
   portfolio,
@@ -34,8 +35,10 @@ export function PublicPortfolioView({
   return (
     <main
       style={style}
-      className="relative flex min-h-svh flex-col overflow-hidden bg-(--p-secondary) text-(--p-text-light)"
+      data-portfolio-root
+      className="relative flex min-h-svh flex-col overflow-x-hidden bg-(--p-secondary) text-(--p-text-light)"
     >
+      <PortfolioMotion />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_15%_0%,color-mix(in_oklab,var(--p-primary)_35%,transparent),transparent_50%),radial-gradient(ellipse_at_90%_10%,color-mix(in_oklab,var(--p-accent)_28%,transparent),transparent_45%)]"
@@ -57,13 +60,17 @@ export function PublicPortfolioView({
                 navItems={navItems}
               />
             ) : null}
-            <div className="mx-auto flex w-full flex-1 flex-col gap-16 px-5 py-16 md:gap-20 md:px-8 md:py-24">
+            <div
+              data-portfolio-body
+              className="mx-auto flex w-full flex-1 flex-col gap-16 px-5 py-16 md:gap-20 md:px-8 md:py-24"
+            >
               {body.map((section) => (
-                <RenderPortfolioSection
-                  key={section.id}
-                  section={section}
-                  portfolio={meta}
-                />
+                <div key={section.id} data-reveal>
+                  <RenderPortfolioSection
+                    section={section}
+                    portfolio={meta}
+                  />
+                </div>
               ))}
             </div>
             <FooterSection

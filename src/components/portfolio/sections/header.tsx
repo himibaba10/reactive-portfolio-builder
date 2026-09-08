@@ -7,6 +7,7 @@ export function HeaderSection({ section, portfolio, navItems = [] }: SectionProp
   return (
     <header
       id="header"
+      data-portfolio-header
       className="sticky top-0 z-20 w-full border-b border-white/10 bg-(--p-secondary)/85 backdrop-blur-md"
     >
       <div className="flex w-full items-center justify-between gap-4 px-5 py-4 md:px-8">

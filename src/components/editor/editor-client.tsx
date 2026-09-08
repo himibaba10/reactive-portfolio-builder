@@ -18,6 +18,7 @@ import {
   isVariantSectionType,
   SECTION_LABELS,
   SECTION_TYPES,
+  sectionVariantCount,
 } from "@/lib/sections";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 import { AppChrome } from "@/components/app/app-chrome";
@@ -30,6 +31,7 @@ import {
 import { SlugField } from "@/components/ui/slug-field";
 import { PalettePicker } from "@/components/ui/palette-picker";
 import { ImageField } from "@/components/ui/image-field";
+import { HeroLayoutPicker } from "@/components/editor/hero-layout-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -395,9 +397,19 @@ export function EditorClient() {
                     </button>
                   </div>
                 </div>
-                {isVariantSectionType(active.type) ? (
+                {active.type === "Hero" ? (
+                  <HeroLayoutPicker
+                    section={active}
+                    paletteId={paletteId}
+                    portfolioTitle={title || "Portfolio"}
+                    portfolioSlug={slug || "your-slug"}
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
+                ) : isVariantSectionType(active.type) ? (
                   <LayoutPicker
                     value={active.variant}
+                    count={sectionVariantCount(active.type)}
                     onChange={(v) => setVariant(active.id, v)}
                   />
                 ) : null}
@@ -413,15 +425,20 @@ export function EditorClient() {
 
 function LayoutPicker({
   value,
+  count,
   onChange,
 }: {
   value: number;
+  count: number;
   onChange: (variant: number) => void;
 }) {
+  const options = Array.from({ length: count }, (_, i) => i + 1);
   return (
     <Field label="Layout">
-      <div className="grid grid-cols-5 gap-2">
-        {[1, 2, 3, 4, 5].map((n) => (
+      <div
+        className={`grid gap-2 ${count > 5 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"}`}
+      >
+        {options.map((n) => (
           <button
             key={n}
             type="button"
@@ -444,25 +461,100 @@ function LayoutPicker({
 }
 
 function LayoutThumb({ variant }: { variant: number }) {
-  const bars =
-    variant === 1
-      ? "items-start"
-      : variant === 2
-        ? "items-stretch"
-        : variant === 3
-          ? "items-center"
-          : variant === 4
-            ? "items-end"
-            : "justify-between";
+  if (variant === 2) {
+    return (
+      <span aria-hidden className="flex h-6 w-8 gap-0.5 opacity-70">
+        <span className="flex flex-1 flex-col justify-end gap-0.5">
+          <span className="h-1 w-full rounded-sm bg-current" />
+          <span className="h-1 w-2/3 rounded-sm bg-current opacity-50" />
+        </span>
+        <span className="w-2.5 rounded-sm bg-current opacity-40" />
+      </span>
+    );
+  }
+  if (variant === 3) {
+    return (
+      <span
+        aria-hidden
+        className="flex h-6 w-8 items-end rounded-sm border border-current/40 p-0.5 opacity-70"
+      >
+        <span className="h-1 w-full rounded-sm bg-current" />
+      </span>
+    );
+  }
+  if (variant === 4) {
+    return (
+      <span
+        aria-hidden
+        className="flex h-6 w-8 flex-col items-center justify-center gap-0.5 opacity-70"
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-current" />
+        <span className="h-1 w-full rounded-sm bg-current" />
+        <span className="h-1 w-1/2 rounded-sm bg-current opacity-50" />
+      </span>
+    );
+  }
+  if (variant === 5) {
+    return (
+      <span aria-hidden className="flex h-6 w-8 gap-0.5 opacity-70">
+        <span className="flex flex-1 flex-col gap-0.5">
+          <span className="h-1 w-full rounded-sm bg-current" />
+          <span className="h-1 w-3/4 rounded-sm bg-current opacity-50" />
+          <span className="h-1 w-1/2 rounded-sm bg-current opacity-30" />
+        </span>
+        <span className="mt-1 h-4 w-2.5 rounded-sm bg-current opacity-35" />
+      </span>
+    );
+  }
+  if (variant === 6) {
+    return (
+      <span aria-hidden className="flex h-6 w-8 flex-col gap-0.5 opacity-70">
+        <span className="flex items-start justify-between gap-0.5">
+          <span className="h-2 w-4 rounded-sm bg-current" />
+          <span className="h-3 w-2 rounded-sm bg-current opacity-40" />
+        </span>
+        <span className="h-1 w-full rounded-sm bg-current opacity-50" />
+      </span>
+    );
+  }
   return (
     <span
       aria-hidden
-      className={`flex h-6 w-8 flex-col gap-0.5 ${bars} opacity-70`}
+      className="flex h-6 w-8 flex-col items-start gap-0.5 opacity-70"
     >
       <span className="h-1 w-full rounded-sm bg-current" />
       <span className="h-1 w-2/3 rounded-sm bg-current opacity-60" />
       <span className="h-1 w-1/2 rounded-sm bg-current opacity-40" />
     </span>
+  );
+}
+
+function OptionalField({
+  label,
+  enabled,
+  onEnabledChange,
+  children,
+}: {
+  label: string;
+  enabled: boolean;
+  onEnabledChange: (enabled: boolean) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="flex items-center gap-2.5 text-sm text-foam">
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(e) => onEnabledChange(e.target.checked)}
+          className="size-3.5 shrink-0 accent-[var(--signal,#d6ff3f)]"
+        />
+        <span>{label}</span>
+      </label>
+      <div className={enabled ? undefined : "pointer-events-none opacity-40"}>
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -498,50 +590,103 @@ function SectionFields({
   }
 
   if (section.type === "Hero") {
+    const showName = data.showName !== false;
+    const showTagline = data.showTagline !== false;
+    const showDescription = data.showDescription !== false;
+    const showImage = data.showImage !== false;
+    const showCtaLabel = data.showCtaLabel !== false;
+    const showCtaHref = data.showCtaHref !== false;
+
     return (
       <>
-        <ImageField
+        <OptionalField
           label="Photo"
-          valueUrl={String(data.imageUrl || "")}
-          valuePublicId={String(data.imagePublicId || "")}
-          onChange={(img) =>
-            onChange({
-              ...data,
-              imageUrl: img?.url || "",
-              imagePublicId: img?.publicId || "",
-            })
-          }
-        />
-        <Field label="Image alt">
-          <FormInput
-            value={String(data.imageAlt || "")}
-            onChange={(e) => onChange({ ...data, imageAlt: e.target.value })}
+          enabled={showImage}
+          onEnabledChange={(v) => onChange({ ...data, showImage: v })}
+        >
+          <ImageField
+            label=""
+            valueUrl={String(data.imageUrl || "")}
+            valuePublicId={String(data.imagePublicId || "")}
+            onChange={(img) =>
+              onChange({
+                ...data,
+                imageUrl: img?.url || "",
+                imagePublicId: img?.publicId || "",
+              })
+            }
           />
-        </Field>
-        <Field label="Name">
+          <div className="mt-3">
+            <Field label="Image alt">
+              <FormInput
+                value={String(data.imageAlt || "")}
+                onChange={(e) =>
+                  onChange({ ...data, imageAlt: e.target.value })
+                }
+                disabled={!showImage}
+              />
+            </Field>
+          </div>
+        </OptionalField>
+        <OptionalField
+          label="Name"
+          enabled={showName}
+          onEnabledChange={(v) => onChange({ ...data, showName: v })}
+        >
           <FormInput
             value={String(data.name || "")}
             onChange={(e) => onChange({ ...data, name: e.target.value })}
+            disabled={!showName}
           />
-        </Field>
-        <Field label="Tagline">
+        </OptionalField>
+        <OptionalField
+          label="Tagline"
+          enabled={showTagline}
+          onEnabledChange={(v) => onChange({ ...data, showTagline: v })}
+        >
           <FormInput
             value={String(data.tagline || "")}
             onChange={(e) => onChange({ ...data, tagline: e.target.value })}
+            disabled={!showTagline}
           />
-        </Field>
-        <Field label="CTA label">
+        </OptionalField>
+        <OptionalField
+          label="Description"
+          enabled={showDescription}
+          onEnabledChange={(v) => onChange({ ...data, showDescription: v })}
+        >
+          <FormTextarea
+            value={String(data.description || "")}
+            onChange={(e) =>
+              onChange({ ...data, description: e.target.value })
+            }
+            disabled={!showDescription}
+            placeholder="A short paragraph under the tagline"
+          />
+        </OptionalField>
+        <OptionalField
+          label="CTA label"
+          enabled={showCtaLabel}
+          onEnabledChange={(v) => onChange({ ...data, showCtaLabel: v })}
+        >
           <FormInput
             value={String(data.ctaLabel || "")}
             onChange={(e) => onChange({ ...data, ctaLabel: e.target.value })}
+            disabled={!showCtaLabel}
           />
-        </Field>
-        <Field label="CTA href">
+        </OptionalField>
+        <OptionalField
+          label="CTA href"
+          enabled={showCtaHref}
+          onEnabledChange={(v) => onChange({ ...data, showCtaHref: v })}
+        >
           <FormInput
             value={String(data.ctaHref || "")}
             onChange={(e) => onChange({ ...data, ctaHref: e.target.value })}
+            disabled={!showCtaHref}
+            placeholder="#projects"
           />
-        </Field>
+        </OptionalField>
       </>
     );
   }

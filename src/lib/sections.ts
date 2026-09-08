@@ -73,13 +73,21 @@ export const PALETTE_IDS = [
 
 export type PaletteId = (typeof PALETTE_IDS)[number];
 
-export const sectionVariantSchema = z.number().int().min(1).max(5);
+export const sectionVariantSchema = z.number().int().min(1).max(6);
+
+/** Hero has 6 layouts; other variant sections stay at 5. */
+export function sectionVariantCount(type: SectionType): number {
+  if (type === "Hero") return 6;
+  if (isVariantSectionType(type)) return 5;
+  return 1;
+}
 
 export function clampSectionVariant(type: SectionType, variant: unknown): number {
   if (!isVariantSectionType(type)) return 1;
   const n = typeof variant === "number" ? variant : Number(variant);
   if (!Number.isFinite(n)) return 1;
-  return Math.min(5, Math.max(1, Math.round(n)));
+  const max = sectionVariantCount(type);
+  return Math.min(max, Math.max(1, Math.round(n)));
 }
 
 export function defaultSectionData(type: SectionType): Record<string, unknown> {
@@ -93,11 +101,19 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
       return {
         name: "Your name",
         tagline: "Maker · designer · builder",
+        description:
+          "A short line about what you build and who you build it for.",
         ctaLabel: "See work",
         ctaHref: "#projects",
         imageUrl: "",
         imagePublicId: "",
         imageAlt: "",
+        showName: true,
+        showTagline: true,
+        showDescription: true,
+        showImage: true,
+        showCtaLabel: true,
+        showCtaHref: true,
       };
     case "About":
       return {

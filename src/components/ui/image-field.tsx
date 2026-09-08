@@ -81,9 +81,11 @@ export function ImageField({
 
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-xs tracking-[0.18em] text-muted uppercase">
-        {label}
-      </span>
+      {label ? (
+        <span className="text-xs tracking-[0.18em] text-muted uppercase">
+          {label}
+        </span>
+      ) : null}
       {valueUrl ? (
         <div className="overflow-hidden rounded-xl border border-line bg-ink">
           {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -30,7 +30,7 @@ export const processSteps = [
   {
     index: "02",
     title: "Compose",
-    body: "Pick layouts for Header, Hero, About, Skills, Portfolio, CTA, and Footer — plus Experience, Education, Contact. Reorder. Hide. No custom section sprawl.",
+    body: "Pick layouts for Hero, About, Skills, Portfolio, and CTA — plus fixed Header/Footer and Experience, Education, Contact. Reorder. Hide. No custom section sprawl.",
   },
   {
     index: "03",
@@ -42,11 +42,11 @@ export const processSteps = [
 export const sectionTypes = [
   {
     type: "Header",
-    hint: "Five layouts · title, slug, optional tagline",
+    hint: "Fixed · logo left, section nav right",
   },
   {
     type: "Hero",
-    hint: "Five layouts · name, tagline, primary CTA",
+    hint: "Six layouts · name, tagline, photo, optional CTA",
   },
   {
     type: "About",
@@ -78,7 +78,7 @@ export const sectionTypes = [
   },
   {
     type: "Footer",
-    hint: "Five layouts · blurb + Reactive credit",
+    hint: "Fixed · centered copyright",
   },
 ] as const;
 
