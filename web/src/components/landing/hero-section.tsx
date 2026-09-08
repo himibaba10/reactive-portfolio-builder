@@ -6,7 +6,7 @@ export function HeroSection() {
     <section
       id="top"
       data-hero
-      className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden px-5 pb-16 pt-28 md:px-8 md:pb-20"
+      className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden px-5 pb-10 pt-24 md:px-8 md:pb-14"
     >
       <div
         aria-hidden
@@ -31,19 +31,18 @@ export function HeroSection() {
           Portfolio infrastructure for makers
         </p>
 
-        <h1 className="font-[family-name:var(--font-display)] text-[clamp(2.8rem,12vw,8.5rem)] leading-[0.88] font-semibold tracking-[-0.04em] text-[var(--foam)]">
+        <h1 className="font-[family-name:var(--font-display)] text-[clamp(2.6rem,9.5vw,7rem)] leading-[0.9] font-semibold tracking-[-0.04em] text-[var(--foam)]">
           <span data-hero-line className="block overflow-hidden">
             <span className="inline-block translate-y-[110%]">Reactive</span>
           </span>
           <span data-hero-line className="block overflow-hidden">
-            <span className="inline-block translate-y-[110%]">Portfolio</span>
-          </span>
-          <span data-hero-line className="block overflow-hidden text-[var(--signal)]">
-            <span className="inline-block translate-y-[110%]">Builder</span>
+            <span className="inline-block translate-y-[110%]">
+              Portfolio <span className="text-[var(--signal)]">Builder</span>
+            </span>
           </span>
         </h1>
 
-        <div className="mt-10 flex max-w-3xl flex-col gap-8 md:mt-12 md:flex-row md:items-end md:justify-between">
+        <div className="mt-8 flex max-w-3xl flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
           <p
             data-hero-copy
             className="max-w-md text-base leading-relaxed text-[var(--muted)] opacity-0 md:text-lg"

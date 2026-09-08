@@ -26,7 +26,7 @@ export function PalettesSection() {
             <li
               key={palette.id}
               data-palette-card
-              className="overflow-hidden rounded-[1.25rem] border border-[color:var(--line)] bg-[var(--panel)] opacity-0"
+              className="overflow-hidden rounded-[1.25rem] border border-[color:var(--line)] bg-[var(--panel)]"
             >
               <div className="flex h-28">
                 {tokenLabels.map((token) => (

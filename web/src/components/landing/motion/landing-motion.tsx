@@ -117,9 +117,11 @@ export function LandingMotion() {
         duration: 0.9,
         stagger: 0.18,
         ease: "power3.out",
+        immediateRender: false,
         scrollTrigger: {
           trigger: "[data-process]",
-          start: "top 70%",
+          start: "top 75%",
+          toggleActions: "play none none none",
         },
       });
 
@@ -150,9 +152,11 @@ export function LandingMotion() {
         duration: 0.75,
         stagger: 0.08,
         ease: "power2.out",
+        immediateRender: false,
         scrollTrigger: {
           trigger: "[data-palettes]",
-          start: "top 75%",
+          start: "top 80%",
+          toggleActions: "play none none none",
         },
       });
 

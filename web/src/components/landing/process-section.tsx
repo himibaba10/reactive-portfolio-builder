@@ -23,7 +23,7 @@ export function ProcessSection() {
             <li
               key={step.index}
               data-process-card
-              className="border-t border-[color:var(--line)] pt-6 opacity-0"
+              className="border-t border-[color:var(--line)] pt-6"
             >
               <div className="mb-4 flex items-baseline justify-between gap-4">
                 <span className="font-[family-name:var(--font-display)] text-sm tracking-[0.2em] text-[var(--signal)]">
