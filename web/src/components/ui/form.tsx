@@ -38,6 +38,21 @@ export function FormInput({
   );
 }
 
+export function FormTextarea({
+  className,
+  ...props
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return (
+    <textarea
+      className={cn(
+        "min-h-28 w-full rounded-xl border border-[color:var(--line)] bg-[var(--panel)] px-4 py-3 text-[var(--foam)] outline-none transition focus:border-[color:var(--signal)]",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
 export function FormError({ message }: { message?: string | null }) {
   if (!message) return null;
   return (
