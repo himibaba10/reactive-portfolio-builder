@@ -10,3 +10,5 @@ coverage/
 !.env.example
 *.log
 .pnpm-store/
+
+walkthrough-artifacts/
