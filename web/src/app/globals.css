@@ -21,9 +21,12 @@
   --color-foam: var(--foam);
   --color-muted: var(--muted);
   --color-signal: var(--signal);
+  --color-signal-soft: var(--signal-soft);
   --color-electric: var(--electric);
+  --color-line: var(--line);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
+  --max-width-site: 1400px;
 }
 
 * {

@@ -10,15 +10,15 @@ export function VerifyEmailClient() {
   const params = useSearchParams();
   const router = useRouter();
   const token = params.get("token") || "";
-  const [status, setStatus] = useState<"working" | "ok" | "error">("working");
-  const [message, setMessage] = useState("Verifying…");
+  const [status, setStatus] = useState<"working" | "ok" | "error">(
+    token ? "working" : "error",
+  );
+  const [message, setMessage] = useState(
+    token ? "Verifying…" : "Missing verification token.",
+  );
 
   useEffect(() => {
-    if (!token) {
-      setStatus("error");
-      setMessage("Missing verification token.");
-      return;
-    }
+    if (!token) return;
 
     let cancelled = false;
     (async () => {
@@ -51,7 +51,7 @@ export function VerifyEmailClient() {
   return (
     <AuthShell title="Email verification" subtitle={message}>
       {status === "error" ? (
-        <Link href="/dashboard" className="text-[var(--signal)] hover:underline">
+        <Link href="/dashboard" className="text-signal hover:underline">
           Back to dashboard
         </Link>
       ) : null}

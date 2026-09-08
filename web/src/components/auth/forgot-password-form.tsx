@@ -34,16 +34,16 @@ export function ForgotPasswordForm() {
       subtitle="We’ll send a reset link if that email exists."
     >
       {done ? (
-        <div className="space-y-4 text-sm text-[var(--muted)]">
+        <div className="space-y-4 text-sm text-muted">
           <p>If an account exists, a reset link was issued.</p>
           {devUrl ? (
-            <p className="break-all rounded-xl border border-[color:var(--line)] bg-[var(--panel)] p-3 text-[var(--signal)]">
+            <p className="break-all rounded-xl border border-line bg-panel p-3 text-signal">
               Dev link: <Link href={devUrl}>{devUrl}</Link>
             </p>
           ) : (
             <p>Check the server console for the link in local development.</p>
           )}
-          <Link href="/login" className="text-[var(--signal)] hover:underline">
+          <Link href="/login" className="text-signal hover:underline">
             Back to login
           </Link>
         </div>

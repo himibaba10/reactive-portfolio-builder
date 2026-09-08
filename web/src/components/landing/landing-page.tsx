@@ -10,7 +10,7 @@ import { LandingMotion } from "@/components/landing/motion/landing-motion";
 
 export function LandingPage() {
   return (
-    <main className="relative bg-[var(--ink)] text-[var(--foam)]">
+    <main className="relative bg-ink text-foam">
       <LandingMotion />
       <SiteHeader />
       <HeroSection />

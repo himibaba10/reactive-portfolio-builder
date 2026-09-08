@@ -37,7 +37,7 @@ export function ResetPasswordForm() {
       >
         <Link
           href="/forgot-password"
-          className="text-[var(--signal)] hover:underline"
+          className="text-signal hover:underline"
         >
           Request a new one
         </Link>

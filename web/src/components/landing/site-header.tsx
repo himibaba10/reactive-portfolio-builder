@@ -8,10 +8,10 @@ export function SiteHeader() {
       data-landing-header
       className="pointer-events-none fixed inset-x-0 top-0 z-50 opacity-0"
     >
-      <div className="border-b border-[color:var(--line)] bg-[var(--ink)]/95 backdrop-blur-md">
+      <div className="border-b border-line bg-ink/95 backdrop-blur-md">
         <div
           data-landing-header-inner
-          className="mx-auto flex w-full max-w-[1400px] flex-col gap-2 px-5 py-3 md:px-8 md:py-4"
+          className="mx-auto flex w-full max-w-site flex-col gap-2 px-5 py-3 md:px-8 md:py-4"
         >
           <div className="flex items-center justify-between gap-3">
             <a href="#top" className="pointer-events-auto shrink-0">
@@ -22,7 +22,7 @@ export function SiteHeader() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="text-xs tracking-[0.16em] text-[color:rgba(244,245,240,0.72)] uppercase transition-colors hover:text-[var(--foam)]"
+                  className="text-xs tracking-[0.16em] text-foam/70 uppercase transition-colors hover:text-foam"
                 >
                   {link.label}
                 </a>
@@ -44,7 +44,7 @@ export function SiteHeader() {
               <a
                 key={link.href}
                 href={link.href}
-                className="text-[10px] tracking-[0.16em] text-[var(--muted)] uppercase"
+                className="text-[10px] tracking-[0.16em] text-muted uppercase"
               >
                 {link.label}
               </a>

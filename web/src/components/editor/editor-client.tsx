@@ -165,7 +165,7 @@ export function EditorClient() {
   if (loading) {
     return (
       <AppChrome>
-        <p className="text-[var(--muted)]">Loading editor…</p>
+        <p className="text-muted">Loading editor…</p>
       </AppChrome>
     );
   }
@@ -175,10 +175,10 @@ export function EditorClient() {
       <div className="flex flex-col gap-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs tracking-[0.2em] text-[var(--signal)] uppercase">
+            <p className="text-xs tracking-[0.2em] text-signal uppercase">
               Editor
             </p>
-            <h1 className="mt-2 font-[family-name:var(--font-display)] text-4xl tracking-[-0.04em]">
+            <h1 className="mt-2 font-display text-4xl tracking-[-0.04em]">
               Compose
             </h1>
           </div>
@@ -187,21 +187,21 @@ export function EditorClient() {
               type="button"
               onClick={() => void save()}
               disabled={saving}
-              className="rounded-full bg-[var(--signal)] px-5 py-2.5 text-sm font-semibold text-[var(--ink)] disabled:opacity-60"
+              className="rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink disabled:opacity-60"
             >
               {saving ? "Saving…" : "Save"}
             </button>
             <button
               type="button"
               onClick={() => void publish()}
-              className="rounded-full border border-[color:var(--line)] px-5 py-2.5 text-sm"
+              className="rounded-full border border-line px-5 py-2.5 text-sm"
             >
               Publish
             </button>
             {portfolio?.status === "published" ? (
               <Link
                 href={`/${portfolio.slug}`}
-                className="rounded-full border border-[color:var(--line)] px-5 py-2.5 text-sm"
+                className="rounded-full border border-line px-5 py-2.5 text-sm"
               >
                 View live
               </Link>
@@ -211,10 +211,10 @@ export function EditorClient() {
 
         <FormError message={error} />
         {message ? (
-          <p className="text-sm text-[var(--signal)]">{message}</p>
+          <p className="text-sm text-signal">{message}</p>
         ) : null}
 
-        <div className="grid gap-4 rounded-2xl border border-[color:var(--line)] bg-[var(--panel)] p-5 md:grid-cols-3">
+        <div className="grid gap-4 rounded-2xl border border-line bg-panel p-5 md:grid-cols-3">
           <Field label="Title">
             <FormInput
               value={title}
@@ -228,7 +228,7 @@ export function EditorClient() {
             <select
               value={paletteId}
               onChange={(e) => setPaletteId(e.target.value)}
-              className="w-full rounded-xl border border-[color:var(--line)] bg-[var(--ink)] px-4 py-3"
+              className="w-full rounded-xl border border-line bg-ink px-4 py-3"
             >
               {palettes.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -240,8 +240,8 @@ export function EditorClient() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="rounded-2xl border border-[color:var(--line)] bg-[var(--panel)] p-4">
-            <p className="mb-3 text-xs tracking-[0.18em] text-[var(--muted)] uppercase">
+          <aside className="rounded-2xl border border-line bg-panel p-4">
+            <p className="mb-3 text-xs tracking-[0.18em] text-muted uppercase">
               Sections
             </p>
             <ul className="flex flex-col gap-2">
@@ -252,8 +252,8 @@ export function EditorClient() {
                     <div
                       className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm ${
                         activeId === section.id
-                          ? "bg-[var(--ink)] text-[var(--foam)]"
-                          : "text-[var(--muted)]"
+                          ? "bg-ink text-foam"
+                          : "text-muted"
                       }`}
                     >
                       <button
@@ -287,15 +287,15 @@ export function EditorClient() {
                 ))}
             </ul>
             {missingTypes.length ? (
-              <div className="mt-4 border-t border-[color:var(--line)] pt-4">
-                <p className="mb-2 text-xs text-[var(--muted)]">Add section</p>
+              <div className="mt-4 border-t border-line pt-4">
+                <p className="mb-2 text-xs text-muted">Add section</p>
                 <div className="flex flex-wrap gap-2">
                   {missingTypes.map((type) => (
                     <button
                       key={type}
                       type="button"
                       onClick={() => addSection(type)}
-                      className="rounded-full border border-[color:var(--line)] px-3 py-1 text-xs"
+                      className="rounded-full border border-line px-3 py-1 text-xs"
                     >
                       {type}
                     </button>
@@ -305,20 +305,20 @@ export function EditorClient() {
             ) : null}
           </aside>
 
-          <section className="rounded-2xl border border-[color:var(--line)] bg-[var(--panel)] p-5">
+          <section className="rounded-2xl border border-line bg-panel p-5">
             {!active ? (
-              <p className="text-[var(--muted)]">Select a section.</p>
+              <p className="text-muted">Select a section.</p>
             ) : (
               <div className="flex flex-col gap-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="font-[family-name:var(--font-display)] text-2xl">
+                  <h2 className="font-display text-2xl">
                     {active.type}
                   </h2>
                   <div className="flex gap-3">
                     <button
                       type="button"
                       onClick={() => toggleVisible(active.id)}
-                      className="text-sm text-[var(--muted)] hover:text-[var(--foam)]"
+                      className="text-sm text-muted hover:text-foam"
                     >
                       {active.visible ? "Hide" : "Show"}
                     </button>
@@ -448,7 +448,7 @@ function SectionFields({
         {items.map((item, index) => (
           <div
             key={index}
-            className="rounded-xl border border-[color:var(--line)] p-4"
+            className="rounded-xl border border-line p-4"
           >
             <Field label="Title">
               <FormInput
@@ -484,7 +484,7 @@ function SectionFields({
         ))}
         <button
           type="button"
-          className="text-sm text-[var(--signal)]"
+          className="text-sm text-signal"
           onClick={() =>
             onChange({
               ...data,
@@ -510,7 +510,7 @@ function SectionFields({
         {items.map((item, index) => (
           <div
             key={index}
-            className="grid gap-3 rounded-xl border border-[color:var(--line)] p-4 md:grid-cols-2"
+            className="grid gap-3 rounded-xl border border-line p-4 md:grid-cols-2"
           >
             {(["role", "company", "period", "description"] as const).map(
               (key) => (
@@ -530,7 +530,7 @@ function SectionFields({
         ))}
         <button
           type="button"
-          className="text-sm text-[var(--signal)]"
+          className="text-sm text-signal"
           onClick={() =>
             onChange({
               ...data,
@@ -561,7 +561,7 @@ function SectionFields({
         {items.map((item, index) => (
           <div
             key={index}
-            className="grid gap-3 rounded-xl border border-[color:var(--line)] p-4 md:grid-cols-3"
+            className="grid gap-3 rounded-xl border border-line p-4 md:grid-cols-3"
           >
             {(["school", "degree", "period"] as const).map((key) => (
               <Field key={key} label={key}>
@@ -579,7 +579,7 @@ function SectionFields({
         ))}
         <button
           type="button"
-          className="text-sm text-[var(--signal)]"
+          className="text-sm text-signal"
           onClick={() =>
             onChange({
               ...data,

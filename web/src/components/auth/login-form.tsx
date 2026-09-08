@@ -45,15 +45,15 @@ export function LoginForm() {
         </Field>
         <SubmitButton pending={pending}>Log in</SubmitButton>
       </form>
-      <p className="mt-6 text-sm text-[var(--muted)]">
+      <p className="mt-6 text-sm text-muted">
         <Link
           href="/forgot-password"
-          className="text-[var(--signal)] hover:underline"
+          className="text-signal hover:underline"
         >
           Forgot password
         </Link>
         {" · "}
-        <Link href="/signup" className="text-[var(--signal)] hover:underline">
+        <Link href="/signup" className="text-signal hover:underline">
           Sign up
         </Link>
       </p>

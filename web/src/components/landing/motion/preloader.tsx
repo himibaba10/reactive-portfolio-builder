@@ -15,9 +15,11 @@ export function Preloader({ onComplete }: PreloaderProps) {
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
-      setProgress(100);
-      onComplete();
-      return;
+      const id = window.setTimeout(() => {
+        setProgress(100);
+        onComplete();
+      }, 0);
+      return () => window.clearTimeout(id);
     }
 
     const state = { value: 0 };
@@ -46,7 +48,7 @@ export function Preloader({ onComplete }: PreloaderProps) {
   return (
     <div
       ref={rootRef}
-      className="fixed inset-0 z-[60] flex flex-col justify-between bg-[var(--ink)] px-5 py-8 text-[var(--foam)] md:px-8"
+      className="fixed inset-0 z-60 flex flex-col justify-between bg-ink px-5 py-8 text-foam md:px-8"
       aria-hidden={progress >= 100}
     >
       <div className="flex items-center justify-between text-xs tracking-[0.24em] uppercase">
@@ -54,10 +56,10 @@ export function Preloader({ onComplete }: PreloaderProps) {
         <span>Booting builder</span>
       </div>
       <div className="flex items-end justify-between gap-6">
-        <p className="max-w-sm font-[family-name:var(--font-display)] text-3xl leading-tight tracking-[-0.03em] md:text-5xl">
+        <p className="max-w-sm font-display text-3xl leading-tight tracking-[-0.03em] md:text-5xl">
           Compose. Palette. Publish.
         </p>
-        <p className="font-[family-name:var(--font-display)] text-6xl tracking-[-0.05em] tabular-nums md:text-8xl">
+        <p className="font-display text-6xl tracking-[-0.05em] tabular-nums md:text-8xl">
           {String(progress).padStart(2, "0")}
         </p>
       </div>

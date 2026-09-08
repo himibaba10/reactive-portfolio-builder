@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`}>
-      <body className="min-h-full bg-[var(--ink)] text-[var(--foam)]">{children}</body>
+      <body className="min-h-full bg-ink text-foam">{children}</body>
     </html>
   );
 }

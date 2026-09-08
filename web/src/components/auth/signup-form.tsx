@@ -58,9 +58,9 @@ export function SignupForm() {
         </Field>
         <SubmitButton pending={pending}>Sign up</SubmitButton>
       </form>
-      <p className="mt-6 text-sm text-[var(--muted)]">
+      <p className="mt-6 text-sm text-muted">
         Already in?{" "}
-        <Link href="/login" className="text-[var(--signal)] hover:underline">
+        <Link href="/login" className="text-signal hover:underline">
           Log in
         </Link>
       </p>

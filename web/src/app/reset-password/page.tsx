@@ -3,7 +3,7 @@ import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={<main className="min-h-svh bg-[var(--ink)]" />}>
+    <Suspense fallback={<main className="min-h-svh bg-ink" />}>
       <ResetPasswordForm />
     </Suspense>
   );

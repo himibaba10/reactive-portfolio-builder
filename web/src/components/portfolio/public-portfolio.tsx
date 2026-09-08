@@ -19,14 +19,14 @@ export function PublicPortfolioView({
   return (
     <main
       style={style}
-      className="min-h-svh bg-[var(--p-secondary)] text-[var(--p-text-light)]"
+      className="min-h-svh bg-(--p-secondary) text-(--p-text-light)"
     >
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-16 px-5 py-16 md:px-8 md:py-24">
         <header className="border-b border-white/10 pb-6">
-          <p className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+          <p className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
             {portfolio.slug}
           </p>
-          <h1 className="mt-3 font-[family-name:var(--font-display)] text-4xl tracking-[-0.04em] md:text-5xl">
+          <h1 className="mt-3 font-display text-4xl tracking-[-0.04em] md:text-5xl">
             {portfolio.title}
           </h1>
         </header>
@@ -49,7 +49,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
   if (section.type === "Hero") {
     return (
       <section id="hero" className="space-y-5">
-        <h2 className="font-[family-name:var(--font-display)] text-5xl leading-[0.95] tracking-[-0.04em] md:text-6xl">
+        <h2 className="font-display text-5xl leading-[0.95] tracking-[-0.04em] md:text-6xl">
           {String(data.name || "")}
         </h2>
         <p className="max-w-xl text-lg text-white/75">
@@ -58,7 +58,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
         {data.ctaLabel ? (
           <a
             href={String(data.ctaHref || "#")}
-            className="inline-flex rounded-full bg-[var(--p-primary)] px-5 py-3 text-sm font-semibold text-[var(--p-text-dark)]"
+            className="inline-flex rounded-full bg-(--p-primary) px-5 py-3 text-sm font-semibold text-(--p-text-dark)"
           >
             {String(data.ctaLabel)}
           </a>
@@ -70,7 +70,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
   if (section.type === "About") {
     return (
       <section id="about" className="space-y-3">
-        <h2 className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+        <h2 className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
           About
         </h2>
         <p className="max-w-2xl text-base leading-relaxed text-white/80 whitespace-pre-wrap">
@@ -84,7 +84,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
     const items = Array.isArray(data.items) ? (data.items as string[]) : [];
     return (
       <section id="skills" className="space-y-4">
-        <h2 className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+        <h2 className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
           Skills
         </h2>
         <div className="flex flex-wrap gap-2">
@@ -107,7 +107,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
       : [];
     return (
       <section id="projects" className="space-y-4">
-        <h2 className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+        <h2 className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
           Projects
         </h2>
         <div className="grid gap-4">
@@ -123,7 +123,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
               {item.url ? (
                 <a
                   href={String(item.url)}
-                  className="mt-3 inline-block text-sm text-[var(--p-accent)]"
+                  className="mt-3 inline-block text-sm text-(--p-accent)"
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -143,7 +143,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
       : [];
     return (
       <section id="experience" className="space-y-4">
-        <h2 className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+        <h2 className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
           Experience
         </h2>
         <div className="space-y-5">
@@ -169,7 +169,7 @@ function PublicSection({ section }: { section: PortfolioSection }) {
       : [];
     return (
       <section id="education" className="space-y-4">
-        <h2 className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+        <h2 className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
           Education
         </h2>
         <div className="space-y-4">
@@ -189,13 +189,13 @@ function PublicSection({ section }: { section: PortfolioSection }) {
     const socials = (data.socials || {}) as Record<string, string>;
     return (
       <section id="contact" className="space-y-4">
-        <h2 className="text-xs tracking-[0.22em] text-[var(--p-accent)] uppercase">
+        <h2 className="text-xs tracking-[0.22em] text-(--p-accent) uppercase">
           Contact
         </h2>
         {data.email ? (
           <a
             href={`mailto:${String(data.email)}`}
-            className="text-lg text-[var(--p-accent)]"
+            className="text-lg text-(--p-accent)"
           >
             {String(data.email)}
           </a>

@@ -3,7 +3,7 @@ import { VerifyEmailClient } from "@/components/auth/verify-email-client";
 
 export default function VerifyPage() {
   return (
-    <Suspense fallback={<main className="min-h-svh bg-[var(--ink)]" />}>
+    <Suspense fallback={<main className="min-h-svh bg-ink" />}>
       <VerifyEmailClient />
     </Suspense>
   );

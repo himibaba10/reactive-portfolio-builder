@@ -7,7 +7,7 @@ export function HeroSection() {
     <section
       id="top"
       data-hero
-      className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden px-5 pb-10 pt-24 md:px-8 md:pb-14"
+      className="relative flex min-h-svh flex-col justify-end overflow-hidden px-5 pb-10 pt-24 md:px-8 md:pb-14"
     >
       <div
         aria-hidden
@@ -16,7 +16,7 @@ export function HeroSection() {
       <div
         aria-hidden
         data-hero-grid
-        className="pointer-events-none absolute inset-0 opacity-[0.22] [background-image:linear-gradient(rgba(244,245,240,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(244,245,240,0.08)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:radial-gradient(ellipse_at_center,black_35%,transparent_78%)]"
+        className="pointer-events-none absolute inset-0 opacity-[0.22] bg-[linear-gradient(rgba(244,245,240,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(244,245,240,0.08)_1px,transparent_1px)] bg-size-[72px_72px] mask-[radial-gradient(ellipse_at_center,black_35%,transparent_78%)]"
       />
       <div
         aria-hidden
@@ -24,7 +24,7 @@ export function HeroSection() {
         className="pointer-events-none absolute top-[18%] right-[8%] h-[42vw] max-h-[420px] w-[42vw] max-w-[420px] rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(214,255,63,0.55),rgba(91,140,255,0.12)_45%,transparent_70%)] blur-2xl"
       />
 
-      <div className="relative z-10 mx-auto w-full max-w-[1400px]">
+      <div className="relative z-10 mx-auto w-full max-w-site">
         <h1 className="sr-only">{site.name}</h1>
         <div data-hero-brand className="overflow-hidden opacity-0">
           <BrandLogo
@@ -37,7 +37,7 @@ export function HeroSection() {
         <div className="mt-8 flex max-w-3xl flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between">
           <p
             data-hero-copy
-            className="max-w-md text-base leading-relaxed text-[var(--muted)] opacity-0 md:text-lg"
+            className="max-w-md text-base leading-relaxed text-muted opacity-0 md:text-lg"
           >
             {site.description}
           </p>

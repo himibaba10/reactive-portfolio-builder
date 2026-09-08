@@ -20,40 +20,48 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
-  const [verifyUrl, setVerifyUrl] = useState<string | null>(null);
+  const [verifyUrl, setVerifyUrl] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return sessionStorage.getItem("reactive_verify_url");
+  });
   const [banner, setBanner] = useState<string | null>(null);
 
-  async function load() {
-    setLoading(true);
-    try {
-      const me = await api<{ user: User }>("/auth/me");
-      setUser(me.user);
-      try {
-        const mine = await api<{ portfolio: Portfolio }>("/portfolios/me");
-        setPortfolio(mine.portfolio);
-      } catch (err) {
-        if (err instanceof ApiError && err.status === 404) {
-          setPortfolio(null);
-        } else {
-          throw err;
-        }
-      }
-    } catch (err) {
-      if (err instanceof ApiError && err.status === 401) {
-        router.replace("/login");
-        return;
-      }
-      setBanner(err instanceof Error ? err.message : "Failed to load");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
-    const stored = sessionStorage.getItem("reactive_verify_url");
-    if (stored) setVerifyUrl(stored);
-    void load();
-  }, []);
+    let cancelled = false;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const me = await api<{ user: User }>("/auth/me");
+        if (cancelled) return;
+        setUser(me.user);
+        try {
+          const mine = await api<{ portfolio: Portfolio }>("/portfolios/me");
+          if (cancelled) return;
+          setPortfolio(mine.portfolio);
+        } catch (err) {
+          if (err instanceof ApiError && err.status === 404) {
+            if (!cancelled) setPortfolio(null);
+          } else {
+            throw err;
+          }
+        }
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/login");
+          return;
+        }
+        setBanner(err instanceof Error ? err.message : "Failed to load");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
 
   const createForm = useFormSubmit(async (form) => {
     const data = new FormData(form);
@@ -136,7 +144,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <AppChrome>
-        <p className="text-[var(--muted)]">Loading…</p>
+        <p className="text-muted">Loading…</p>
       </AppChrome>
     );
   }
@@ -146,43 +154,43 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs tracking-[0.2em] text-[var(--signal)] uppercase">
+            <p className="text-xs tracking-[0.2em] text-signal uppercase">
               Dashboard
             </p>
-            <h1 className="mt-2 font-[family-name:var(--font-display)] text-4xl tracking-[-0.04em]">
+            <h1 className="mt-2 font-display text-4xl tracking-[-0.04em]">
               Your portfolio
             </h1>
           </div>
           <button
             type="button"
             onClick={() => void logout()}
-            className="text-sm text-[var(--muted)] hover:text-[var(--foam)]"
+            className="text-sm text-muted hover:text-foam"
           >
             Log out
           </button>
         </div>
 
         {banner ? (
-          <p className="rounded-xl border border-[color:var(--line)] bg-[var(--panel)] px-4 py-3 text-sm">
+          <p className="rounded-xl border border-line bg-panel px-4 py-3 text-sm">
             {banner}
           </p>
         ) : null}
 
         {user && !user.isEmailVerified ? (
-          <div className="rounded-2xl border border-[color:var(--signal)]/30 bg-[var(--panel)] p-5">
-            <p className="font-medium text-[var(--foam)]">Verify your email</p>
-            <p className="mt-2 text-sm text-[var(--muted)]">
+          <div className="rounded-2xl border border-signal/30 bg-panel p-5">
+            <p className="font-medium text-foam">Verify your email</p>
+            <p className="mt-2 text-sm text-muted">
               Publishing requires a verified address.
             </p>
             {verifyUrl ? (
-              <p className="mt-3 break-all text-sm text-[var(--signal)]">
+              <p className="mt-3 break-all text-sm text-signal">
                 <Link href={verifyUrl}>{verifyUrl}</Link>
               </p>
             ) : null}
             <button
               type="button"
               onClick={() => void resendVerification()}
-              className="mt-4 text-sm text-[var(--signal)] hover:underline"
+              className="mt-4 text-sm text-signal hover:underline"
             >
               Resend verification
             </button>
@@ -190,13 +198,13 @@ export default function DashboardPage() {
         ) : null}
 
         {portfolio ? (
-          <div className="rounded-2xl border border-[color:var(--line)] bg-[var(--panel)] p-6">
+          <div className="rounded-2xl border border-line bg-panel p-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-[-0.03em]">
+                <h2 className="font-display text-2xl tracking-[-0.03em]">
                   {portfolio.title}
                 </h2>
-                <p className="mt-2 text-sm text-[var(--muted)]">
+                <p className="mt-2 text-sm text-muted">
                   /{portfolio.slug} · {portfolio.status} · palette{" "}
                   {portfolio.paletteId}
                 </p>
@@ -204,7 +212,7 @@ export default function DashboardPage() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/editor"
-                  className="rounded-full bg-[var(--signal)] px-5 py-2.5 text-sm font-semibold text-[var(--ink)]"
+                  className="rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink"
                 >
                   Open editor
                 </Link>
@@ -212,14 +220,14 @@ export default function DashboardPage() {
                   <>
                     <Link
                       href={`/${portfolio.slug}`}
-                      className="rounded-full border border-[color:var(--line)] px-5 py-2.5 text-sm"
+                      className="rounded-full border border-line px-5 py-2.5 text-sm"
                     >
                       View live
                     </Link>
                     <button
                       type="button"
                       onClick={() => void unpublish()}
-                      className="rounded-full border border-[color:var(--line)] px-5 py-2.5 text-sm"
+                      className="rounded-full border border-line px-5 py-2.5 text-sm"
                     >
                       Unpublish
                     </button>
@@ -228,7 +236,7 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => void publish()}
-                    className="rounded-full border border-[color:var(--line)] px-5 py-2.5 text-sm"
+                    className="rounded-full border border-line px-5 py-2.5 text-sm"
                   >
                     Publish
                   </button>
@@ -244,11 +252,11 @@ export default function DashboardPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-[color:var(--line)] bg-[var(--panel)] p-6">
-            <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-[-0.03em]">
+          <div className="rounded-2xl border border-line bg-panel p-6">
+            <h2 className="font-display text-2xl tracking-[-0.03em]">
               Create your one portfolio
             </h2>
-            <p className="mt-2 max-w-xl text-sm text-[var(--muted)]">
+            <p className="mt-2 max-w-xl text-sm text-muted">
               Title, slug, and a five-token palette. You can only create one.
             </p>
             <form
@@ -275,7 +283,7 @@ export default function DashboardPage() {
                 <select
                   name="paletteId"
                   defaultValue="signal"
-                  className="w-full rounded-xl border border-[color:var(--line)] bg-[var(--ink)] px-4 py-3"
+                  className="w-full rounded-xl border border-line bg-ink px-4 py-3"
                 >
                   {palettes.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -291,7 +299,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="border-t border-[color:var(--line)] pt-8">
+        <div className="border-t border-line pt-8">
           <button
             type="button"
             onClick={() => void deleteAccount()}

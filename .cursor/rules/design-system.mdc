@@ -18,10 +18,12 @@ Ink + Signal. Dark, technical, motion-led. **Not** purple gradients, cream/terra
 | `--panel` | Elevated surface | `#12141a` |
 | `--foam` | Primary text | `#f4f5f0` |
 | `--muted` | Secondary text | `#8b909a` |
-| `--signal` | Accent / CTA | `#d6ff3f` |
-| `--signal-soft` | Accent hover | `#e7ff8a` |
-| `--electric` | Secondary accent | `#5b8cff` |
-| `--line` | Hairline borders | `rgba(244,245,240,0.12)` |
+| `--signal` | Accent / CTA | `#d6ff3f` → `bg-signal` `text-signal` |
+| `--signal-soft` | Accent hover | `#e7ff8a` → `bg-signal-soft` |
+| `--electric` | Secondary accent | `#5b8cff` → `text-electric` |
+| `--line` | Hairline borders | `rgba(244,245,240,0.12)` → `border-line` |
+
+Use Tailwind v4 theme utilities (`bg-ink`, `text-foam`, `font-display`, `max-w-site`) instead of `bg-[var(--…)]` / `font-[family-name:…]`.
 
 ## Typography
 

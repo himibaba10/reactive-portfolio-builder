@@ -10,24 +10,24 @@ export function CtaSection() {
         aria-hidden
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(214,255,63,0.16),transparent_55%),linear-gradient(180deg,#0a0b0d_0%,#10131a_100%)]"
       />
-      <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col items-start gap-10 md:items-center md:text-center">
+      <div className="relative z-10 mx-auto flex w-full max-w-site flex-col items-start gap-10 md:items-center md:text-center">
         <p
           data-cta-eyebrow
-          className="text-xs tracking-[0.28em] text-[var(--signal)] uppercase opacity-0"
+          className="text-xs tracking-[0.28em] text-signal uppercase opacity-0"
         >
           Free for now
         </p>
-        <h2 className="max-w-5xl font-[family-name:var(--font-display)] text-[clamp(2.8rem,9vw,7rem)] leading-[0.9] font-semibold tracking-[-0.045em] text-[var(--foam)]">
+        <h2 className="max-w-5xl font-display text-[clamp(2.8rem,9vw,7rem)] leading-[0.9] font-semibold tracking-[-0.045em] text-foam">
           <span data-cta-line className="block overflow-hidden">
             <span className="inline-block translate-y-[110%]">Claim your slug.</span>
           </span>
-          <span data-cta-line className="block overflow-hidden text-[var(--signal)]">
+          <span data-cta-line className="block overflow-hidden text-signal">
             <span className="inline-block translate-y-[110%]">Ship the page.</span>
           </span>
         </h2>
         <p
           data-cta-copy
-          className="max-w-lg text-base leading-relaxed text-[var(--muted)] opacity-0"
+          className="max-w-lg text-base leading-relaxed text-muted opacity-0"
         >
           One portfolio per account. Prebuilt sections. Strict palettes. Publish on
           your path — no billing in the MVP.

@@ -14,11 +14,11 @@ export function Field({
 }) {
   return (
     <label className="flex w-full flex-col gap-2 text-left">
-      <span className="text-xs tracking-[0.18em] text-[var(--muted)] uppercase">
+      <span className="text-xs tracking-[0.18em] text-muted uppercase">
         {label}
       </span>
       {children}
-      {hint ? <span className="text-xs text-[var(--muted)]">{hint}</span> : null}
+      {hint ? <span className="text-xs text-muted">{hint}</span> : null}
     </label>
   );
 }
@@ -30,7 +30,7 @@ export function FormInput({
   return (
     <input
       className={cn(
-        "w-full rounded-xl border border-[color:var(--line)] bg-[var(--panel)] px-4 py-3 text-[var(--foam)] outline-none transition focus:border-[color:var(--signal)]",
+        "w-full rounded-xl border border-line bg-panel px-4 py-3 text-foam outline-none transition focus:border-signal",
         className,
       )}
       {...props}
@@ -45,7 +45,7 @@ export function FormTextarea({
   return (
     <textarea
       className={cn(
-        "min-h-28 w-full rounded-xl border border-[color:var(--line)] bg-[var(--panel)] px-4 py-3 text-[var(--foam)] outline-none transition focus:border-[color:var(--signal)]",
+        "min-h-28 w-full rounded-xl border border-line bg-panel px-4 py-3 text-foam outline-none transition focus:border-signal",
         className,
       )}
       {...props}
@@ -73,7 +73,7 @@ export function SubmitButton({
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex items-center justify-center rounded-full bg-[var(--signal)] px-6 py-3 text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--signal-soft)] disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex items-center justify-center rounded-full bg-signal px-6 py-3 text-sm font-semibold text-ink transition hover:bg-signal-soft disabled:cursor-not-allowed disabled:opacity-60"
     >
       {pending ? "Working…" : children}
     </button>

@@ -5,16 +5,16 @@ export function SectionsGallery() {
     <section
       id="sections"
       data-sections
-      className="relative overflow-hidden bg-[var(--panel)] py-24 md:py-32"
+      className="relative overflow-hidden bg-panel py-24 md:py-32"
     >
-      <div className="mx-auto mb-12 max-w-[1400px] px-5 md:mb-16 md:px-8">
-        <p className="mb-4 text-xs tracking-[0.28em] text-[var(--signal)] uppercase">
+      <div className="mx-auto mb-12 max-w-site px-5 md:mb-16 md:px-8">
+        <p className="mb-4 text-xs tracking-[0.28em] text-signal uppercase">
           Sections
         </p>
-        <h2 className="max-w-3xl font-[family-name:var(--font-display)] text-[clamp(2.2rem,5.5vw,4.4rem)] leading-[0.98] font-semibold tracking-[-0.04em] text-[var(--foam)]">
+        <h2 className="max-w-3xl font-display text-[clamp(2.2rem,5.5vw,4.4rem)] leading-[0.98] font-semibold tracking-[-0.04em] text-foam">
           Prebuilt blocks. No custom section chaos.
         </h2>
-        <p className="mt-5 max-w-xl text-base text-[var(--muted)]">
+        <p className="mt-5 max-w-xl text-base text-muted">
           <span className="md:hidden">Swipe sideways through the section types you can ship on day one.</span>
           <span className="hidden md:inline">
             Scroll sideways through the exact section types you can ship on day one.
@@ -35,7 +35,7 @@ export function SectionsGallery() {
               <li
                 key={section.type}
                 data-section-card
-                className="relative flex h-[400px] w-[min(78vw,320px)] shrink-0 snap-center flex-col justify-between overflow-hidden rounded-[1.5rem] border border-[color:var(--line)] bg-[var(--ink)] p-6 md:h-[520px] md:w-[380px] md:p-9"
+                className="relative flex h-[400px] w-[min(78vw,320px)] shrink-0 snap-center flex-col justify-between overflow-hidden rounded-[1.5rem] border border-line bg-ink p-6 md:h-[520px] md:w-[380px] md:p-9"
               >
                 <div
                   aria-hidden
@@ -45,18 +45,18 @@ export function SectionsGallery() {
                   }}
                 />
                 <div className="relative z-10 flex items-start justify-between gap-3">
-                  <span className="font-[family-name:var(--font-display)] text-xs tracking-[0.24em] text-[var(--signal)]">
+                  <span className="font-display text-xs tracking-[0.24em] text-signal">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="text-xs tracking-[0.18em] text-[var(--muted)] uppercase">
+                  <span className="text-xs tracking-[0.18em] text-muted uppercase">
                     Block
                   </span>
                 </div>
                 <div className="relative z-10">
-                  <h3 className="font-[family-name:var(--font-display)] text-3xl tracking-[-0.04em] text-[var(--foam)] md:text-5xl">
+                  <h3 className="font-display text-3xl tracking-[-0.04em] text-foam md:text-5xl">
                     {section.type}
                   </h3>
-                  <p className="mt-4 max-w-[16rem] text-sm leading-relaxed text-[var(--muted)]">
+                  <p className="mt-4 max-w-[16rem] text-sm leading-relaxed text-muted">
                     {section.hint}
                   </p>
                 </div>
