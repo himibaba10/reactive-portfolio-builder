@@ -12,6 +12,7 @@ Keep implementation plans aligned with Locked MVP rules in root `AGENTS.md` and 
 
 - Call out in-scope vs out-of-scope explicitly
 - Prefer phased milestones: Auth → Portfolio CRUD → Sections editor → Public `/{slug}` → Polish
+- Server is **Next.js only** (Route Handlers / Server Actions) — no Express package
 - Name collections, routes, and validation rules before coding
 - Do not expand into billing, OAuth, custom domains, or custom sections unless the user changes product scope
 

@@ -14,16 +14,14 @@ This repo is set up for Cursor agents. After `git pull`, open the project in Cur
 
 ## Stack
 
-- **web** — Next.js (App Router), Tailwind CSS, GSAP, shadcn-ready primitives
-- **api** — Express + Mongoose (stub health route for now)
+- **web** — Next.js (App Router) for UI + server (Route Handlers / Server Actions)
 - **db** — MongoDB Atlas (wired in a later milestone)
 
 ## Apps
 
 ```bash
 pnpm install
-pnpm dev:web   # http://localhost:3000
-pnpm dev:api   # http://localhost:4000/health
+pnpm dev   # http://localhost:3000
 ```
 
 ## Current milestone

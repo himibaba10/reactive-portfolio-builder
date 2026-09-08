@@ -13,12 +13,12 @@ Email/password signup + login + logout + verify email + forgot/reset password + 
 
 ## Steps
 
-1. Add Mongoose `User` model per `.cursor/rules/api.mdc`
-2. Wire Express auth routes + httpOnly cookie session/JWT
+1. Add Mongoose `User` model in `web/` (server-only module)
+2. Wire Next.js Route Handlers (or Server Actions) + httpOnly cookie session/JWT
 3. Add Next.js pages: `/signup`, `/login`, `/forgot-password`, `/reset-password`, `/verify`
 4. Protect future `/dashboard` and `/editor` behind auth
 5. Soft-delete sets `deletedAt` and blocks login; free portfolio slug
 
 ## Do not include
 
-OAuth, magic link, billing gates, multi-tenant orgs.
+OAuth, magic link, billing gates, multi-tenant orgs, a separate Express API.

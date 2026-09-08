@@ -23,15 +23,14 @@ Read this file first in every new chat. It is the source of truth for product, a
 
 Sign up → verify email → create portfolio (title + slug + palette) → compose sections → publish → live at `/{slug}` → edit / change slug / unpublish / delete portfolio · soft-delete account
 
-## Monorepo layout
+## Repo layout
 
 ```text
 /
   AGENTS.md                 ← you are here
   .cursor/rules/            ← scoped Cursor rules (.mdc)
   .cursor/agents/           ← specialist subagents
-  web/                      ← Next.js 16 App Router + Tailwind 4 + GSAP
-  api/                      ← Express + Mongoose (health stub today)
+  web/                      ← Next.js 16 App Router (UI + server)
   package.json              ← pnpm workspace root
 ```
 
@@ -39,10 +38,10 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
 
 | Layer | Choice |
 | --- | --- |
-| Frontend | Next.js (App Router), React 19, Tailwind CSS 4, GSAP + `@gsap/react`, shadcn-ready primitives |
-| Backend | Express.js + Mongoose |
+| App | Next.js (App Router) — UI + Route Handlers / Server Actions |
+| UI | React 19, Tailwind CSS 4, GSAP + `@gsap/react`, shadcn-ready primitives |
 | DB | MongoDB Atlas (not wired yet) |
-| Hosting (planned) | Web → Vercel · API → Railway/Render · DB → Atlas |
+| Hosting (planned) | Vercel · DB → Atlas |
 
 ## Current shipped milestone
 
@@ -53,15 +52,12 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
 - Animations: preloader, hero line reveal, marquee, desktop pinned horizontal sections gallery, process/palette staggers, CTA reveal, magnetic buttons (fine pointer only)
 - Mobile: native swipe for sections gallery (no ScrollTrigger pin under 768px)
 
-**API:** `GET /health` stub only
-
 ## Commands
 
 ```bash
 pnpm install
-pnpm dev:web   # http://localhost:3000
-pnpm dev:api   # http://localhost:4000/health
-pnpm --filter web build
+pnpm dev       # http://localhost:3000
+pnpm build
 ```
 
 ## Agent priorities
@@ -70,7 +66,8 @@ pnpm --filter web build
 2. Keep components **composed** (small section files, thin motion islands)
 3. Follow the design system in `.cursor/rules/design-system.mdc`
 4. Do not invent product features that violate Locked MVP rules
-5. When adding auth/portfolio later, keep one-portfolio + prebuilt sections + 5-token presets
+5. Server logic lives in Next.js (`web/src/app/api`, Server Actions) — **no separate Express app**
+6. When adding auth/portfolio later, keep one-portfolio + prebuilt sections + 5-token presets
 
 ## Where details live
 
@@ -78,7 +75,7 @@ pnpm --filter web build
 | --- | --- |
 | Design tokens / landing UI rules | `.cursor/rules/design-system.mdc` |
 | Frontend patterns | `.cursor/rules/frontend.mdc` + `web/AGENTS.md` |
-| API / data model (planned) | `.cursor/rules/api.mdc` |
+| Server / data model (planned) | `.cursor/rules/api.mdc` |
 | Product always-on | `.cursor/rules/product.mdc` |
 | Landing motion specialist | `.cursor/agents/landing-motion.md` |
 | Frontend QA specialist | `.cursor/agents/frontend-qa.md` |
