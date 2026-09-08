@@ -1,3 +1,4 @@
+import { Calendar } from "lucide-react";
 import type { PortfolioSection } from "@/lib/api-client";
 
 export type PortfolioMeta = {
@@ -18,9 +19,52 @@ export type SectionProps = {
 
 export function SectionEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-xs tracking-[0.28em] text-(--p-accent) uppercase">
+    <p className="inline-flex items-center gap-2 text-[11px] tracking-[0.28em] text-(--p-accent) uppercase">
+      <span
+        aria-hidden
+        className="h-1.5 w-1.5 rounded-full bg-(--p-accent) shadow-[0_0_0_4px_color-mix(in_oklab,var(--p-accent)_22%,transparent)]"
+      />
       {children}
-    </h2>
+    </p>
+  );
+}
+
+export function SectionHeader({
+  eyebrow,
+  headline,
+  showEyebrow = true,
+  showHeadline = true,
+  className = "",
+}: {
+  eyebrow?: string;
+  headline?: string;
+  showEyebrow?: boolean;
+  showHeadline?: boolean;
+  className?: string;
+}) {
+  const hasEyebrow = showEyebrow && Boolean(eyebrow);
+  const hasHeadline = showHeadline && Boolean(headline);
+  if (!hasEyebrow && !hasHeadline) return null;
+
+  return (
+    <div className={`space-y-3 ${className}`}>
+      {hasEyebrow ? <SectionEyebrow>{eyebrow}</SectionEyebrow> : null}
+      {hasHeadline ? (
+        <h3 className="max-w-3xl font-display text-[clamp(1.75rem,3.8vw,2.75rem)] leading-[0.95] tracking-[-0.04em]">
+          {headline}
+        </h3>
+      ) : null}
+    </div>
+  );
+}
+
+export function PeriodBadge({ children }: { children: React.ReactNode }) {
+  if (!children) return null;
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/5 px-3 py-1 text-[11px] tracking-[0.12em] text-white/55 uppercase">
+      <Calendar className="size-3 opacity-70" aria-hidden />
+      {children}
+    </span>
   );
 }
 

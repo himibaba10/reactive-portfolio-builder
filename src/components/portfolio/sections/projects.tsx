@@ -1,4 +1,4 @@
-import { SectionEyebrow, asRecordArray, type SectionProps } from "./shared";
+import { SectionHeader, asRecordArray, type SectionProps } from "./shared";
 import { PortfolioImage } from "./portfolio-image";
 
 type ProjectsFlags = {
@@ -23,21 +23,6 @@ function readProjects(data: Record<string, unknown>): ProjectsFlags {
     showDescriptions: data.showDescriptions !== false,
     showLinks: data.showLinks !== false,
   };
-}
-
-function ProjectsHeader({ projects }: { projects: ProjectsFlags }) {
-  return (
-    <div className="space-y-3">
-      {projects.showEyebrow && projects.eyebrow ? (
-        <SectionEyebrow>{projects.eyebrow}</SectionEyebrow>
-      ) : null}
-      {projects.showHeadline && projects.headline ? (
-        <h3 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] leading-[0.95] tracking-[-0.04em]">
-          {projects.headline}
-        </h3>
-      ) : null}
-    </div>
-  );
 }
 
 function ProjectCover({
@@ -99,12 +84,20 @@ export function ProjectsSection({ section }: SectionProps) {
     items.length === 0 ? (
       <p className="text-sm text-white/50">No projects yet.</p>
     ) : null;
+  const header = (
+    <SectionHeader
+      eyebrow={projects.eyebrow}
+      headline={projects.headline}
+      showEyebrow={projects.showEyebrow}
+      showHeadline={projects.showHeadline}
+    />
+  );
 
   // 1 — Stack cards
   if (variant === 1) {
     return (
       <section id="projects" className="space-y-6">
-        <ProjectsHeader projects={projects} />
+        {header}
         {empty || (
           <div className="grid gap-4">
             {items.map((item, i) => (
@@ -140,7 +133,7 @@ export function ProjectsSection({ section }: SectionProps) {
   if (variant === 2) {
     return (
       <section id="projects" className="space-y-6">
-        <ProjectsHeader projects={projects} />
+        {header}
         {empty || (
           <div className="grid gap-4 md:grid-cols-2">
             {items.map((item, i) => (
@@ -178,7 +171,7 @@ export function ProjectsSection({ section }: SectionProps) {
   if (variant === 3) {
     return (
       <section id="projects" className="space-y-6">
-        <ProjectsHeader projects={projects} />
+        {header}
         {empty || (
           <div className="divide-y divide-white/10 border-y border-white/10">
             {items.map((item, i) => (
@@ -225,7 +218,7 @@ export function ProjectsSection({ section }: SectionProps) {
   if (variant === 4) {
     return (
       <section id="projects" className="space-y-6">
-        <ProjectsHeader projects={projects} />
+        {header}
         {empty || (
           <div className="space-y-4">
             {items.map((item, i) => (
@@ -271,7 +264,7 @@ export function ProjectsSection({ section }: SectionProps) {
     const [featured, ...rest] = items;
     return (
       <section id="projects" className="space-y-6">
-        <ProjectsHeader projects={projects} />
+        {header}
         {empty || (
           <div className="space-y-4">
             {featured ? (
@@ -338,7 +331,7 @@ export function ProjectsSection({ section }: SectionProps) {
   // 6 — Image mosaic with overlay titles
   return (
     <section id="projects" className="space-y-6">
-      <ProjectsHeader projects={projects} />
+      {header}
       {empty || (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, i) => (

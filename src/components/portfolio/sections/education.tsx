@@ -1,5 +1,11 @@
-import { SectionEyebrow, asRecordArray, type SectionProps } from "./shared";
+import {
+  PeriodBadge,
+  SectionHeader,
+  asRecordArray,
+  type SectionProps,
+} from "./shared";
 import { PortfolioImage } from "./portfolio-image";
+import { GraduationCap } from "lucide-react";
 
 type EduFlags = {
   eyebrow: string;
@@ -25,43 +31,38 @@ function readEdu(data: Record<string, unknown>): EduFlags {
   };
 }
 
-function EduHeader({ edu }: { edu: EduFlags }) {
-  return (
-    <div className="space-y-3">
-      {edu.showEyebrow && edu.eyebrow ? (
-        <SectionEyebrow>{edu.eyebrow}</SectionEyebrow>
-      ) : null}
-      {edu.showHeadline && edu.headline ? (
-        <h3 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] leading-[0.95] tracking-[-0.04em]">
-          {edu.headline}
-        </h3>
-      ) : null}
-    </div>
-  );
-}
-
 function SchoolMark({
   url,
   alt,
   enabled,
-  className = "h-10 w-10",
+  className = "size-11",
 }: {
   url: unknown;
   alt: string;
   enabled: boolean;
   className?: string;
 }) {
-  if (!enabled || !url) return null;
+  if (!enabled) return null;
+  if (url) {
+    return (
+      <div
+        className={`${className} shrink-0 overflow-hidden rounded-xl border border-white/12 bg-black/20`}
+      >
+        <PortfolioImage
+          src={String(url)}
+          alt={alt}
+          className="h-full w-full object-cover"
+          sizes="48px"
+        />
+      </div>
+    );
+  }
   return (
     <div
-      className={`${className} shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black/20`}
+      className={`${className} flex shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/5 text-(--p-accent)`}
+      aria-hidden
     >
-      <PortfolioImage
-        src={String(url)}
-        alt={alt}
-        className="h-full w-full object-cover"
-        sizes="48px"
-      />
+      <GraduationCap className="size-4 opacity-80" />
     </div>
   );
 }
@@ -73,12 +74,20 @@ export function EducationSection({ section }: SectionProps) {
   const empty = !items.length ? (
     <p className="text-sm text-white/50">No education listed.</p>
   ) : null;
+  const header = (
+    <SectionHeader
+      eyebrow={edu.eyebrow}
+      headline={edu.headline}
+      showEyebrow={edu.showEyebrow}
+      showHeadline={edu.showHeadline}
+    />
+  );
 
   // 1 — Simple stack
   if (variant === 1) {
     return (
       <section id="education" className="space-y-6">
-        <EduHeader edu={edu} />
+        {header}
         {empty || (
           <div className="space-y-5">
             {items.map((item, i) => (
@@ -111,7 +120,7 @@ export function EducationSection({ section }: SectionProps) {
   if (variant === 2) {
     return (
       <section id="education" className="space-y-6">
-        <EduHeader edu={edu} />
+        {header}
         {empty || (
           <div className="grid gap-3 sm:grid-cols-2">
             {items.map((item, i) => (
@@ -148,7 +157,7 @@ export function EducationSection({ section }: SectionProps) {
   if (variant === 3) {
     return (
       <section id="education" className="space-y-6">
-        <EduHeader edu={edu} />
+        {header}
         {empty || (
           <div className="space-y-6 border-l border-white/15 pl-5">
             {items.map((item, i) => (
@@ -191,7 +200,7 @@ export function EducationSection({ section }: SectionProps) {
   if (variant === 4) {
     return (
       <section id="education" className="space-y-6">
-        <EduHeader edu={edu} />
+        {header}
         {empty || (
           <div className="divide-y divide-white/10 border-y border-white/10">
             {items.map((item, i) => (
@@ -236,7 +245,7 @@ export function EducationSection({ section }: SectionProps) {
           aria-hidden
           className="absolute top-0 bottom-0 left-0 w-1 rounded-full bg-(--p-accent)"
         />
-        <EduHeader edu={edu} />
+        {header}
         {empty || (
           <div className="space-y-5">
             {items.map((item, i) => (
@@ -270,7 +279,7 @@ export function EducationSection({ section }: SectionProps) {
   // 6 — Diploma panels
   return (
     <section id="education" className="space-y-6">
-      <EduHeader edu={edu} />
+      {header}
       {empty || (
         <div className="space-y-4">
           {items.map((item, i) => (

@@ -1,5 +1,11 @@
+import { Building2 } from "lucide-react";
 import { PortfolioImage } from "./portfolio-image";
-import { SectionEyebrow, asRecordArray, type SectionProps } from "./shared";
+import {
+  PeriodBadge,
+  SectionHeader,
+  asRecordArray,
+  type SectionProps,
+} from "./shared";
 
 type ExpFlags = {
   eyebrow: string;
@@ -25,43 +31,38 @@ function readExp(data: Record<string, unknown>): ExpFlags {
   };
 }
 
-function ExpHeader({ exp }: { exp: ExpFlags }) {
-  return (
-    <div className="space-y-3">
-      {exp.showEyebrow && exp.eyebrow ? (
-        <SectionEyebrow>{exp.eyebrow}</SectionEyebrow>
-      ) : null}
-      {exp.showHeadline && exp.headline ? (
-        <h3 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] leading-[0.95] tracking-[-0.04em]">
-          {exp.headline}
-        </h3>
-      ) : null}
-    </div>
-  );
-}
-
 function Mark({
   url,
   alt,
   enabled,
-  className = "h-10 w-10",
+  className = "size-11",
 }: {
   url: unknown;
   alt: string;
   enabled: boolean;
   className?: string;
 }) {
-  if (!enabled || !url) return null;
+  if (!enabled) return null;
+  if (url) {
+    return (
+      <div
+        className={`${className} shrink-0 overflow-hidden rounded-xl border border-white/12 bg-black/25`}
+      >
+        <PortfolioImage
+          src={String(url)}
+          alt={alt}
+          className="h-full w-full object-cover"
+          sizes="48px"
+        />
+      </div>
+    );
+  }
   return (
     <div
-      className={`${className} shrink-0 overflow-hidden rounded-lg border border-white/10 bg-black/20`}
+      className={`${className} flex shrink-0 items-center justify-center rounded-xl border border-white/12 bg-white/5 text-(--p-accent)`}
+      aria-hidden
     >
-      <PortfolioImage
-        src={String(url)}
-        alt={alt}
-        className="h-full w-full object-cover"
-        sizes="48px"
-      />
+      <Building2 className="size-4 opacity-80" />
     </div>
   );
 }
@@ -74,40 +75,66 @@ export function ExperienceSection({ section }: SectionProps) {
     <p className="text-sm text-white/50">No experience listed.</p>
   ) : null;
 
-  // 1 — Timeline rail
+  const header = (
+    <SectionHeader
+      eyebrow={exp.eyebrow}
+      headline={exp.headline}
+      showEyebrow={exp.showEyebrow}
+      showHeadline={exp.showHeadline}
+    />
+  );
+
+  // 1 — Premium timeline
   if (variant === 1) {
     return (
-      <section id="experience" className="space-y-6">
-        <ExpHeader exp={exp} />
+      <section id="experience" className="space-y-8">
+        {header}
         {empty || (
-          <div className="space-y-6 border-l border-white/15 pl-5">
+          <div className="relative ml-2 space-y-0 border-l border-(--p-accent)/35 pl-8 md:ml-3 md:pl-10">
+            <span
+              aria-hidden
+              className="absolute top-0 bottom-0 left-[-1px] w-px bg-linear-to-b from-(--p-accent) via-(--p-accent)/40 to-transparent"
+            />
             {items.map((item, i) => (
-              <article key={i} className="relative">
+              <article
+                key={i}
+                data-reveal-item
+                className="relative pb-10 last:pb-0"
+              >
                 <span
                   aria-hidden
-                  className="absolute top-1.5 left-[-1.4rem] h-2.5 w-2.5 rounded-full bg-(--p-accent)"
+                  className="absolute top-5 left-[-2.45rem] size-3.5 rounded-full border-2 border-(--p-secondary) bg-(--p-accent) shadow-[0_0_0_4px_color-mix(in_oklab,var(--p-accent)_25%,transparent)] md:left-[-2.95rem]"
                 />
-                <div className="flex items-start gap-3">
-                  <Mark
-                    url={item.imageUrl}
-                    alt={String(item.company || item.role || "")}
-                    enabled={exp.showImages}
-                  />
-                  <div>
-                    <h3 className="text-lg font-medium">
-                      {String(item.role || "")}
-                      {item.company ? ` · ${String(item.company)}` : ""}
-                    </h3>
-                    {exp.showPeriod && item.period ? (
-                      <p className="text-sm text-white/45">
-                        {String(item.period)}
-                      </p>
-                    ) : null}
-                    {exp.showDescription && item.description ? (
-                      <p className="mt-2 text-sm leading-relaxed text-white/75">
-                        {String(item.description)}
-                      </p>
-                    ) : null}
+                <div className="rounded-2xl border border-white/10 bg-black/20 p-5 transition hover:border-white/18 hover:bg-black/30 md:p-6">
+                  <div className="flex items-start gap-4">
+                    <Mark
+                      url={item.imageUrl}
+                      alt={String(item.company || item.role || "")}
+                      enabled={exp.showImages}
+                      className="size-12"
+                    />
+                    <div className="min-w-0 flex-1 space-y-3">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h3 className="font-display text-xl tracking-[-0.03em] md:text-2xl">
+                            {String(item.role || "")}
+                          </h3>
+                          {item.company ? (
+                            <p className="mt-1 text-sm font-medium text-(--p-accent)">
+                              {String(item.company)}
+                            </p>
+                          ) : null}
+                        </div>
+                        {exp.showPeriod && item.period ? (
+                          <PeriodBadge>{String(item.period)}</PeriodBadge>
+                        ) : null}
+                      </div>
+                      {exp.showDescription && item.description ? (
+                        <p className="max-w-2xl text-sm leading-relaxed text-white/70 md:text-[15px]">
+                          {String(item.description)}
+                        </p>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               </article>
@@ -121,40 +148,39 @@ export function ExperienceSection({ section }: SectionProps) {
   // 2 — Card stack
   if (variant === 2) {
     return (
-      <section id="experience" className="space-y-6">
-        <ExpHeader exp={exp} />
+      <section id="experience" className="space-y-8">
+        {header}
         {empty || (
-          <div className="grid gap-3">
+          <div className="grid gap-4">
             {items.map((item, i) => (
               <article
                 key={i}
-                className="rounded-2xl border border-white/10 bg-black/20 p-5"
+                data-reveal-item
+                className="group rounded-2xl border border-white/10 bg-black/20 p-5 transition hover:border-(--p-accent)/35 hover:bg-black/30 md:p-6"
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-4">
                   <Mark
                     url={item.imageUrl}
                     alt={String(item.company || item.role || "")}
                     enabled={exp.showImages}
-                    className="h-12 w-12"
+                    className="size-14"
                   />
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-0 flex-1 space-y-3">
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
-                      <h3 className="font-display text-xl tracking-[-0.03em]">
+                      <h3 className="font-display text-2xl tracking-[-0.03em]">
                         {String(item.role || "")}
                       </h3>
                       {exp.showPeriod && item.period ? (
-                        <span className="text-xs tracking-[0.14em] text-white/45 uppercase">
-                          {String(item.period)}
-                        </span>
+                        <PeriodBadge>{String(item.period)}</PeriodBadge>
                       ) : null}
                     </div>
                     {item.company ? (
-                      <p className="mt-1 text-sm text-(--p-accent)">
+                      <p className="text-sm text-(--p-accent)">
                         {String(item.company)}
                       </p>
                     ) : null}
                     {exp.showDescription && item.description ? (
-                      <p className="mt-3 text-sm leading-relaxed text-white/70">
+                      <p className="text-sm leading-relaxed text-white/70">
                         {String(item.description)}
                       </p>
                     ) : null}
@@ -171,38 +197,42 @@ export function ExperienceSection({ section }: SectionProps) {
   // 3 — Split role / meta
   if (variant === 3) {
     return (
-      <section id="experience" className="space-y-6">
-        <ExpHeader exp={exp} />
+      <section id="experience" className="space-y-8">
+        {header}
         {empty || (
           <div className="divide-y divide-white/10 border-y border-white/10">
             {items.map((item, i) => (
               <article
                 key={i}
-                className="grid gap-3 py-5 md:grid-cols-[1.2fr_0.8fr] md:gap-8"
+                data-reveal-item
+                className="grid gap-4 py-7 md:grid-cols-[1.2fr_0.8fr] md:gap-10"
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-4">
                   <Mark
                     url={item.imageUrl}
                     alt={String(item.company || item.role || "")}
                     enabled={exp.showImages}
+                    className="size-12"
                   />
                   <div>
-                    <h3 className="font-display text-2xl tracking-[-0.03em]">
+                    <h3 className="font-display text-2xl tracking-[-0.03em] md:text-3xl">
                       {String(item.role || "")}
                     </h3>
                     {item.company ? (
-                      <p className="mt-1 text-sm text-white/65">
+                      <p className="mt-2 text-sm text-white/65">
                         {String(item.company)}
                       </p>
                     ) : null}
                   </div>
                 </div>
-                <div className="md:text-right">
+                <div className="space-y-3 md:pt-1 md:text-right">
                   {exp.showPeriod && item.period ? (
-                    <p className="text-sm text-white/45">{String(item.period)}</p>
+                    <div className="md:flex md:justify-end">
+                      <PeriodBadge>{String(item.period)}</PeriodBadge>
+                    </div>
                   ) : null}
                   {exp.showDescription && item.description ? (
-                    <p className="mt-2 text-sm leading-relaxed text-white/70">
+                    <p className="text-sm leading-relaxed text-white/70">
                       {String(item.description)}
                     </p>
                   ) : null}
@@ -218,26 +248,27 @@ export function ExperienceSection({ section }: SectionProps) {
   // 4 — Compact rows
   if (variant === 4) {
     return (
-      <section id="experience" className="space-y-6">
-        <ExpHeader exp={exp} />
+      <section id="experience" className="space-y-8">
+        {header}
         {empty || (
-          <ul className="space-y-3">
+          <ul className="space-y-1">
             {items.map((item, i) => (
               <li
                 key={i}
-                className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3"
+                data-reveal-item
+                className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-transparent px-3 py-4 transition hover:border-white/10 hover:bg-white/5"
               >
                 <div className="flex items-center gap-3">
                   <Mark
                     url={item.imageUrl}
                     alt={String(item.company || item.role || "")}
                     enabled={exp.showImages}
-                    className="h-8 w-8"
+                    className="size-9"
                   />
                   <span className="text-base text-white/90">
-                    {String(item.role || "")}
+                    <span className="font-medium">{String(item.role || "")}</span>
                     {item.company ? (
-                      <span className="text-white/50">
+                      <span className="text-white/45">
                         {" "}
                         · {String(item.company)}
                       </span>
@@ -245,9 +276,7 @@ export function ExperienceSection({ section }: SectionProps) {
                   </span>
                 </div>
                 {exp.showPeriod && item.period ? (
-                  <span className="text-xs text-white/45">
-                    {String(item.period)}
-                  </span>
+                  <PeriodBadge>{String(item.period)}</PeriodBadge>
                 ) : null}
               </li>
             ))}
@@ -260,24 +289,24 @@ export function ExperienceSection({ section }: SectionProps) {
   // 5 — Numbered index
   if (variant === 5) {
     return (
-      <section id="experience" className="space-y-6">
-        <ExpHeader exp={exp} />
+      <section id="experience" className="space-y-8">
+        {header}
         {empty || (
-          <ol className="space-y-5">
+          <ol className="space-y-6">
             {items.map((item, i) => (
-              <li key={i} className="flex gap-4">
-                <span className="w-8 shrink-0 font-display text-sm text-(--p-accent)">
+              <li key={i} data-reveal-item className="flex gap-5">
+                <span className="mt-1 w-10 shrink-0 font-display text-sm text-(--p-accent)">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/15 p-5">
+                  <div className="flex items-start gap-4">
                     <Mark
                       url={item.imageUrl}
                       alt={String(item.company || item.role || "")}
                       enabled={exp.showImages}
                     />
-                    <div>
-                      <h3 className="text-lg font-medium">
+                    <div className="space-y-2">
+                      <h3 className="font-display text-xl tracking-[-0.03em]">
                         {String(item.role || "")}
                       </h3>
                       {item.company ? (
@@ -286,12 +315,10 @@ export function ExperienceSection({ section }: SectionProps) {
                         </p>
                       ) : null}
                       {exp.showPeriod && item.period ? (
-                        <p className="text-sm text-white/45">
-                          {String(item.period)}
-                        </p>
+                        <PeriodBadge>{String(item.period)}</PeriodBadge>
                       ) : null}
                       {exp.showDescription && item.description ? (
-                        <p className="mt-2 text-sm leading-relaxed text-white/75">
+                        <p className="pt-1 text-sm leading-relaxed text-white/70">
                           {String(item.description)}
                         </p>
                       ) : null}
@@ -308,37 +335,43 @@ export function ExperienceSection({ section }: SectionProps) {
 
   // 6 — Accent rail cards
   return (
-    <section id="experience" className="space-y-6">
-      <ExpHeader exp={exp} />
+    <section id="experience" className="space-y-8">
+      {header}
       {empty || (
         <div className="space-y-4">
           {items.map((item, i) => (
             <article
               key={i}
-              className="relative rounded-2xl border border-white/10 bg-black/15 py-5 pr-5 pl-6"
+              data-reveal-item
+              className="relative overflow-hidden rounded-2xl border border-white/10 bg-black/20 py-6 pr-6 pl-7"
             >
               <span
                 aria-hidden
-                className="absolute top-5 bottom-5 left-0 w-1 rounded-full bg-(--p-accent)"
+                className="absolute top-0 bottom-0 left-0 w-1.5 bg-(--p-accent)"
               />
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-4">
                 <Mark
                   url={item.imageUrl}
                   alt={String(item.company || item.role || "")}
                   enabled={exp.showImages}
+                  className="size-12"
                 />
-                <div>
-                  <h3 className="font-display text-xl tracking-[-0.03em]">
+                <div className="space-y-3">
+                  <h3 className="font-display text-xl tracking-[-0.03em] md:text-2xl">
                     {String(item.role || "")}
                   </h3>
-                  <p className="mt-1 text-sm text-white/60">
-                    {[item.company, exp.showPeriod ? item.period : null]
-                      .filter(Boolean)
-                      .map(String)
-                      .join(" · ")}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {item.company ? (
+                      <span className="text-sm text-white/65">
+                        {String(item.company)}
+                      </span>
+                    ) : null}
+                    {exp.showPeriod && item.period ? (
+                      <PeriodBadge>{String(item.period)}</PeriodBadge>
+                    ) : null}
+                  </div>
                   {exp.showDescription && item.description ? (
-                    <p className="mt-3 text-sm leading-relaxed text-white/75">
+                    <p className="max-w-2xl text-sm leading-relaxed text-white/70">
                       {String(item.description)}
                     </p>
                   ) : null}

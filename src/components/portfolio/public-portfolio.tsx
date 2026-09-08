@@ -62,10 +62,18 @@ export function PublicPortfolioView({
             ) : null}
             <div
               data-portfolio-body
-              className="mx-auto flex w-full max-w-[1270px] flex-1 flex-col gap-16 px-5 py-16 md:gap-20 md:px-8 md:py-24"
+              className="mx-auto flex w-full max-w-317.5 flex-1 flex-col gap-20 px-5 py-20 md:gap-28 md:px-8 md:py-28"
             >
-              {body.map((section) => (
-                <div key={section.id} data-reveal>
+              {body.map((section, index) => (
+                <div
+                  key={section.id}
+                  data-reveal
+                      className={
+                    index > 0
+                      ? "border-t border-white/10 pt-20 md:pt-28"
+                      : undefined
+                  }
+                >
                   <RenderPortfolioSection
                     section={section}
                     portfolio={meta}

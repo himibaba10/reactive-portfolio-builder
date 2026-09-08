@@ -7,6 +7,9 @@ import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 function revealTargets(block: HTMLElement): HTMLElement[] {
+  const items = gsap.utils.toArray<HTMLElement>("[data-reveal-item]", block);
+  if (items.length) return items;
+
   const section =
     block.matches("section, header, footer")
       ? block
@@ -55,17 +58,17 @@ export function PortfolioMotion() {
 
     blocks.forEach((block) => {
       const targets = revealTargets(block);
-      gsap.set(targets, { opacity: 0, y: 36 });
+      gsap.set(targets, { opacity: 0, y: 28 });
       gsap.to(targets, {
         opacity: 1,
         y: 0,
-        duration: 0.85,
-        stagger: 0.09,
+        duration: 0.8,
+        stagger: 0.1,
         ease: "power3.out",
         overwrite: "auto",
         scrollTrigger: {
           trigger: block,
-          start: "top 88%",
+          start: "top 86%",
           once: true,
         },
       });

@@ -1,8 +1,23 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { AppChrome } from '@/components/app/app-chrome';
+import { AboutLayoutPicker } from '@/components/editor/about-layout-picker';
+import { ContactLayoutPicker } from '@/components/editor/contact-layout-picker';
+import { CtaLayoutPicker } from '@/components/editor/cta-layout-picker';
+import { EducationLayoutPicker } from '@/components/editor/education-layout-picker';
+import { ExperienceLayoutPicker } from '@/components/editor/experience-layout-picker';
+import { HeroLayoutPicker } from '@/components/editor/hero-layout-picker';
+import { ProjectsLayoutPicker } from '@/components/editor/projects-layout-picker';
+import { SkillsLayoutPicker } from '@/components/editor/skills-layout-picker';
+import {
+  Field,
+  FormError,
+  FormInput,
+  FormTextarea,
+} from '@/components/ui/form';
+import { ImageField } from '@/components/ui/image-field';
+import { PalettePicker } from '@/components/ui/palette-picker';
+import { SlugField } from '@/components/ui/slug-field';
 import {
   api,
   ApiError,
@@ -10,7 +25,7 @@ import {
   type PortfolioSection,
   type SectionType,
   type User,
-} from "@/lib/api-client";
+} from '@/lib/api-client';
 import {
   clampSectionVariant,
   defaultSectionData,
@@ -19,26 +34,11 @@ import {
   SECTION_LABELS,
   SECTION_TYPES,
   sectionVariantCount,
-} from "@/lib/sections";
-import { isValidSlug, normalizeSlug } from "@/lib/slug";
-import { AppChrome } from "@/components/app/app-chrome";
-import {
-  Field,
-  FormError,
-  FormInput,
-  FormTextarea,
-} from "@/components/ui/form";
-import { SlugField } from "@/components/ui/slug-field";
-import { PalettePicker } from "@/components/ui/palette-picker";
-import { ImageField } from "@/components/ui/image-field";
-import { HeroLayoutPicker } from "@/components/editor/hero-layout-picker";
-import { AboutLayoutPicker } from "@/components/editor/about-layout-picker";
-import { SkillsLayoutPicker } from "@/components/editor/skills-layout-picker";
-import { ProjectsLayoutPicker } from "@/components/editor/projects-layout-picker";
-import { CtaLayoutPicker } from "@/components/editor/cta-layout-picker";
-import { ExperienceLayoutPicker } from "@/components/editor/experience-layout-picker";
-import { EducationLayoutPicker } from "@/components/editor/education-layout-picker";
-import { ContactLayoutPicker } from "@/components/editor/contact-layout-picker";
+} from '@/lib/sections';
+import { isValidSlug, normalizeSlug } from '@/lib/slug';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -55,9 +55,9 @@ export function EditorClient() {
   const [user, setUser] = useState<User | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [sections, setSections] = useState<PortfolioSection[]>([]);
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
-  const [paletteId, setPaletteId] = useState("signal");
+  const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState('');
+  const [paletteId, setPaletteId] = useState('signal');
   const [activeId, setActiveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -67,9 +67,9 @@ export function EditorClient() {
   useEffect(() => {
     (async () => {
       try {
-        const me = await api<{ user: User }>("/auth/me");
+        const me = await api<{ user: User }>('/auth/me');
         setUser(me.user);
-        const mine = await api<{ portfolio: Portfolio }>("/portfolios/me");
+        const mine = await api<{ portfolio: Portfolio }>('/portfolios/me');
         setPortfolio(mine.portfolio);
         setTitle(mine.portfolio.title);
         setSlug(mine.portfolio.slug);
@@ -79,14 +79,14 @@ export function EditorClient() {
         setActiveId(sorted[0]?.id ?? null);
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
-          router.replace("/login");
+          router.replace('/login');
           return;
         }
         if (err instanceof ApiError && err.status === 404) {
-          router.replace("/dashboard");
+          router.replace('/dashboard');
           return;
         }
-        setError(err instanceof Error ? err.message : "Failed to load editor");
+        setError(err instanceof Error ? err.message : 'Failed to load editor');
       } finally {
         setLoading(false);
       }
@@ -172,10 +172,10 @@ export function EditorClient() {
     try {
       const normalized = normalizeSlug(slug);
       if (!isValidSlug(normalized)) {
-        throw new Error("Invalid or reserved slug.");
+        throw new Error('Invalid or reserved slug.');
       }
-      const result = await api<{ portfolio: Portfolio }>("/portfolios/me", {
-        method: "PATCH",
+      const result = await api<{ portfolio: Portfolio }>('/portfolios/me', {
+        method: 'PATCH',
         body: {
           title,
           slug: normalized,
@@ -190,9 +190,9 @@ export function EditorClient() {
       setPortfolio(result.portfolio);
       setSlug(result.portfolio.slug);
       setSections(normalizeSections(result.portfolio.sections));
-      setMessage("Saved.");
+      setMessage('Saved.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Save failed");
+      setError(err instanceof Error ? err.message : 'Save failed');
     } finally {
       setSaving(false);
     }
@@ -202,25 +202,25 @@ export function EditorClient() {
     await save();
     try {
       const result = await api<{ portfolio: Portfolio }>(
-        "/portfolios/me/publish",
-        { method: "POST" },
+        '/portfolios/me/publish',
+        { method: 'POST' },
       );
       setPortfolio(result.portfolio);
-      setMessage("Published.");
+      setMessage('Published.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Publish failed");
+      setError(err instanceof Error ? err.message : 'Publish failed');
     }
   }
 
   if (loading) {
     return (
       <AppChrome>
-        <div className="animate-pulse space-y-4">
-          <div className="h-4 w-24 rounded bg-panel" />
-          <div className="h-10 w-48 rounded bg-panel" />
-          <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-            <div className="h-64 rounded-2xl bg-panel" />
-            <div className="h-64 rounded-2xl bg-panel" />
+        <div className='animate-pulse space-y-4'>
+          <div className='h-4 w-24 rounded bg-panel' />
+          <div className='h-10 w-48 rounded bg-panel' />
+          <div className='grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]'>
+            <div className='h-64 rounded-2xl bg-panel' />
+            <div className='h-64 rounded-2xl bg-panel' />
           </div>
         </div>
       </AppChrome>
@@ -230,10 +230,10 @@ export function EditorClient() {
   if (error && !portfolio) {
     return (
       <AppChrome>
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-6">
-          <h1 className="font-display text-2xl">Editor unavailable</h1>
-          <p className="mt-2 text-sm text-red-200">{error}</p>
-          <Link href="/dashboard" className="mt-4 inline-block text-signal">
+        <div className='rounded-2xl border border-red-500/30 bg-red-500/10 p-6'>
+          <h1 className='font-display text-2xl'>Editor unavailable</h1>
+          <p className='mt-2 text-sm text-red-200'>{error}</p>
+          <Link href='/dashboard' className='mt-4 inline-block text-signal'>
             Back to dashboard
           </Link>
         </div>
@@ -243,36 +243,36 @@ export function EditorClient() {
 
   return (
     <AppChrome email={user?.email}>
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className='flex flex-col gap-6'>
+        <div className='flex flex-wrap items-end justify-between gap-4'>
           <div>
-            <p className="text-xs tracking-[0.2em] text-signal uppercase">
+            <p className='text-xs tracking-[0.2em] text-signal uppercase'>
               Editor
             </p>
-            <h1 className="mt-2 font-display text-4xl tracking-[-0.04em]">
+            <h1 className='mt-2 font-display text-4xl tracking-[-0.04em]'>
               Compose
             </h1>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className='flex flex-wrap gap-3'>
             <button
-              type="button"
+              type='button'
               onClick={() => void save()}
               disabled={saving}
-              className="rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink disabled:opacity-60"
+              className='rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink disabled:opacity-60'
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? 'Saving…' : 'Save'}
             </button>
             <button
-              type="button"
+              type='button'
               onClick={() => void publish()}
-              className="rounded-full border border-line px-5 py-2.5 text-sm"
+              className='rounded-full border border-line px-5 py-2.5 text-sm'
             >
               Publish
             </button>
-            {portfolio?.status === "published" ? (
+            {portfolio?.status === 'published' ? (
               <Link
                 href={`/${portfolio.slug}`}
-                className="rounded-full border border-line px-5 py-2.5 text-sm"
+                className='rounded-full border border-line px-5 py-2.5 text-sm'
               >
                 View live
               </Link>
@@ -281,10 +281,10 @@ export function EditorClient() {
         </div>
 
         <FormError message={error} />
-        {message ? <p className="text-sm text-signal">{message}</p> : null}
+        {message ? <p className='text-sm text-signal'>{message}</p> : null}
 
-        <div className="grid gap-4 rounded-2xl border border-line bg-panel p-5 md:grid-cols-3">
-          <Field label="Title">
+        <div className='grid gap-4 rounded-2xl border border-line bg-panel p-5 md:grid-cols-3'>
+          <Field label='Title'>
             <FormInput
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -295,20 +295,20 @@ export function EditorClient() {
             onChange={setSlug}
             excludeCurrent={portfolio?.slug}
           />
-          <div className="flex w-full flex-col gap-2 text-left md:col-span-3">
-            <span className="text-xs tracking-[0.18em] text-muted uppercase">
+          <div className='flex w-full flex-col gap-2 text-left md:col-span-3'>
+            <span className='text-xs tracking-[0.18em] text-muted uppercase'>
               Palette
             </span>
             <PalettePicker value={paletteId} onChange={setPaletteId} />
           </div>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <aside className="rounded-2xl border border-line bg-panel p-4">
-            <p className="mb-3 text-xs tracking-[0.18em] text-muted uppercase">
+        <div className='grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]'>
+          <aside className='rounded-2xl border border-line bg-panel p-4'>
+            <p className='mb-3 text-xs tracking-[0.18em] text-muted uppercase'>
               Sections
             </p>
-            <ul className="flex flex-col gap-2">
+            <ul className='flex flex-col gap-2'>
               {[...sections]
                 .sort((a, b) => a.order - b.order)
                 .map((section) => {
@@ -318,39 +318,39 @@ export function EditorClient() {
                       <div
                         className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm ${
                           activeId === section.id
-                            ? "bg-ink text-foam"
-                            : "text-muted"
+                            ? 'bg-ink text-foam'
+                            : 'text-muted'
                         }`}
                       >
                         <button
-                          type="button"
-                          className="flex-1 text-left"
+                          type='button'
+                          className='flex-1 text-left'
                           onClick={() => setActiveId(section.id)}
                         >
                           {SECTION_LABELS[section.type]}
-                          {!section.visible ? " · hidden" : ""}
+                          {!section.visible ? ' · hidden' : ''}
                         </button>
                         {!pinned ? (
-                          <span className="flex gap-1 text-xs">
+                          <span className='flex gap-1 text-xs'>
                             <button
-                              type="button"
+                              type='button'
                               onClick={() => move(section.id, -1)}
-                              className="px-1"
-                              aria-label="Move up"
+                              className='px-1'
+                              aria-label='Move up'
                             >
                               ↑
                             </button>
                             <button
-                              type="button"
+                              type='button'
                               onClick={() => move(section.id, 1)}
-                              className="px-1"
-                              aria-label="Move down"
+                              className='px-1'
+                              aria-label='Move down'
                             >
                               ↓
                             </button>
                           </span>
                         ) : (
-                          <span className="text-[10px] tracking-wide text-muted uppercase">
+                          <span className='text-[10px] tracking-wide text-muted uppercase'>
                             pinned
                           </span>
                         )}
@@ -360,15 +360,15 @@ export function EditorClient() {
                 })}
             </ul>
             {missingTypes.length ? (
-              <div className="mt-4 border-t border-line pt-4">
-                <p className="mb-2 text-xs text-muted">Add section</p>
-                <div className="flex flex-wrap gap-2">
+              <div className='mt-4 border-t border-line pt-4'>
+                <p className='mb-2 text-xs text-muted'>Add section</p>
+                <div className='flex flex-wrap gap-2'>
                   {missingTypes.map((type) => (
                     <button
                       key={type}
-                      type="button"
+                      type='button'
                       onClick={() => addSection(type)}
-                      className="rounded-full border border-line px-3 py-1 text-xs"
+                      className='rounded-full border border-line px-3 py-1 text-xs'
                     >
                       {SECTION_LABELS[type]}
                     </button>
@@ -378,101 +378,101 @@ export function EditorClient() {
             ) : null}
           </aside>
 
-          <section className="rounded-2xl border border-line bg-panel p-5">
+          <section className='rounded-2xl border border-line bg-panel p-5'>
             {!active ? (
-              <p className="text-muted">Select a section.</p>
+              <p className='text-muted'>Select a section.</p>
             ) : (
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="font-display text-2xl">
+              <div className='flex flex-col gap-4'>
+                <div className='flex flex-wrap items-center justify-between gap-3'>
+                  <h2 className='font-display text-2xl'>
                     {SECTION_LABELS[active.type]}
                   </h2>
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => toggleVisible(active.id)}
-                      className="text-sm text-muted hover:text-foam"
+                      className='text-sm text-muted hover:text-foam'
                     >
-                      {active.visible ? "Hide" : "Show"}
+                      {active.visible ? 'Hide' : 'Show'}
                     </button>
                     <button
-                      type="button"
+                      type='button'
                       onClick={() => removeSection(active.id)}
-                      className="text-sm text-red-300"
+                      className='text-sm text-red-300'
                     >
                       Remove
                     </button>
                   </div>
                 </div>
-                {active.type === "Hero" ? (
+                {active.type === 'Hero' ? (
                   <HeroLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "About" ? (
+                ) : active.type === 'About' ? (
                   <AboutLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "Skills" ? (
+                ) : active.type === 'Skills' ? (
                   <SkillsLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "Projects" ? (
+                ) : active.type === 'Projects' ? (
                   <ProjectsLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "CTA" ? (
+                ) : active.type === 'CTA' ? (
                   <CtaLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "Experience" ? (
+                ) : active.type === 'Experience' ? (
                   <ExperienceLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "Education" ? (
+                ) : active.type === 'Education' ? (
                   <EducationLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
-                ) : active.type === "Contact" ? (
+                ) : active.type === 'Contact' ? (
                   <ContactLayoutPicker
                     section={active}
                     paletteId={paletteId}
-                    portfolioTitle={title || "Portfolio"}
-                    portfolioSlug={slug || "your-slug"}
+                    portfolioTitle={title || 'Portfolio'}
+                    portfolioSlug={slug || 'your-slug'}
                     value={active.variant}
                     onChange={(v) => setVariant(active.id, v)}
                   />
@@ -504,19 +504,19 @@ function LayoutPicker({
 }) {
   const options = Array.from({ length: count }, (_, i) => i + 1);
   return (
-    <Field label="Layout">
+    <Field label='Layout'>
       <div
-        className={`grid gap-2 ${count > 5 ? "grid-cols-3 sm:grid-cols-6" : "grid-cols-5"}`}
+        className={`grid gap-2 ${count > 5 ? 'grid-cols-3 sm:grid-cols-6' : 'grid-cols-5'}`}
       >
         {options.map((n) => (
           <button
             key={n}
-            type="button"
+            type='button'
             onClick={() => onChange(n)}
             className={`flex aspect-4/3 flex-col items-center justify-center gap-1 rounded-xl border text-xs transition ${
               value === n
-                ? "border-signal bg-ink text-foam"
-                : "border-line text-muted hover:border-foam/40"
+                ? 'border-signal bg-ink text-foam'
+                : 'border-line text-muted hover:border-foam/40'
             }`}
             aria-pressed={value === n}
             aria-label={`Layout ${n}`}
@@ -533,12 +533,12 @@ function LayoutPicker({
 function LayoutThumb({ variant }: { variant: number }) {
   if (variant === 2) {
     return (
-      <span aria-hidden className="flex h-6 w-8 gap-0.5 opacity-70">
-        <span className="flex flex-1 flex-col justify-end gap-0.5">
-          <span className="h-1 w-full rounded-sm bg-current" />
-          <span className="h-1 w-2/3 rounded-sm bg-current opacity-50" />
+      <span aria-hidden className='flex h-6 w-8 gap-0.5 opacity-70'>
+        <span className='flex flex-1 flex-col justify-end gap-0.5'>
+          <span className='h-1 w-full rounded-sm bg-current' />
+          <span className='h-1 w-2/3 rounded-sm bg-current opacity-50' />
         </span>
-        <span className="w-2.5 rounded-sm bg-current opacity-40" />
+        <span className='w-2.5 rounded-sm bg-current opacity-40' />
       </span>
     );
   }
@@ -546,9 +546,9 @@ function LayoutThumb({ variant }: { variant: number }) {
     return (
       <span
         aria-hidden
-        className="flex h-6 w-8 items-end rounded-sm border border-current/40 p-0.5 opacity-70"
+        className='flex h-6 w-8 items-end rounded-sm border border-current/40 p-0.5 opacity-70'
       >
-        <span className="h-1 w-full rounded-sm bg-current" />
+        <span className='h-1 w-full rounded-sm bg-current' />
       </span>
     );
   }
@@ -556,45 +556,45 @@ function LayoutThumb({ variant }: { variant: number }) {
     return (
       <span
         aria-hidden
-        className="flex h-6 w-8 flex-col items-center justify-center gap-0.5 opacity-70"
+        className='flex h-6 w-8 flex-col items-center justify-center gap-0.5 opacity-70'
       >
-        <span className="h-1.5 w-1.5 rounded-full bg-current" />
-        <span className="h-1 w-full rounded-sm bg-current" />
-        <span className="h-1 w-1/2 rounded-sm bg-current opacity-50" />
+        <span className='h-1.5 w-1.5 rounded-full bg-current' />
+        <span className='h-1 w-full rounded-sm bg-current' />
+        <span className='h-1 w-1/2 rounded-sm bg-current opacity-50' />
       </span>
     );
   }
   if (variant === 5) {
     return (
-      <span aria-hidden className="flex h-6 w-8 gap-0.5 opacity-70">
-        <span className="flex flex-1 flex-col gap-0.5">
-          <span className="h-1 w-full rounded-sm bg-current" />
-          <span className="h-1 w-3/4 rounded-sm bg-current opacity-50" />
-          <span className="h-1 w-1/2 rounded-sm bg-current opacity-30" />
+      <span aria-hidden className='flex h-6 w-8 gap-0.5 opacity-70'>
+        <span className='flex flex-1 flex-col gap-0.5'>
+          <span className='h-1 w-full rounded-sm bg-current' />
+          <span className='h-1 w-3/4 rounded-sm bg-current opacity-50' />
+          <span className='h-1 w-1/2 rounded-sm bg-current opacity-30' />
         </span>
-        <span className="mt-1 h-4 w-2.5 rounded-sm bg-current opacity-35" />
+        <span className='mt-1 h-4 w-2.5 rounded-sm bg-current opacity-35' />
       </span>
     );
   }
   if (variant === 6) {
     return (
-      <span aria-hidden className="flex h-6 w-8 flex-col gap-0.5 opacity-70">
-        <span className="flex items-start justify-between gap-0.5">
-          <span className="h-2 w-4 rounded-sm bg-current" />
-          <span className="h-3 w-2 rounded-sm bg-current opacity-40" />
+      <span aria-hidden className='flex h-6 w-8 flex-col gap-0.5 opacity-70'>
+        <span className='flex items-start justify-between gap-0.5'>
+          <span className='h-2 w-4 rounded-sm bg-current' />
+          <span className='h-3 w-2 rounded-sm bg-current opacity-40' />
         </span>
-        <span className="h-1 w-full rounded-sm bg-current opacity-50" />
+        <span className='h-1 w-full rounded-sm bg-current opacity-50' />
       </span>
     );
   }
   return (
     <span
       aria-hidden
-      className="flex h-6 w-8 flex-col items-start gap-0.5 opacity-70"
+      className='flex h-6 w-8 flex-col items-start gap-0.5 opacity-70'
     >
-      <span className="h-1 w-full rounded-sm bg-current" />
-      <span className="h-1 w-2/3 rounded-sm bg-current opacity-60" />
-      <span className="h-1 w-1/2 rounded-sm bg-current opacity-40" />
+      <span className='h-1 w-full rounded-sm bg-current' />
+      <span className='h-1 w-2/3 rounded-sm bg-current opacity-60' />
+      <span className='h-1 w-1/2 rounded-sm bg-current opacity-40' />
     </span>
   );
 }
@@ -611,17 +611,17 @@ function OptionalField({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-2">
-      <label className="flex items-center gap-2.5 text-sm text-foam">
+    <div className='space-y-2'>
+      <label className='flex items-center gap-2.5 text-sm text-foam'>
         <input
-          type="checkbox"
+          type='checkbox'
           checked={enabled}
           onChange={(e) => onEnabledChange(e.target.checked)}
-          className="size-3.5 shrink-0 accent-[var(--signal,#d6ff3f)]"
+          className='size-3.5 shrink-0 accent-(--signal,#d6ff3f)'
         />
         <span>{label}</span>
       </label>
-      <div className={enabled ? undefined : "pointer-events-none opacity-40"}>
+      <div className={enabled ? undefined : 'pointer-events-none opacity-40'}>
         {children}
       </div>
     </div>
@@ -637,29 +637,30 @@ function SectionFields({
 }) {
   const data = section.data;
 
-  if (section.type === "Header") {
+  if (section.type === 'Header') {
     return (
       <>
         <ImageField
-          label="Logo"
-          valueUrl={String(data.logoUrl || "")}
-          valuePublicId={String(data.logoPublicId || "")}
+          label='Logo'
+          valueUrl={String(data.logoUrl || '')}
+          valuePublicId={String(data.logoPublicId || '')}
           onChange={(img) =>
             onChange({
               ...data,
-              logoUrl: img?.url || "",
-              logoPublicId: img?.publicId || "",
+              logoUrl: img?.url || '',
+              logoPublicId: img?.publicId || '',
             })
           }
         />
-        <p className="text-xs text-muted">
-          Logo on the left. Visible section names link on the right automatically.
+        <p className='text-xs text-muted'>
+          Logo on the left. Visible section names link on the right
+          automatically.
         </p>
       </>
     );
   }
 
-  if (section.type === "Hero") {
+  if (section.type === 'Hero') {
     const showName = data.showName !== false;
     const showTagline = data.showTagline !== false;
     const showDescription = data.showDescription !== false;
@@ -670,26 +671,26 @@ function SectionFields({
     return (
       <>
         <OptionalField
-          label="Photo"
+          label='Photo'
           enabled={showImage}
           onEnabledChange={(v) => onChange({ ...data, showImage: v })}
         >
           <ImageField
-            label=""
-            valueUrl={String(data.imageUrl || "")}
-            valuePublicId={String(data.imagePublicId || "")}
+            label=''
+            valueUrl={String(data.imageUrl || '')}
+            valuePublicId={String(data.imagePublicId || '')}
             onChange={(img) =>
               onChange({
                 ...data,
-                imageUrl: img?.url || "",
-                imagePublicId: img?.publicId || "",
+                imageUrl: img?.url || '',
+                imagePublicId: img?.publicId || '',
               })
             }
           />
-          <div className="mt-3">
-            <Field label="Image alt">
+          <div className='mt-3'>
+            <Field label='Image alt'>
               <FormInput
-                value={String(data.imageAlt || "")}
+                value={String(data.imageAlt || '')}
                 onChange={(e) =>
                   onChange({ ...data, imageAlt: e.target.value })
                 }
@@ -699,69 +700,67 @@ function SectionFields({
           </div>
         </OptionalField>
         <OptionalField
-          label="Name"
+          label='Name'
           enabled={showName}
           onEnabledChange={(v) => onChange({ ...data, showName: v })}
         >
           <FormInput
-            value={String(data.name || "")}
+            value={String(data.name || '')}
             onChange={(e) => onChange({ ...data, name: e.target.value })}
             disabled={!showName}
           />
         </OptionalField>
         <OptionalField
-          label="Tagline"
+          label='Tagline'
           enabled={showTagline}
           onEnabledChange={(v) => onChange({ ...data, showTagline: v })}
         >
           <FormInput
-            value={String(data.tagline || "")}
+            value={String(data.tagline || '')}
             onChange={(e) => onChange({ ...data, tagline: e.target.value })}
             disabled={!showTagline}
           />
         </OptionalField>
         <OptionalField
-          label="Description"
+          label='Description'
           enabled={showDescription}
           onEnabledChange={(v) => onChange({ ...data, showDescription: v })}
         >
           <FormTextarea
-            value={String(data.description || "")}
-            onChange={(e) =>
-              onChange({ ...data, description: e.target.value })
-            }
+            value={String(data.description || '')}
+            onChange={(e) => onChange({ ...data, description: e.target.value })}
             disabled={!showDescription}
-            placeholder="A short paragraph under the tagline"
+            placeholder='A short paragraph under the tagline'
           />
         </OptionalField>
         <OptionalField
-          label="CTA label"
+          label='CTA label'
           enabled={showCtaLabel}
           onEnabledChange={(v) => onChange({ ...data, showCtaLabel: v })}
         >
           <FormInput
-            value={String(data.ctaLabel || "")}
+            value={String(data.ctaLabel || '')}
             onChange={(e) => onChange({ ...data, ctaLabel: e.target.value })}
             disabled={!showCtaLabel}
           />
         </OptionalField>
         <OptionalField
-          label="CTA href"
+          label='CTA href'
           enabled={showCtaHref}
           onEnabledChange={(v) => onChange({ ...data, showCtaHref: v })}
         >
           <FormInput
-            value={String(data.ctaHref || "")}
+            value={String(data.ctaHref || '')}
             onChange={(e) => onChange({ ...data, ctaHref: e.target.value })}
             disabled={!showCtaHref}
-            placeholder="#projects"
+            placeholder='#projects'
           />
         </OptionalField>
       </>
     );
   }
 
-  if (section.type === "About") {
+  if (section.type === 'About') {
     const showEyebrow = data.showEyebrow !== false;
     const showHeadline = data.showHeadline !== false;
     const showBody = data.showBody !== false;
@@ -770,26 +769,26 @@ function SectionFields({
     return (
       <>
         <OptionalField
-          label="Portrait"
+          label='Portrait'
           enabled={showImage}
           onEnabledChange={(v) => onChange({ ...data, showImage: v })}
         >
           <ImageField
-            label=""
-            valueUrl={String(data.imageUrl || "")}
-            valuePublicId={String(data.imagePublicId || "")}
+            label=''
+            valueUrl={String(data.imageUrl || '')}
+            valuePublicId={String(data.imagePublicId || '')}
             onChange={(img) =>
               onChange({
                 ...data,
-                imageUrl: img?.url || "",
-                imagePublicId: img?.publicId || "",
+                imageUrl: img?.url || '',
+                imagePublicId: img?.publicId || '',
               })
             }
           />
-          <div className="mt-3">
-            <Field label="Image alt">
+          <div className='mt-3'>
+            <Field label='Image alt'>
               <FormInput
-                value={String(data.imageAlt || "")}
+                value={String(data.imageAlt || '')}
                 onChange={(e) =>
                   onChange({ ...data, imageAlt: e.target.value })
                 }
@@ -799,35 +798,35 @@ function SectionFields({
           </div>
         </OptionalField>
         <OptionalField
-          label="Eyebrow"
+          label='Eyebrow'
           enabled={showEyebrow}
           onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
         >
           <FormInput
-            value={String(data.eyebrow || "")}
+            value={String(data.eyebrow || '')}
             onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
             disabled={!showEyebrow}
-            placeholder="About"
+            placeholder='About'
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Bio"
+          label='Bio'
           enabled={showBody}
           onEnabledChange={(v) => onChange({ ...data, showBody: v })}
         >
           <FormTextarea
-            value={String(data.body || "")}
+            value={String(data.body || '')}
             onChange={(e) => onChange({ ...data, body: e.target.value })}
             disabled={!showBody}
           />
@@ -836,7 +835,7 @@ function SectionFields({
     );
   }
 
-  if (section.type === "Skills") {
+  if (section.type === 'Skills') {
     const items = Array.isArray(data.items) ? (data.items as string[]) : [];
     const showEyebrow = data.showEyebrow !== false;
     const showHeadline = data.showHeadline !== false;
@@ -845,54 +844,54 @@ function SectionFields({
     return (
       <>
         <OptionalField
-          label="Eyebrow"
+          label='Eyebrow'
           enabled={showEyebrow}
           onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
         >
           <FormInput
-            value={String(data.eyebrow || "")}
+            value={String(data.eyebrow || '')}
             onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
             disabled={!showEyebrow}
-            placeholder="Skills"
+            placeholder='Skills'
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Skills"
+          label='Skills'
           enabled={showItems}
           onEnabledChange={(v) => onChange({ ...data, showItems: v })}
         >
           <FormInput
-            value={items.join(", ")}
+            value={items.join(', ')}
             onChange={(e) =>
               onChange({
                 ...data,
                 items: e.target.value
-                  .split(",")
+                  .split(',')
                   .map((s) => s.trim())
                   .filter(Boolean),
               })
             }
             disabled={!showItems}
-            placeholder="React, Design systems, Product"
+            placeholder='React, Design systems, Product'
           />
-          <p className="mt-1 text-xs text-muted">Comma-separated</p>
+          <p className='mt-1 text-xs text-muted'>Comma-separated</p>
         </OptionalField>
       </>
     );
   }
 
-  if (section.type === "CTA") {
+  if (section.type === 'CTA') {
     const showHeadline = data.showHeadline !== false;
     const showBody = data.showBody !== false;
     const showImage = data.showImage !== false;
@@ -902,82 +901,82 @@ function SectionFields({
     return (
       <>
         <OptionalField
-          label="Image"
+          label='Image'
           enabled={showImage}
           onEnabledChange={(v) => onChange({ ...data, showImage: v })}
         >
           <ImageField
-            label=""
-            valueUrl={String(data.imageUrl || "")}
-            valuePublicId={String(data.imagePublicId || "")}
+            label=''
+            valueUrl={String(data.imageUrl || '')}
+            valuePublicId={String(data.imagePublicId || '')}
             onChange={(img) =>
               onChange({
                 ...data,
-                imageUrl: img?.url || "",
-                imagePublicId: img?.publicId || "",
+                imageUrl: img?.url || '',
+                imagePublicId: img?.publicId || '',
               })
             }
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Body"
+          label='Body'
           enabled={showBody}
           onEnabledChange={(v) => onChange({ ...data, showBody: v })}
         >
           <FormTextarea
-            value={String(data.body || "")}
+            value={String(data.body || '')}
             onChange={(e) => onChange({ ...data, body: e.target.value })}
             disabled={!showBody}
           />
         </OptionalField>
         <OptionalField
-          label="CTA label"
+          label='CTA label'
           enabled={showCtaLabel}
           onEnabledChange={(v) => onChange({ ...data, showCtaLabel: v })}
         >
           <FormInput
-            value={String(data.ctaLabel || "")}
+            value={String(data.ctaLabel || '')}
             onChange={(e) => onChange({ ...data, ctaLabel: e.target.value })}
             disabled={!showCtaLabel}
           />
         </OptionalField>
         <OptionalField
-          label="CTA href"
+          label='CTA href'
           enabled={showCtaHref}
           onEnabledChange={(v) => onChange({ ...data, showCtaHref: v })}
         >
           <FormInput
-            value={String(data.ctaHref || "")}
+            value={String(data.ctaHref || '')}
             onChange={(e) => onChange({ ...data, ctaHref: e.target.value })}
             disabled={!showCtaHref}
-            placeholder="#contact"
+            placeholder='#contact'
           />
         </OptionalField>
       </>
     );
   }
 
-  if (section.type === "Footer") {
+  if (section.type === 'Footer') {
     return (
-      <p className="text-sm text-muted">
+      <p className='text-sm text-muted'>
         Footer is fixed: centered copyright with your portfolio title. Toggle
         visibility in the sidebar if you want it hidden.
       </p>
     );
   }
 
-  if (section.type === "Contact") {
+  if (section.type === 'Contact') {
     const socials = (data.socials || {}) as Record<string, string>;
     const showEyebrow = data.showEyebrow !== false;
     const showHeadline = data.showHeadline !== false;
@@ -988,68 +987,68 @@ function SectionFields({
     return (
       <>
         <OptionalField
-          label="Eyebrow"
+          label='Eyebrow'
           enabled={showEyebrow}
           onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
         >
           <FormInput
-            value={String(data.eyebrow || "")}
+            value={String(data.eyebrow || '')}
             onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
             disabled={!showEyebrow}
-            placeholder="Contact"
+            placeholder='Contact'
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Avatar"
+          label='Avatar'
           enabled={showImage}
           onEnabledChange={(v) => onChange({ ...data, showImage: v })}
         >
           <ImageField
-            label=""
-            valueUrl={String(data.imageUrl || "")}
-            valuePublicId={String(data.imagePublicId || "")}
+            label=''
+            valueUrl={String(data.imageUrl || '')}
+            valuePublicId={String(data.imagePublicId || '')}
             onChange={(img) =>
               onChange({
                 ...data,
-                imageUrl: img?.url || "",
-                imagePublicId: img?.publicId || "",
+                imageUrl: img?.url || '',
+                imagePublicId: img?.publicId || '',
               })
             }
           />
         </OptionalField>
         <OptionalField
-          label="Email"
+          label='Email'
           enabled={showEmail}
           onEnabledChange={(v) => onChange({ ...data, showEmail: v })}
         >
           <FormInput
-            value={String(data.email || "")}
+            value={String(data.email || '')}
             onChange={(e) => onChange({ ...data, email: e.target.value })}
             disabled={!showEmail}
           />
         </OptionalField>
         <OptionalField
-          label="Social links"
+          label='Social links'
           enabled={showSocials}
           onEnabledChange={(v) => onChange({ ...data, showSocials: v })}
         >
-          <div className="flex flex-col gap-3">
-            {(["github", "linkedin", "twitter", "website"] as const).map(
+          <div className='flex flex-col gap-3'>
+            {(['github', 'linkedin', 'twitter', 'website'] as const).map(
               (key) => (
                 <Field key={key} label={key}>
                   <FormInput
-                    value={socials[key] || ""}
+                    value={socials[key] || ''}
                     onChange={(e) =>
                       onChange({
                         ...data,
@@ -1067,7 +1066,7 @@ function SectionFields({
     );
   }
 
-  if (section.type === "Projects") {
+  if (section.type === 'Projects') {
     const items = Array.isArray(data.items)
       ? (data.items as Array<Record<string, unknown>>)
       : [];
@@ -1078,74 +1077,77 @@ function SectionFields({
     const showLinks = data.showLinks !== false;
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className='flex flex-col gap-4'>
         <OptionalField
-          label="Eyebrow"
+          label='Eyebrow'
           enabled={showEyebrow}
           onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
         >
           <FormInput
-            value={String(data.eyebrow || "")}
+            value={String(data.eyebrow || '')}
             onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
             disabled={!showEyebrow}
-            placeholder="Portfolio"
+            placeholder='Portfolio'
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Show covers"
+          label='Show covers'
           enabled={showImages}
           onEnabledChange={(v) => onChange({ ...data, showImages: v })}
         >
-          <p className="text-xs text-muted">
+          <p className='text-xs text-muted'>
             Project cover images on the public page.
           </p>
         </OptionalField>
         <OptionalField
-          label="Show descriptions"
+          label='Show descriptions'
           enabled={showDescriptions}
           onEnabledChange={(v) => onChange({ ...data, showDescriptions: v })}
         >
-          <p className="text-xs text-muted">
+          <p className='text-xs text-muted'>
             One-line outcomes under each project title.
           </p>
         </OptionalField>
         <OptionalField
-          label="Show links"
+          label='Show links'
           enabled={showLinks}
           onEnabledChange={(v) => onChange({ ...data, showLinks: v })}
         >
-          <p className="text-xs text-muted">Visit / open project links.</p>
+          <p className='text-xs text-muted'>Visit / open project links.</p>
         </OptionalField>
         {items.map((item, index) => (
-          <div key={index} className="flex flex-col gap-3 rounded-xl border border-line p-4">
+          <div
+            key={index}
+            className='flex flex-col gap-3 rounded-xl border border-line p-4'
+          >
             <ImageField
-              label="Cover"
-              valueUrl={String(item.imageUrl || "")}
-              valuePublicId={String(item.imagePublicId || "")}
+              label='Cover'
+              valueUrl={String(item.imageUrl || '')}
+              valuePublicId={String(item.imagePublicId || '')}
               onChange={(img) => {
                 const next = [...items];
                 next[index] = {
                   ...item,
-                  imageUrl: img?.url || "",
-                  imagePublicId: img?.publicId || "",
+                  imageUrl: img?.url || '',
+                  imagePublicId: img?.publicId || '',
                 };
                 onChange({ ...data, items: next });
               }}
             />
-            <Field label="Title">
+            <Field label='Title'>
               <FormInput
-                value={String(item.title || "")}
+                value={String(item.title || '')}
                 onChange={(e) => {
                   const next = [...items];
                   next[index] = { ...item, title: e.target.value };
@@ -1153,9 +1155,9 @@ function SectionFields({
                 }}
               />
             </Field>
-            <Field label="Description">
+            <Field label='Description'>
               <FormInput
-                value={String(item.description || "")}
+                value={String(item.description || '')}
                 onChange={(e) => {
                   const next = [...items];
                   next[index] = { ...item, description: e.target.value };
@@ -1163,9 +1165,9 @@ function SectionFields({
                 }}
               />
             </Field>
-            <Field label="URL">
+            <Field label='URL'>
               <FormInput
-                value={String(item.url || "")}
+                value={String(item.url || '')}
                 onChange={(e) => {
                   const next = [...items];
                   next[index] = { ...item, url: e.target.value };
@@ -1176,20 +1178,20 @@ function SectionFields({
           </div>
         ))}
         <button
-          type="button"
-          className="text-sm text-signal"
+          type='button'
+          className='text-sm text-signal'
           onClick={() =>
             onChange({
               ...data,
               items: [
                 ...items,
                 {
-                  title: "New project",
-                  description: "",
-                  url: "",
+                  title: 'New project',
+                  description: '',
+                  url: '',
                   tags: [],
-                  imageUrl: "",
-                  imagePublicId: "",
+                  imageUrl: '',
+                  imagePublicId: '',
                 },
               ],
             })
@@ -1201,7 +1203,7 @@ function SectionFields({
     );
   }
 
-  if (section.type === "Experience") {
+  if (section.type === 'Experience') {
     const items = Array.isArray(data.items)
       ? (data.items as Array<Record<string, unknown>>)
       : [];
@@ -1212,77 +1214,79 @@ function SectionFields({
     const showDescription = data.showDescription !== false;
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className='flex flex-col gap-4'>
         <OptionalField
-          label="Eyebrow"
+          label='Eyebrow'
           enabled={showEyebrow}
           onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
         >
           <FormInput
-            value={String(data.eyebrow || "")}
+            value={String(data.eyebrow || '')}
             onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
             disabled={!showEyebrow}
-            placeholder="Experience"
+            placeholder='Experience'
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Show company marks"
+          label='Show company marks'
           enabled={showImages}
           onEnabledChange={(v) => onChange({ ...data, showImages: v })}
         >
-          <p className="text-xs text-muted">Logos next to each role.</p>
+          <p className='text-xs text-muted'>Logos next to each role.</p>
         </OptionalField>
         <OptionalField
-          label="Show periods"
+          label='Show periods'
           enabled={showPeriod}
           onEnabledChange={(v) => onChange({ ...data, showPeriod: v })}
         >
-          <p className="text-xs text-muted">Date ranges on each role.</p>
+          <p className='text-xs text-muted'>Date ranges on each role.</p>
         </OptionalField>
         <OptionalField
-          label="Show descriptions"
+          label='Show descriptions'
           enabled={showDescription}
           onEnabledChange={(v) => onChange({ ...data, showDescription: v })}
         >
-          <p className="text-xs text-muted">What you shipped under each role.</p>
+          <p className='text-xs text-muted'>
+            What you shipped under each role.
+          </p>
         </OptionalField>
         {items.map((item, index) => (
           <div
             key={index}
-            className="grid gap-3 rounded-xl border border-line p-4 md:grid-cols-2"
+            className='grid gap-3 rounded-xl border border-line p-4 md:grid-cols-2'
           >
-            <div className="md:col-span-2">
+            <div className='md:col-span-2'>
               <ImageField
-                label="Company mark"
-                valueUrl={String(item.imageUrl || "")}
-                valuePublicId={String(item.imagePublicId || "")}
+                label='Company mark'
+                valueUrl={String(item.imageUrl || '')}
+                valuePublicId={String(item.imagePublicId || '')}
                 onChange={(img) => {
                   const next = [...items];
                   next[index] = {
                     ...item,
-                    imageUrl: img?.url || "",
-                    imagePublicId: img?.publicId || "",
+                    imageUrl: img?.url || '',
+                    imagePublicId: img?.publicId || '',
                   };
                   onChange({ ...data, items: next });
                 }}
               />
             </div>
-            {(["role", "company", "period", "description"] as const).map(
+            {(['role', 'company', 'period', 'description'] as const).map(
               (key) => (
                 <Field key={key} label={key}>
                   <FormInput
-                    value={String(item[key] || "")}
+                    value={String(item[key] || '')}
                     onChange={(e) => {
                       const next = [...items];
                       next[index] = { ...item, [key]: e.target.value };
@@ -1295,20 +1299,20 @@ function SectionFields({
           </div>
         ))}
         <button
-          type="button"
-          className="text-sm text-signal"
+          type='button'
+          className='text-sm text-signal'
           onClick={() =>
             onChange({
               ...data,
               items: [
                 ...items,
                 {
-                  role: "Role",
-                  company: "Company",
-                  period: "",
-                  description: "",
-                  imageUrl: "",
-                  imagePublicId: "",
+                  role: 'Role',
+                  company: 'Company',
+                  period: '',
+                  description: '',
+                  imageUrl: '',
+                  imagePublicId: '',
                 },
               ],
             })
@@ -1320,7 +1324,7 @@ function SectionFields({
     );
   }
 
-  if (section.type === "Education") {
+  if (section.type === 'Education') {
     const items = Array.isArray(data.items)
       ? (data.items as Array<Record<string, unknown>>)
       : [];
@@ -1331,76 +1335,76 @@ function SectionFields({
     const showPeriod = data.showPeriod !== false;
 
     return (
-      <div className="flex flex-col gap-4">
+      <div className='flex flex-col gap-4'>
         <OptionalField
-          label="Eyebrow"
+          label='Eyebrow'
           enabled={showEyebrow}
           onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
         >
           <FormInput
-            value={String(data.eyebrow || "")}
+            value={String(data.eyebrow || '')}
             onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
             disabled={!showEyebrow}
-            placeholder="Education"
+            placeholder='Education'
           />
         </OptionalField>
         <OptionalField
-          label="Headline"
+          label='Headline'
           enabled={showHeadline}
           onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
         >
           <FormInput
-            value={String(data.headline || "")}
+            value={String(data.headline || '')}
             onChange={(e) => onChange({ ...data, headline: e.target.value })}
             disabled={!showHeadline}
           />
         </OptionalField>
         <OptionalField
-          label="Show school marks"
+          label='Show school marks'
           enabled={showImages}
           onEnabledChange={(v) => onChange({ ...data, showImages: v })}
         >
-          <p className="text-xs text-muted">Logos next to each school.</p>
+          <p className='text-xs text-muted'>Logos next to each school.</p>
         </OptionalField>
         <OptionalField
-          label="Show degrees"
+          label='Show degrees'
           enabled={showDegree}
           onEnabledChange={(v) => onChange({ ...data, showDegree: v })}
         >
-          <p className="text-xs text-muted">Degree lines under each school.</p>
+          <p className='text-xs text-muted'>Degree lines under each school.</p>
         </OptionalField>
         <OptionalField
-          label="Show periods"
+          label='Show periods'
           enabled={showPeriod}
           onEnabledChange={(v) => onChange({ ...data, showPeriod: v })}
         >
-          <p className="text-xs text-muted">Date ranges on each school.</p>
+          <p className='text-xs text-muted'>Date ranges on each school.</p>
         </OptionalField>
         {items.map((item, index) => (
           <div
             key={index}
-            className="grid gap-3 rounded-xl border border-line p-4 md:grid-cols-3"
+            className='grid gap-3 rounded-xl border border-line p-4 md:grid-cols-3'
           >
-            <div className="md:col-span-3">
+            <div className='md:col-span-3'>
               <ImageField
-                label="School mark"
-                valueUrl={String(item.imageUrl || "")}
-                valuePublicId={String(item.imagePublicId || "")}
+                label='School mark'
+                valueUrl={String(item.imageUrl || '')}
+                valuePublicId={String(item.imagePublicId || '')}
                 onChange={(img) => {
                   const next = [...items];
                   next[index] = {
                     ...item,
-                    imageUrl: img?.url || "",
-                    imagePublicId: img?.publicId || "",
+                    imageUrl: img?.url || '',
+                    imagePublicId: img?.publicId || '',
                   };
                   onChange({ ...data, items: next });
                 }}
               />
             </div>
-            {(["school", "degree", "period"] as const).map((key) => (
+            {(['school', 'degree', 'period'] as const).map((key) => (
               <Field key={key} label={key}>
                 <FormInput
-                  value={String(item[key] || "")}
+                  value={String(item[key] || '')}
                   onChange={(e) => {
                     const next = [...items];
                     next[index] = { ...item, [key]: e.target.value };
@@ -1412,19 +1416,19 @@ function SectionFields({
           </div>
         ))}
         <button
-          type="button"
-          className="text-sm text-signal"
+          type='button'
+          className='text-sm text-signal'
           onClick={() =>
             onChange({
               ...data,
               items: [
                 ...items,
                 {
-                  school: "School",
-                  degree: "Degree",
-                  period: "",
-                  imageUrl: "",
-                  imagePublicId: "",
+                  school: 'School',
+                  degree: 'Degree',
+                  period: '',
+                  imageUrl: '',
+                  imagePublicId: '',
                 },
               ],
             })

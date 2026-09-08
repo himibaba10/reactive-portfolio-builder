@@ -184,10 +184,20 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         showDescription: true,
         items: [
           {
-            role: "Role",
-            company: "Company",
+            role: "Product Designer",
+            company: "Studio North",
             period: "2024 — Present",
-            description: "What you shipped.",
+            description:
+              "Led end-to-end product design for a B2B platform — systems, prototypes, and shipping with engineering.",
+            imageUrl: "",
+            imagePublicId: "",
+          },
+          {
+            role: "Frontend Engineer",
+            company: "Atlas Labs",
+            period: "2021 — 2024",
+            description:
+              "Built design systems and marketing surfaces in React. Shipped performance and accessibility wins across the app.",
             imageUrl: "",
             imagePublicId: "",
           },

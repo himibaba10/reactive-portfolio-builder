@@ -1,5 +1,6 @@
-import { SectionEyebrow, type SectionProps } from "./shared";
+import { SectionHeader, type SectionProps } from "./shared";
 import { PortfolioImage } from "./portfolio-image";
+import { Mail } from "lucide-react";
 
 type ContactFlags = {
   eyebrow: string;
@@ -32,16 +33,12 @@ function readContact(data: Record<string, unknown>): ContactFlags {
 
 function ContactHeader({ contact }: { contact: ContactFlags }) {
   return (
-    <div className="space-y-3">
-      {contact.showEyebrow && contact.eyebrow ? (
-        <SectionEyebrow>{contact.eyebrow}</SectionEyebrow>
-      ) : null}
-      {contact.showHeadline && contact.headline ? (
-        <h3 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] leading-[0.95] tracking-[-0.04em]">
-          {contact.headline}
-        </h3>
-      ) : null}
-    </div>
+    <SectionHeader
+      eyebrow={contact.eyebrow}
+      headline={contact.headline}
+      showEyebrow={contact.showEyebrow}
+      showHeadline={contact.showHeadline}
+    />
   );
 }
 
@@ -77,7 +74,10 @@ function ContactEmail({
   if (!contact.showEmail || !contact.email) return null;
   return (
     <a href={`mailto:${contact.email}`} className={className}>
-      {contact.email}
+      <span className="inline-flex items-center gap-2">
+        <Mail className="size-5 opacity-70" aria-hidden />
+        {contact.email}
+      </span>
     </a>
   );
 }

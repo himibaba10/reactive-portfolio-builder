@@ -1,4 +1,4 @@
-import { SectionEyebrow, asStringArray, type SectionProps } from "./shared";
+import { SectionHeader, asStringArray, type SectionProps } from "./shared";
 
 type SkillsFlags = {
   eyebrow: string;
@@ -20,21 +20,6 @@ function readSkills(data: Record<string, unknown>): SkillsFlags {
   };
 }
 
-function SkillsHeader({ skills }: { skills: SkillsFlags }) {
-  return (
-    <div className="space-y-3">
-      {skills.showEyebrow && skills.eyebrow ? (
-        <SectionEyebrow>{skills.eyebrow}</SectionEyebrow>
-      ) : null}
-      {skills.showHeadline && skills.headline ? (
-        <h3 className="font-display text-[clamp(1.6rem,3.5vw,2.4rem)] leading-[0.95] tracking-[-0.04em]">
-          {skills.headline}
-        </h3>
-      ) : null}
-    </div>
-  );
-}
-
 function SkillsEmpty() {
   return <p className="text-sm text-white/50">No skills listed.</p>;
 }
@@ -44,12 +29,20 @@ export function SkillsSection({ section }: SectionProps) {
   const variant = section.variant;
   const items = skills.showItems ? skills.items : [];
   const empty = items.length === 0;
+  const header = (
+    <SectionHeader
+      eyebrow={skills.eyebrow}
+      headline={skills.headline}
+      showEyebrow={skills.showEyebrow}
+      showHeadline={skills.showHeadline}
+    />
+  );
 
   // 1 — Soft pill cloud
   if (variant === 1) {
     return (
       <section id="skills" className="space-y-6">
-        <SkillsHeader skills={skills} />
+        {header}
         {empty ? (
           <SkillsEmpty />
         ) : (
@@ -72,7 +65,7 @@ export function SkillsSection({ section }: SectionProps) {
   if (variant === 2) {
     return (
       <section id="skills" className="space-y-6">
-        <SkillsHeader skills={skills} />
+        {header}
         {empty ? (
           <SkillsEmpty />
         ) : (
@@ -95,7 +88,7 @@ export function SkillsSection({ section }: SectionProps) {
   if (variant === 3) {
     return (
       <section id="skills" className="space-y-6">
-        <SkillsHeader skills={skills} />
+        {header}
         {empty ? (
           <SkillsEmpty />
         ) : (
@@ -118,7 +111,7 @@ export function SkillsSection({ section }: SectionProps) {
   if (variant === 4) {
     return (
       <section id="skills" className="space-y-6">
-        <SkillsHeader skills={skills} />
+        {header}
         {empty ? (
           <SkillsEmpty />
         ) : (
@@ -144,7 +137,7 @@ export function SkillsSection({ section }: SectionProps) {
         id="skills"
         className="rounded-[1.75rem] border border-white/10 px-5 py-7 md:px-8 md:py-9"
       >
-        <SkillsHeader skills={skills} />
+        {header}
         {empty ? (
           <div className="mt-5">
             <SkillsEmpty />
@@ -169,7 +162,7 @@ export function SkillsSection({ section }: SectionProps) {
   const loop = [...items, ...items];
   return (
     <section id="skills" className="space-y-6">
-      <SkillsHeader skills={skills} />
+      {header}
       {empty ? (
         <SkillsEmpty />
       ) : (
