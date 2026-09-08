@@ -16,13 +16,23 @@ const cached = global.__reactiveMongoose ?? {
 global.__reactiveMongoose = cached;
 
 export async function connectDb() {
-  if (cached.conn) return cached.conn;
+  if (cached.conn) {
+    if (cached.conn.connection.readyState === 1) return cached.conn;
+    cached.conn = null;
+    cached.promise = null;
+  }
 
   if (!cached.promise) {
     mongoose.set("strictQuery", true);
-    cached.promise = mongoose.connect(serverConfig.mongoUri, {
-      bufferCommands: false,
-    });
+    cached.promise = mongoose
+      .connect(serverConfig.mongoUri, {
+        bufferCommands: false,
+      })
+      .catch((err) => {
+        cached.promise = null;
+        cached.conn = null;
+        throw err;
+      });
   }
 
   cached.conn = await cached.promise;
