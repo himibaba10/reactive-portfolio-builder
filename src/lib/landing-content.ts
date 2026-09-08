@@ -70,7 +70,7 @@ export const sectionTypes = [
   },
   {
     type: "Education",
-    hint: "Schools and credentials, clean",
+    hint: "Six layouts · cards, timeline, diploma",
   },
   {
     type: "Contact",

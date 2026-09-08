@@ -37,6 +37,7 @@ import { SkillsLayoutPicker } from "@/components/editor/skills-layout-picker";
 import { ProjectsLayoutPicker } from "@/components/editor/projects-layout-picker";
 import { CtaLayoutPicker } from "@/components/editor/cta-layout-picker";
 import { ExperienceLayoutPicker } from "@/components/editor/experience-layout-picker";
+import { EducationLayoutPicker } from "@/components/editor/education-layout-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -449,6 +450,15 @@ export function EditorClient() {
                   />
                 ) : active.type === "Experience" ? (
                   <ExperienceLayoutPicker
+                    section={active}
+                    paletteId={paletteId}
+                    portfolioTitle={title || "Portfolio"}
+                    portfolioSlug={slug || "your-slug"}
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
+                ) : active.type === "Education" ? (
+                  <EducationLayoutPicker
                     section={active}
                     paletteId={paletteId}
                     portfolioTitle={title || "Portfolio"}
@@ -1253,8 +1263,58 @@ function SectionFields({
     const items = Array.isArray(data.items)
       ? (data.items as Array<Record<string, unknown>>)
       : [];
+    const showEyebrow = data.showEyebrow !== false;
+    const showHeadline = data.showHeadline !== false;
+    const showImages = data.showImages !== false;
+    const showDegree = data.showDegree !== false;
+    const showPeriod = data.showPeriod !== false;
+
     return (
       <div className="flex flex-col gap-4">
+        <OptionalField
+          label="Eyebrow"
+          enabled={showEyebrow}
+          onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
+        >
+          <FormInput
+            value={String(data.eyebrow || "")}
+            onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
+            disabled={!showEyebrow}
+            placeholder="Education"
+          />
+        </OptionalField>
+        <OptionalField
+          label="Headline"
+          enabled={showHeadline}
+          onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
+        >
+          <FormInput
+            value={String(data.headline || "")}
+            onChange={(e) => onChange({ ...data, headline: e.target.value })}
+            disabled={!showHeadline}
+          />
+        </OptionalField>
+        <OptionalField
+          label="Show school marks"
+          enabled={showImages}
+          onEnabledChange={(v) => onChange({ ...data, showImages: v })}
+        >
+          <p className="text-xs text-muted">Logos next to each school.</p>
+        </OptionalField>
+        <OptionalField
+          label="Show degrees"
+          enabled={showDegree}
+          onEnabledChange={(v) => onChange({ ...data, showDegree: v })}
+        >
+          <p className="text-xs text-muted">Degree lines under each school.</p>
+        </OptionalField>
+        <OptionalField
+          label="Show periods"
+          enabled={showPeriod}
+          onEnabledChange={(v) => onChange({ ...data, showPeriod: v })}
+        >
+          <p className="text-xs text-muted">Date ranges on each school.</p>
+        </OptionalField>
         {items.map((item, index) => (
           <div
             key={index}
