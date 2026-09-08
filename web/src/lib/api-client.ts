@@ -5,6 +5,36 @@ export type User = {
   createdAt?: string | Date;
 };
 
+export type SectionType =
+  | "Hero"
+  | "About"
+  | "Skills"
+  | "Projects"
+  | "Experience"
+  | "Education"
+  | "Contact";
+
+export type PortfolioSection = {
+  id: string;
+  type: SectionType;
+  order: number;
+  visible: boolean;
+  data: Record<string, unknown>;
+};
+
+export type Portfolio = {
+  id: string;
+  userId: string;
+  title: string;
+  slug: string;
+  status: "draft" | "published";
+  paletteId: string;
+  sections: PortfolioSection[];
+  publishedAt: string | Date | null;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+};
+
 export class ApiError extends Error {
   status: number;
 
