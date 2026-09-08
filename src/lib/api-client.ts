@@ -6,19 +6,23 @@ export type User = {
 };
 
 export type SectionType =
+  | "Header"
   | "Hero"
   | "About"
   | "Skills"
   | "Projects"
+  | "CTA"
   | "Experience"
   | "Education"
-  | "Contact";
+  | "Contact"
+  | "Footer";
 
 export type PortfolioSection = {
   id: string;
   type: SectionType;
   order: number;
   visible: boolean;
+  variant: number;
   data: Record<string, unknown>;
 };
 

@@ -2,6 +2,7 @@ import { connectDb } from "@/lib/db/connect";
 import { Portfolio } from "@/lib/db/models/portfolio";
 import { normalizeSlug } from "@/lib/slug";
 import type { PortfolioSection } from "@/lib/api-client";
+import { clampSectionVariant, type SectionType } from "@/lib/sections";
 
 export type PublicPortfolio = {
   title: string;
@@ -27,7 +28,18 @@ export async function getPublishedPortfolio(
 
   const sections = [...(portfolio.sections || [])]
     .filter((s) => s.visible)
-    .sort((a, b) => a.order - b.order) as PortfolioSection[];
+    .sort((a, b) => a.order - b.order)
+    .map((s) => ({
+      id: s.id,
+      type: s.type as SectionType,
+      order: s.order,
+      visible: s.visible,
+      variant: clampSectionVariant(
+        s.type as SectionType,
+        (s as { variant?: number }).variant,
+      ),
+      data: (s.data || {}) as Record<string, unknown>,
+    })) satisfies PortfolioSection[];
 
   return {
     title: portfolio.title,

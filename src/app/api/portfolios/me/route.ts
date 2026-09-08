@@ -2,7 +2,14 @@ import { connectDb } from "@/lib/db/connect";
 import { Portfolio, type PortfolioDocument } from "@/lib/db/models/portfolio";
 import { requireSessionUser } from "@/lib/server/auth";
 import { serializePortfolio } from "@/lib/server/portfolio";
-import { createDefaultSections, paletteIdSchema } from "@/lib/sections";
+import {
+  clampSectionVariant,
+  createDefaultSections,
+  paletteIdSchema,
+  sectionTypeSchema,
+  sectionVariantSchema,
+  type SectionType,
+} from "@/lib/sections";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 import { handleRouteError } from "@/lib/server/http";
 import { NextResponse } from "next/server";
@@ -86,17 +93,10 @@ export async function PATCH(request: Request) {
           .array(
             z.object({
               id: z.string(),
-              type: z.enum([
-                "Hero",
-                "About",
-                "Skills",
-                "Projects",
-                "Experience",
-                "Education",
-                "Contact",
-              ]),
+              type: sectionTypeSchema,
               order: z.number().int().min(0),
               visible: z.boolean(),
+              variant: sectionVariantSchema.optional(),
               data: z.record(z.string(), z.unknown()),
             }),
           )
@@ -147,7 +147,13 @@ export async function PATCH(request: Request) {
           { status: 400 },
         );
       }
-      portfolio.sections = body.sections as PortfolioDocument["sections"];
+      portfolio.sections = body.sections.map((section) => ({
+        ...section,
+        variant: clampSectionVariant(
+          section.type as SectionType,
+          section.variant,
+        ),
+      })) as PortfolioDocument["sections"];
       portfolio.markModified("sections");
     }
 

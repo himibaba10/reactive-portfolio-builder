@@ -7,6 +7,7 @@ export type PortfolioSectionDoc = {
   type: SectionType;
   order: number;
   visible: boolean;
+  variant: number;
   data: Record<string, unknown>;
 };
 
@@ -16,6 +17,7 @@ const sectionSchema = new Schema(
     type: { type: String, enum: SECTION_TYPES, required: true },
     order: { type: Number, required: true },
     visible: { type: Boolean, default: true },
+    variant: { type: Number, default: 1, min: 1, max: 5 },
     data: { type: Schema.Types.Mixed, default: {} },
   },
   { _id: false },

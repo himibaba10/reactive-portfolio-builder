@@ -12,12 +12,12 @@ export function SectionsGallery() {
           Sections
         </p>
         <h2 className="max-w-3xl font-display text-[clamp(2.2rem,5.5vw,4.4rem)] leading-[0.98] font-semibold tracking-[-0.04em] text-foam">
-          Prebuilt blocks. No custom section chaos.
+          Prebuilt blocks. Pick a layout. Ship.
         </h2>
         <p className="mt-5 max-w-xl text-base text-muted">
-          <span className="md:hidden">Swipe sideways through the section types you can ship on day one.</span>
+          <span className="md:hidden">Swipe through section types — most offer five layouts you choose in the editor.</span>
           <span className="hidden md:inline">
-            Scroll sideways through the exact section types you can ship on day one.
+            Scroll through the section types you can ship — most offer five layouts you choose in the editor.
           </span>
         </p>
       </div>
@@ -25,7 +25,7 @@ export function SectionsGallery() {
       <div data-sections-pin className="relative md:pt-2">
         <div
           data-sections-viewport
-          className="snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] md:snap-none md:overflow-hidden [&::-webkit-scrollbar]:hidden"
+          className="snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] scrollbar-none md:snap-none md:overflow-hidden [&::-webkit-scrollbar]:hidden"
         >
           <ul
             data-sections-track
@@ -35,7 +35,7 @@ export function SectionsGallery() {
               <li
                 key={section.type}
                 data-section-card
-                className="relative flex h-[400px] w-[min(78vw,320px)] shrink-0 snap-center flex-col justify-between overflow-hidden rounded-[1.5rem] border border-line bg-ink p-6 md:h-[520px] md:w-[380px] md:p-9"
+                className="relative flex h-100 w-[min(78vw,320px)] shrink-0 snap-center flex-col justify-between overflow-hidden rounded-3xl border border-line bg-ink p-6 md:h-130 md:w-95 md:p-9"
               >
                 <div
                   aria-hidden

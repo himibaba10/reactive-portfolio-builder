@@ -12,7 +12,14 @@ import {
   type User,
 } from "@/lib/api-client";
 import { palettes } from "@/lib/landing-content";
-import { defaultSectionData, SECTION_TYPES } from "@/lib/sections";
+import {
+  clampSectionVariant,
+  defaultSectionData,
+  isPinnedSectionType,
+  isVariantSectionType,
+  SECTION_LABELS,
+  SECTION_TYPES,
+} from "@/lib/sections";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 import { AppChrome } from "@/components/app/app-chrome";
 import {
@@ -22,6 +29,16 @@ import {
   FormTextarea,
 } from "@/components/ui/form";
 import { SlugField } from "@/components/ui/slug-field";
+
+function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
+  return [...sections]
+    .map((s) => ({
+      ...s,
+      variant: clampSectionVariant(s.type, s.variant),
+      data: s.data || {},
+    }))
+    .sort((a, b) => a.order - b.order);
+}
 
 export function EditorClient() {
   const router = useRouter();
@@ -47,9 +64,7 @@ export function EditorClient() {
         setTitle(mine.portfolio.title);
         setSlug(mine.portfolio.slug);
         setPaletteId(mine.portfolio.paletteId);
-        const sorted = [...mine.portfolio.sections].sort(
-          (a, b) => a.order - b.order,
-        );
+        const sorted = normalizeSections(mine.portfolio.sections);
         setSections(sorted);
         setActiveId(sorted[0]?.id ?? null);
       } catch (err) {
@@ -80,12 +95,30 @@ export function EditorClient() {
     );
   }
 
+  function setVariant(id: string, variant: number) {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.id === id
+          ? { ...s, variant: clampSectionVariant(s.type, variant) }
+          : s,
+      ),
+    );
+  }
+
   function move(id: string, dir: -1 | 1) {
     setSections((prev) => {
       const sorted = [...prev].sort((a, b) => a.order - b.order);
       const idx = sorted.findIndex((s) => s.id === id);
       const swap = idx + dir;
       if (idx < 0 || swap < 0 || swap >= sorted.length) return prev;
+      const current = sorted[idx];
+      const neighbor = sorted[swap];
+      if (
+        isPinnedSectionType(current.type) ||
+        isPinnedSectionType(neighbor.type)
+      ) {
+        return prev;
+      }
       const copy = [...sorted];
       [copy[idx], copy[swap]] = [copy[swap], copy[idx]];
       return copy.map((s, order) => ({ ...s, order }));
@@ -105,6 +138,7 @@ export function EditorClient() {
       type,
       order: sections.length,
       visible: true,
+      variant: 1,
       data: defaultSectionData(type),
     };
     setSections((prev) => [...prev, section]);
@@ -136,11 +170,16 @@ export function EditorClient() {
           title,
           slug: normalized,
           paletteId,
-          sections: sections.map((s, order) => ({ ...s, order })),
+          sections: sections.map((s, order) => ({
+            ...s,
+            order,
+            variant: clampSectionVariant(s.type, s.variant),
+          })),
         },
       });
       setPortfolio(result.portfolio);
       setSlug(result.portfolio.slug);
+      setSections(normalizeSections(result.portfolio.sections));
       setMessage("Saved.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Save failed");
@@ -232,9 +271,7 @@ export function EditorClient() {
         </div>
 
         <FormError message={error} />
-        {message ? (
-          <p className="text-sm text-signal">{message}</p>
-        ) : null}
+        {message ? <p className="text-sm text-signal">{message}</p> : null}
 
         <div className="grid gap-4 rounded-2xl border border-line bg-panel p-5 md:grid-cols-3">
           <Field label="Title">
@@ -271,44 +308,53 @@ export function EditorClient() {
             <ul className="flex flex-col gap-2">
               {[...sections]
                 .sort((a, b) => a.order - b.order)
-                .map((section) => (
-                  <li key={section.id}>
-                    <div
-                      className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm ${
-                        activeId === section.id
-                          ? "bg-ink text-foam"
-                          : "text-muted"
-                      }`}
-                    >
-                      <button
-                        type="button"
-                        className="flex-1 text-left"
-                        onClick={() => setActiveId(section.id)}
+                .map((section) => {
+                  const pinned = isPinnedSectionType(section.type);
+                  return (
+                    <li key={section.id}>
+                      <div
+                        className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm ${
+                          activeId === section.id
+                            ? "bg-ink text-foam"
+                            : "text-muted"
+                        }`}
                       >
-                        {section.type}
-                        {!section.visible ? " · hidden" : ""}
-                      </button>
-                      <span className="flex gap-1 text-xs">
                         <button
                           type="button"
-                          onClick={() => move(section.id, -1)}
-                          className="px-1"
-                          aria-label="Move up"
+                          className="flex-1 text-left"
+                          onClick={() => setActiveId(section.id)}
                         >
-                          ↑
+                          {SECTION_LABELS[section.type]}
+                          {!section.visible ? " · hidden" : ""}
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => move(section.id, 1)}
-                          className="px-1"
-                          aria-label="Move down"
-                        >
-                          ↓
-                        </button>
-                      </span>
-                    </div>
-                  </li>
-                ))}
+                        {!pinned ? (
+                          <span className="flex gap-1 text-xs">
+                            <button
+                              type="button"
+                              onClick={() => move(section.id, -1)}
+                              className="px-1"
+                              aria-label="Move up"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => move(section.id, 1)}
+                              className="px-1"
+                              aria-label="Move down"
+                            >
+                              ↓
+                            </button>
+                          </span>
+                        ) : (
+                          <span className="text-[10px] tracking-wide text-muted uppercase">
+                            pinned
+                          </span>
+                        )}
+                      </div>
+                    </li>
+                  );
+                })}
             </ul>
             {missingTypes.length ? (
               <div className="mt-4 border-t border-line pt-4">
@@ -321,7 +367,7 @@ export function EditorClient() {
                       onClick={() => addSection(type)}
                       className="rounded-full border border-line px-3 py-1 text-xs"
                     >
-                      {type}
+                      {SECTION_LABELS[type]}
                     </button>
                   ))}
                 </div>
@@ -336,7 +382,7 @@ export function EditorClient() {
               <div className="flex flex-col gap-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <h2 className="font-display text-2xl">
-                    {active.type}
+                    {SECTION_LABELS[active.type]}
                   </h2>
                   <div className="flex gap-3">
                     <button
@@ -355,6 +401,12 @@ export function EditorClient() {
                     </button>
                   </div>
                 </div>
+                {isVariantSectionType(active.type) ? (
+                  <LayoutPicker
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
+                ) : null}
                 <SectionFields section={active} onChange={updateActiveData} />
               </div>
             )}
@@ -362,6 +414,61 @@ export function EditorClient() {
         </div>
       </div>
     </AppChrome>
+  );
+}
+
+function LayoutPicker({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (variant: number) => void;
+}) {
+  return (
+    <Field label="Layout">
+      <div className="grid grid-cols-5 gap-2">
+        {[1, 2, 3, 4, 5].map((n) => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => onChange(n)}
+            className={`flex aspect-4/3 flex-col items-center justify-center gap-1 rounded-xl border text-xs transition ${
+              value === n
+                ? "border-signal bg-ink text-foam"
+                : "border-line text-muted hover:border-foam/40"
+            }`}
+            aria-pressed={value === n}
+            aria-label={`Layout ${n}`}
+          >
+            <LayoutThumb variant={n} />
+            <span>{n}</span>
+          </button>
+        ))}
+      </div>
+    </Field>
+  );
+}
+
+function LayoutThumb({ variant }: { variant: number }) {
+  const bars =
+    variant === 1
+      ? "items-start"
+      : variant === 2
+        ? "items-stretch"
+        : variant === 3
+          ? "items-center"
+          : variant === 4
+            ? "items-end"
+            : "justify-between";
+  return (
+    <span
+      aria-hidden
+      className={`flex h-6 w-8 flex-col gap-0.5 ${bars} opacity-70`}
+    >
+      <span className="h-1 w-full rounded-sm bg-current" />
+      <span className="h-1 w-2/3 rounded-sm bg-current opacity-60" />
+      <span className="h-1 w-1/2 rounded-sm bg-current opacity-40" />
+    </span>
   );
 }
 
@@ -373,6 +480,29 @@ function SectionFields({
   onChange: (data: Record<string, unknown>) => void;
 }) {
   const data = section.data;
+
+  if (section.type === "Header") {
+    return (
+      <>
+        <Field label="Tagline" hint="Optional line under the portfolio title">
+          <FormInput
+            value={String(data.tagline || "")}
+            onChange={(e) => onChange({ ...data, tagline: e.target.value })}
+          />
+        </Field>
+        <label className="flex items-center gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            checked={Boolean(data.showSlug)}
+            onChange={(e) =>
+              onChange({ ...data, showSlug: e.target.checked })
+            }
+          />
+          Show slug
+        </label>
+      </>
+    );
+  }
 
   if (section.type === "Hero") {
     return (
@@ -436,6 +566,60 @@ function SectionFields({
     );
   }
 
+  if (section.type === "CTA") {
+    return (
+      <>
+        <Field label="Headline">
+          <FormInput
+            value={String(data.headline || "")}
+            onChange={(e) => onChange({ ...data, headline: e.target.value })}
+          />
+        </Field>
+        <Field label="Body">
+          <FormTextarea
+            value={String(data.body || "")}
+            onChange={(e) => onChange({ ...data, body: e.target.value })}
+          />
+        </Field>
+        <Field label="CTA label">
+          <FormInput
+            value={String(data.ctaLabel || "")}
+            onChange={(e) => onChange({ ...data, ctaLabel: e.target.value })}
+          />
+        </Field>
+        <Field label="CTA href">
+          <FormInput
+            value={String(data.ctaHref || "")}
+            onChange={(e) => onChange({ ...data, ctaHref: e.target.value })}
+          />
+        </Field>
+      </>
+    );
+  }
+
+  if (section.type === "Footer") {
+    return (
+      <>
+        <Field label="Blurb" hint="Optional footer line">
+          <FormInput
+            value={String(data.blurb || "")}
+            onChange={(e) => onChange({ ...data, blurb: e.target.value })}
+          />
+        </Field>
+        <label className="flex items-center gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            checked={data.showBuiltWith !== false}
+            onChange={(e) =>
+              onChange({ ...data, showBuiltWith: e.target.checked })
+            }
+          />
+          Show “Built with Reactive”
+        </label>
+      </>
+    );
+  }
+
   if (section.type === "Contact") {
     const socials = (data.socials || {}) as Record<string, string>;
     return (
@@ -470,10 +654,7 @@ function SectionFields({
     return (
       <div className="flex flex-col gap-4">
         {items.map((item, index) => (
-          <div
-            key={index}
-            className="rounded-xl border border-line p-4"
-          >
+          <div key={index} className="rounded-xl border border-line p-4">
             <Field label="Title">
               <FormInput
                 value={String(item.title || "")}

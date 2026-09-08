@@ -13,7 +13,7 @@ Read this file first in every new chat. It is the source of truth for product, a
 
 1. Auth: email + password only; email verification before publish; password reset; account soft-delete
 2. Exactly **one portfolio** per user (second create → 409)
-3. Sections: **prebuilt only** (Hero, About, Skills, Projects, Experience, Education, Contact) — no custom section types; each type at most once; reorder + hide allowed
+3. Sections: **prebuilt only** (Header, Hero, About, Skills, Projects/Portfolio, CTA, Experience, Education, Contact, Footer) — no custom section types; each type at most once; reorder + hide allowed. Header/Hero/About/Skills/Projects/CTA/Footer offer **5 layout variants** (picker); Experience/Education/Contact are single-layout. Header & Footer are pinned (not reordered with body sections).
 4. Public URL: `/{slug}` on the same Next.js host (e.g. `…/daniel-portfolio`)
 5. One-page public portfolios only
 6. Themes: **strict presets** with exactly 5 tokens — `primary`, `secondary`, `accent`, `textDark`, `textLight` (no custom hex in MVP)
@@ -85,3 +85,13 @@ pnpm build
 | Frontend QA specialist | `.cursor/agents/frontend-qa.md` |
 | Landing content/data | `src/lib/landing-content.ts` |
 | Landing composition | `src/components/landing/` |
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

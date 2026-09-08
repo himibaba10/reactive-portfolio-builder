@@ -30,7 +30,7 @@ export const processSteps = [
   {
     index: "02",
     title: "Compose",
-    body: "Drop in Hero, About, Skills, Projects, Experience, Education, Contact. Reorder. Hide. No custom section sprawl.",
+    body: "Pick layouts for Header, Hero, About, Skills, Portfolio, CTA, and Footer — plus Experience, Education, Contact. Reorder. Hide. No custom section sprawl.",
   },
   {
     index: "03",
@@ -41,20 +41,28 @@ export const processSteps = [
 
 export const sectionTypes = [
   {
+    type: "Header",
+    hint: "Five layouts · title, slug, optional tagline",
+  },
+  {
     type: "Hero",
-    hint: "Name, tagline, avatar, primary CTA",
+    hint: "Five layouts · name, tagline, primary CTA",
   },
   {
     type: "About",
-    hint: "Short bio with optional portrait",
+    hint: "Five layouts · short bio",
   },
   {
     type: "Skills",
-    hint: "Compact tag cloud of craft",
+    hint: "Five layouts · craft tags",
   },
   {
-    type: "Projects",
-    hint: "Image grid with links and tags",
+    type: "Portfolio",
+    hint: "Five layouts · projects with links",
+  },
+  {
+    type: "CTA",
+    hint: "Five layouts · headline + action",
   },
   {
     type: "Experience",
@@ -67,6 +75,10 @@ export const sectionTypes = [
   {
     type: "Contact",
     hint: "Mailto plus fixed social set",
+  },
+  {
+    type: "Footer",
+    hint: "Five layouts · blurb + Reactive credit",
   },
 ] as const;
 

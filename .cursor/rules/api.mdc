@@ -25,7 +25,9 @@ Next.js Route Handlers + Mongoose + MongoDB Atlas · JWT in httpOnly cookies · 
 
 **users:** email (unique), passwordHash, isEmailVerified, verification/reset tokens, deletedAt, timestamps  
 
-**portfolios:** userId (unique), title, slug (unique), status `draft|published`, paletteId, embedded `sections[]` (`id`, `type`, `order`, `visible`, `data`), publishedAt, timestamps
+**portfolios:** userId (unique), title, slug (unique), status `draft|published`, paletteId, embedded `sections[]` (`id`, `type`, `order`, `visible`, `variant` 1–5, `data`), publishedAt, timestamps
+
+Section types: Header, Hero, About, Skills, Projects, CTA, Experience, Education, Contact, Footer (at most one each). Clamp `variant` to 1 for non-variant types.
 
 ## Endpoints
 
