@@ -5,12 +5,12 @@ description: Specialist for GSAP landing motion, ScrollTrigger, mobile fallbacks
 
 # Landing motion agent
 
-You own motion quality for `web/src/components/landing/`.
+You own motion quality for `src/components/landing/`.
 
 ## Source files
 
-- Orchestrator: `web/src/components/landing/motion/landing-motion.tsx`
-- Preloader: `web/src/components/landing/motion/preloader.tsx`
+- Orchestrator: `src/components/landing/motion/landing-motion.tsx`
+- Preloader: `src/components/landing/motion/preloader.tsx`
 - Markup hooks: `data-*` attributes on section Server Components
 
 ## Requirements

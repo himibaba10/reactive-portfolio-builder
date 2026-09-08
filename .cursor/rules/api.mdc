@@ -1,41 +1,41 @@
 ---
 description: Next.js server/API and MongoDB data model conventions
-globs: web/src/app/api/**/*.{ts,tsx},web/src/lib/server/**/*.{ts,tsx},web/src/lib/db/**/*.{ts,tsx}
+globs: src/app/api/**/*.{ts,tsx},src/lib/server/**/*.{ts,tsx},src/lib/db/**/*.{ts,tsx}
 alwaysApply: false
 ---
 
-# Server / API (`web/`)
+# Server / API
 
 ## Architecture
 
 **Next.js only** — no separate Express app. Auth, portfolio CRUD, and public data live in:
 
-- Route Handlers under `web/src/app/api/`
+- Route Handlers under `src/app/api/`
 - and/or Server Actions
 
 ## Today
 
-Auth, portfolio CRUD, public slug APIs, and pages are implemented under `web/src/app/api` and App Router routes. Set `MONGODB_URI` and `JWT_SECRET` in `web/.env`.
+Auth, portfolio CRUD, public slug APIs, and pages are implemented. Set `MONGODB_URI` and `JWT_SECRET` in `.env`.
 
 ## Stack
 
-Next.js Route Handlers + Mongoose + MongoDB Atlas · JWT in httpOnly cookies
+Next.js Route Handlers + Mongoose + MongoDB Atlas · JWT in httpOnly cookies · Resend email · Upstash rate limits (optional)
 
-## Planned collections
+## Collections
 
 **users:** email (unique), passwordHash, isEmailVerified, verification/reset tokens, deletedAt, timestamps  
 
 **portfolios:** userId (unique), title, slug (unique), status `draft|published`, paletteId, embedded `sections[]` (`id`, `type`, `order`, `visible`, `data`), publishedAt, timestamps
 
-## Planned endpoints (implement when asked)
+## Endpoints
 
 - Auth: signup, login, logout, verify-email, forgot/reset password, soft-delete account
-- Portfolio: get/create (409 if exists), patch, delete, slug availability/change
+- Portfolio: get/create (409 if exists), patch, delete, slug availability/change, publish/unpublish
 - Public: published portfolio by slug (for `/{slug}` SSR)
 
 ## Rules
 
-- Validate inputs (Zod preferred when shared schemas land)
+- Validate inputs (Zod)
 - Rate-limit auth + slug checks
 - Soft-deleted users cannot authenticate; free their slug on account delete
 - One portfolio per user enforced at DB unique index + application layer

@@ -1,6 +1,6 @@
 ---
 description: Design system for Reactive product UI (landing and future app chrome)
-globs: web/**/*.{tsx,ts,css}
+globs: src/**/*.{tsx,ts,css}
 alwaysApply: false
 ---
 
@@ -10,7 +10,7 @@ alwaysApply: false
 
 Ink + Signal. Dark, technical, motion-led. **Not** purple gradients, cream/terracotta, or broadsheet layouts.
 
-## Tokens (CSS variables in `web/src/app/globals.css`)
+## Tokens (CSS variables in `src/app/globals.css`)
 
 | Token | Role | Value |
 | --- | --- | --- |
@@ -43,4 +43,4 @@ Use Tailwind v4 theme utilities (`bg-ink`, `text-foam`, `font-display`, `max-w-s
 
 ## Portfolio user themes (product feature)
 
-User portfolios use **preset palettes** with five tokens only (`primary`, `secondary`, `accent`, `textDark`, `textLight`). Preset list lives in `web/src/lib/landing-content.ts` (`palettes`).
+User portfolios use **preset palettes** with five tokens only (`primary`, `secondary`, `accent`, `textDark`, `textLight`). Preset list lives in `src/lib/landing-content.ts` (`palettes`).

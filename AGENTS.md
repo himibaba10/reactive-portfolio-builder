@@ -30,8 +30,8 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
   AGENTS.md                 ← you are here
   .cursor/rules/            ← scoped Cursor rules (.mdc)
   .cursor/agents/           ← specialist subagents
-  web/                      ← Next.js 16 App Router (UI + server)
-  package.json              ← pnpm workspace root
+  src/                      ← Next.js 16 App Router (UI + server)
+  package.json              ← app + scripts
 ```
 
 ## Stack
@@ -40,25 +40,27 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
 | --- | --- |
 | App | Next.js (App Router) — UI + Route Handlers / Server Actions |
 | UI | React 19, Tailwind CSS 4, GSAP + `@gsap/react`, shadcn-ready primitives |
-| DB | MongoDB Atlas (not wired yet) |
+| DB | MongoDB Atlas |
+| Email | Resend (console fallback locally) |
+| Rate limit | Upstash Redis (in-memory fallback locally) |
 | Hosting (planned) | Vercel · DB → Atlas |
 
 ## Current shipped milestone
 
-**App MVP surface** (`web/`):
+**App MVP surface:**
 
 - Landing page with GSAP motion
 - Auth (email/password, verify, reset, soft-delete) via Route Handlers
 - One portfolio per user · sections editor · publish/unpublish
 - Public SSR page at `/{slug}`
-- Requires MongoDB (`MONGODB_URI`) + `JWT_SECRET` in `web/.env`
+- Requires MongoDB (`MONGODB_URI`) + `JWT_SECRET` in `.env`
 
 ## Commands
 
 ```bash
 pnpm install
-cp web/.env.example web/.env   # then edit secrets
-pnpm dev                       # http://localhost:3000
+cp .env.example .env   # then edit secrets
+pnpm dev               # http://localhost:3000
 pnpm build
 ```
 
@@ -68,7 +70,7 @@ pnpm build
 2. Keep components **composed** (small section files, thin motion islands)
 3. Follow the design system in `.cursor/rules/design-system.mdc`
 4. Do not invent product features that violate Locked MVP rules
-5. Server logic lives in Next.js (`web/src/app/api`, Server Actions) — **no separate Express app**
+5. Server logic lives in Next.js (`src/app/api`, Server Actions) — **no separate Express app**
 6. When adding auth/portfolio later, keep one-portfolio + prebuilt sections + 5-token presets
 
 ## Where details live
@@ -76,10 +78,10 @@ pnpm build
 | Topic | File |
 | --- | --- |
 | Design tokens / landing UI rules | `.cursor/rules/design-system.mdc` |
-| Frontend patterns | `.cursor/rules/frontend.mdc` + `web/AGENTS.md` |
-| Server / data model (planned) | `.cursor/rules/api.mdc` |
+| Frontend patterns | `.cursor/rules/frontend.mdc` + `AGENTS.md` (Next block may live in repo root) |
+| Server / data model | `.cursor/rules/api.mdc` |
 | Product always-on | `.cursor/rules/product.mdc` |
 | Landing motion specialist | `.cursor/agents/landing-motion.md` |
 | Frontend QA specialist | `.cursor/agents/frontend-qa.md` |
-| Landing content/data | `web/src/lib/landing-content.ts` |
-| Landing composition | `web/src/components/landing/` |
+| Landing content/data | `src/lib/landing-content.ts` |
+| Landing composition | `src/components/landing/` |

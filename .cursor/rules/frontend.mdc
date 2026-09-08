@@ -1,23 +1,23 @@
 ---
-description: Next.js frontend conventions for the web app
-globs: web/**/*.{tsx,ts,css}
+description: Next.js frontend conventions for the app
+globs: src/**/*.{tsx,ts,css}
 alwaysApply: false
 ---
 
-# Frontend (`web/`)
+# Frontend (`src/`)
 
 ## Stack
 
-Next.js 16 App Router · React 19 · Tailwind 4 · GSAP · `@gsap/react` · shadcn-ready primitives (`web/src/components/ui`)
+Next.js 16 App Router · React 19 · Tailwind 4 · GSAP · `@gsap/react` · shadcn-ready primitives (`src/components/ui`)
 
 ## Patterns
 
 - Default to **Server Components**
 - `"use client"` only for GSAP, event handlers, browser APIs
-- Compose pages from section components under `web/src/components/landing/`
-- Shared marketing copy/data: `web/src/lib/landing-content.ts`
-- Class merging: `cn()` from `web/src/lib/utils.ts`
-- Keep Next.js version-specific guidance in `web/AGENTS.md` (auto-maintained block)
+- Compose pages from section components under `src/components/landing/`
+- Shared marketing copy/data: `src/lib/landing-content.ts`
+- Class merging: `cn()` from `src/lib/utils.ts`
+- Keep Next.js version-specific guidance in root `AGENTS.md` / auto-maintained Next agent files
 
 ## GSAP
 
@@ -31,7 +31,7 @@ Next.js 16 App Router · React 19 · Tailwind 4 · GSAP · `@gsap/react` · shad
 
 - `/` — landing
 - `/signup`, `/login`, `/forgot-password`, `/reset-password`, `/verify` — auth
-- `/dashboard`, `/editor` — authenticated app (cookie gate in middleware)
+- `/dashboard`, `/editor` — authenticated app (cookie gate in proxy)
 - `/{slug}` — public published portfolio
 
 ## Do not

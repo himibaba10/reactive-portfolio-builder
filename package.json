@@ -1,14 +1,46 @@
 {
   "name": "reactive-portfolio-builder",
-  "private": true,
   "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "dev": "pnpm --filter web dev",
-    "dev:web": "pnpm --filter web dev",
-    "build": "pnpm --filter web build",
-    "lint": "pnpm --filter web lint"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@gsap/react": "^2.1.2",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.4",
+    "bcryptjs": "^3.0.3",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "gsap": "^3.15.0",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.43.0",
+    "mongoose": "^9.9.5",
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "resend": "^6.26.0",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.4",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   },
   "engines": {
     "node": ">=20"
-  }
+  },
+  "packageManager": "pnpm@10.33.3"
 }

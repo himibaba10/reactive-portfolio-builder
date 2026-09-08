@@ -13,7 +13,7 @@ Email/password signup + login + logout + verify email + forgot/reset password + 
 
 ## Steps
 
-1. Add Mongoose `User` model in `web/` (server-only module)
+1. Add Mongoose `User` model in `src/lib/db` (server-only module)
 2. Wire Next.js Route Handlers (or Server Actions) + httpOnly cookie session/JWT
 3. Add Next.js pages: `/signup`, `/login`, `/forgot-password`, `/reset-password`, `/verify`
 4. Protect future `/dashboard` and `/editor` behind auth

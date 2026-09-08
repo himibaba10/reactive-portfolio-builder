@@ -1,14 +1,32 @@
+# dependencies
 node_modules/
-.DS_Store
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# next.js / build
 .next/
+out/
 .turbo/
 dist/
 build/
 coverage/
+
+# env
 .env
 .env.*
 !.env.example
+
+# misc
+.DS_Store
+*.pem
 *.log
 .pnpm-store/
-
+.vercel
+*.tsbuildinfo
+next-env.d.ts
 walkthrough-artifacts/

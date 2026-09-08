@@ -23,7 +23,7 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 
 ## Current status
 
-MVP app is implemented (auth, one portfolio, editor, public `/{slug}`). Ship checklist: set Atlas + JWT locally; for production add Resend + Upstash and deploy `web/` on Vercel. Server lives in Next.js only (no Express).
+MVP app is implemented (auth, one portfolio, editor, public `/{slug}`). Ship checklist: set Atlas + JWT in `.env`; for production add Resend + Upstash and deploy the repo root on Vercel. Server lives in Next.js only (no Express).
 
 ## Tone / copy
 

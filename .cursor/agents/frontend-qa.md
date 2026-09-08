@@ -6,14 +6,14 @@ readonly: true
 
 # Frontend QA agent
 
-Verify `web/` UI before handoff.
+Verify app UI before handoff.
 
 ## Must check
 
 1. Desktop ~1440×900 and mobile ~390×844
 2. Browser console errors / page errors / failed network ≥400
 3. Horizontal document overflow (`scrollWidth ≈ clientWidth`)
-4. Key routes: `/`, `/signup`
+4. Key routes: `/`, `/signup`, `/dashboard`, `/editor`, `/{slug}`
 5. Brand visible as hero-level signal on `/`
 6. Animations: preloader, reveals, sections gallery behavior (pin desktop / swipe mobile)
 
