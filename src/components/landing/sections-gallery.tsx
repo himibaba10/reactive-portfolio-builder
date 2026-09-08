@@ -15,9 +15,9 @@ export function SectionsGallery() {
           Prebuilt blocks. Pick a layout. Ship.
         </h2>
         <p className="mt-5 max-w-xl text-base text-muted">
-          <span className="md:hidden">Swipe through section types — Hero and About have six layouts; most others offer five.</span>
+          <span className="md:hidden">Swipe through section types — most offer six layouts you choose in the editor.</span>
           <span className="hidden md:inline">
-            Scroll through the section types you can ship — Hero and About have six layouts; most others offer five in the editor.
+            Scroll through the section types you can ship — most offer six layouts you choose in the editor.
           </span>
         </p>
       </div>

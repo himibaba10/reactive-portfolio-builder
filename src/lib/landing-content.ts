@@ -74,7 +74,7 @@ export const sectionTypes = [
   },
   {
     type: "Contact",
-    hint: "Mailto plus fixed social set",
+    hint: "Six layouts · email, socials, portrait",
   },
   {
     type: "Footer",

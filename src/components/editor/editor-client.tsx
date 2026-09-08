@@ -38,6 +38,7 @@ import { ProjectsLayoutPicker } from "@/components/editor/projects-layout-picker
 import { CtaLayoutPicker } from "@/components/editor/cta-layout-picker";
 import { ExperienceLayoutPicker } from "@/components/editor/experience-layout-picker";
 import { EducationLayoutPicker } from "@/components/editor/education-layout-picker";
+import { ContactLayoutPicker } from "@/components/editor/contact-layout-picker";
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -459,6 +460,15 @@ export function EditorClient() {
                   />
                 ) : active.type === "Education" ? (
                   <EducationLayoutPicker
+                    section={active}
+                    paletteId={paletteId}
+                    portfolioTitle={title || "Portfolio"}
+                    portfolioSlug={slug || "your-slug"}
+                    value={active.variant}
+                    onChange={(v) => setVariant(active.id, v)}
+                  />
+                ) : active.type === "Contact" ? (
+                  <ContactLayoutPicker
                     section={active}
                     paletteId={paletteId}
                     portfolioTitle={title || "Portfolio"}
@@ -969,39 +979,90 @@ function SectionFields({
 
   if (section.type === "Contact") {
     const socials = (data.socials || {}) as Record<string, string>;
+    const showEyebrow = data.showEyebrow !== false;
+    const showHeadline = data.showHeadline !== false;
+    const showEmail = data.showEmail !== false;
+    const showImage = data.showImage !== false;
+    const showSocials = data.showSocials !== false;
+
     return (
       <>
-        <ImageField
+        <OptionalField
+          label="Eyebrow"
+          enabled={showEyebrow}
+          onEnabledChange={(v) => onChange({ ...data, showEyebrow: v })}
+        >
+          <FormInput
+            value={String(data.eyebrow || "")}
+            onChange={(e) => onChange({ ...data, eyebrow: e.target.value })}
+            disabled={!showEyebrow}
+            placeholder="Contact"
+          />
+        </OptionalField>
+        <OptionalField
+          label="Headline"
+          enabled={showHeadline}
+          onEnabledChange={(v) => onChange({ ...data, showHeadline: v })}
+        >
+          <FormInput
+            value={String(data.headline || "")}
+            onChange={(e) => onChange({ ...data, headline: e.target.value })}
+            disabled={!showHeadline}
+          />
+        </OptionalField>
+        <OptionalField
           label="Avatar"
-          valueUrl={String(data.imageUrl || "")}
-          valuePublicId={String(data.imagePublicId || "")}
-          onChange={(img) =>
-            onChange({
-              ...data,
-              imageUrl: img?.url || "",
-              imagePublicId: img?.publicId || "",
-            })
-          }
-        />
-        <Field label="Email">
+          enabled={showImage}
+          onEnabledChange={(v) => onChange({ ...data, showImage: v })}
+        >
+          <ImageField
+            label=""
+            valueUrl={String(data.imageUrl || "")}
+            valuePublicId={String(data.imagePublicId || "")}
+            onChange={(img) =>
+              onChange({
+                ...data,
+                imageUrl: img?.url || "",
+                imagePublicId: img?.publicId || "",
+              })
+            }
+          />
+        </OptionalField>
+        <OptionalField
+          label="Email"
+          enabled={showEmail}
+          onEnabledChange={(v) => onChange({ ...data, showEmail: v })}
+        >
           <FormInput
             value={String(data.email || "")}
             onChange={(e) => onChange({ ...data, email: e.target.value })}
+            disabled={!showEmail}
           />
-        </Field>
-        {(["github", "linkedin", "twitter", "website"] as const).map((key) => (
-          <Field key={key} label={key}>
-            <FormInput
-              value={socials[key] || ""}
-              onChange={(e) =>
-                onChange({
-                  ...data,
-                  socials: { ...socials, [key]: e.target.value },
-                })
-              }
-            />
-          </Field>
-        ))}
+        </OptionalField>
+        <OptionalField
+          label="Social links"
+          enabled={showSocials}
+          onEnabledChange={(v) => onChange({ ...data, showSocials: v })}
+        >
+          <div className="flex flex-col gap-3">
+            {(["github", "linkedin", "twitter", "website"] as const).map(
+              (key) => (
+                <Field key={key} label={key}>
+                  <FormInput
+                    value={socials[key] || ""}
+                    onChange={(e) =>
+                      onChange({
+                        ...data,
+                        socials: { ...socials, [key]: e.target.value },
+                      })
+                    }
+                    disabled={!showSocials}
+                  />
+                </Field>
+              ),
+            )}
+          </div>
+        </OptionalField>
       </>
     );
   }
