@@ -30,10 +30,12 @@ Next.js 16 App Router · React 19 · Tailwind 4 · GSAP · `@gsap/react` · shad
 ## Routes today
 
 - `/` — landing
-- `/signup` — placeholder until auth milestone
+- `/signup`, `/login`, `/forgot-password`, `/reset-password`, `/verify` — auth
+- `/dashboard`, `/editor` — authenticated app (cookie gate in middleware)
+- `/{slug}` — public published portfolio
 
 ## Do not
 
-- Add dashboard/editor routes until auth + portfolio CRUD exist
 - Introduce Inter/system fonts or purple SaaS defaults
 - Put heavy animation logic inside Server Components
+- Reintroduce a separate Express API package

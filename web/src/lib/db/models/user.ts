@@ -1,5 +1,5 @@
 import "server-only";
-import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
+import mongoose, { Schema, type HydratedDocument, type Model } from "mongoose";
 
 const userSchema = new Schema(
   {
@@ -23,9 +23,18 @@ const userSchema = new Schema(
 
 userSchema.index({ deletedAt: 1 });
 
-export type UserDocument = InferSchemaType<typeof userSchema> & {
-  _id: mongoose.Types.ObjectId;
-};
+export type UserDocument = HydratedDocument<{
+  email: string;
+  passwordHash: string;
+  isEmailVerified: boolean;
+  emailVerificationTokenHash: string | null;
+  emailVerificationExpiresAt: Date | null;
+  passwordResetTokenHash: string | null;
+  passwordResetExpiresAt: Date | null;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}>;
 
 export const User: Model<UserDocument> =
   (mongoose.models.User as Model<UserDocument>) ||

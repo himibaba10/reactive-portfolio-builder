@@ -26,12 +26,13 @@ pnpm dev   # http://localhost:3000
 
 ## Current milestone
 
-Landing page only:
+MVP app surface on Next.js only:
 
-- Server-composed sections
-- Client GSAP islands (preloader, hero reveal, marquee, horizontal section gallery, palette stagger, CTA, magnetic buttons)
-- Placeholder `/signup` route
-- Mobile: swipeable sections gallery (no GSAP pin)
+- Landing + GSAP motion
+- Auth (signup/login/verify/reset/soft-delete)
+- One portfolio · editor · publish
+- Public `/{slug}`
+- Copy `web/.env.example` → `web/.env` and set MongoDB + JWT
 
 ## Product rules (locked)
 

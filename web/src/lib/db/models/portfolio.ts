@@ -1,6 +1,14 @@
 import "server-only";
-import mongoose, { Schema, type InferSchemaType, type Model } from "mongoose";
-import { PALETTE_IDS, SECTION_TYPES } from "@/lib/sections";
+import mongoose, { Schema, type HydratedDocument, type Model } from "mongoose";
+import { PALETTE_IDS, SECTION_TYPES, type SectionType, type PaletteId } from "@/lib/sections";
+
+export type PortfolioSectionDoc = {
+  id: string;
+  type: SectionType;
+  order: number;
+  visible: boolean;
+  data: Record<string, unknown>;
+};
 
 const sectionSchema = new Schema(
   {
@@ -45,9 +53,17 @@ const portfolioSchema = new Schema(
   { timestamps: true },
 );
 
-export type PortfolioDocument = InferSchemaType<typeof portfolioSchema> & {
-  _id: mongoose.Types.ObjectId;
-};
+export type PortfolioDocument = HydratedDocument<{
+  userId: mongoose.Types.ObjectId;
+  title: string;
+  slug: string;
+  status: "draft" | "published";
+  paletteId: PaletteId;
+  sections: PortfolioSectionDoc[];
+  publishedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}>;
 
 export const Portfolio: Model<PortfolioDocument> =
   (mongoose.models.Portfolio as Model<PortfolioDocument>) ||

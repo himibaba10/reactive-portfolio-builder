@@ -45,18 +45,20 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
 
 ## Current shipped milestone
 
-**Landing page only** (`web/`):
+**App MVP surface** (`web/`):
 
-- Server Components compose the page; GSAP lives in thin client islands
-- Routes: `/` (landing), `/signup` (placeholder)
-- Animations: preloader, hero line reveal, marquee, desktop pinned horizontal sections gallery, process/palette staggers, CTA reveal, magnetic buttons (fine pointer only)
-- Mobile: native swipe for sections gallery (no ScrollTrigger pin under 768px)
+- Landing page with GSAP motion
+- Auth (email/password, verify, reset, soft-delete) via Route Handlers
+- One portfolio per user · sections editor · publish/unpublish
+- Public SSR page at `/{slug}`
+- Requires MongoDB (`MONGODB_URI`) + `JWT_SECRET` in `web/.env`
 
 ## Commands
 
 ```bash
 pnpm install
-pnpm dev       # http://localhost:3000
+cp web/.env.example web/.env   # then edit secrets
+pnpm dev                       # http://localhost:3000
 pnpm build
 ```
 

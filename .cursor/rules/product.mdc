@@ -21,7 +21,9 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 
 ## Current status
 
-Landing page shipped. Auth, portfolio CRUD, public SSR pages, MongoDB wiring are **next milestones** — do not pretend they exist. Server lives in Next.js only (no Express).
+## Current status
+
+Landing, auth, one-portfolio CRUD, sections editor, and public `/{slug}` are in code. Wire `MONGODB_URI` / `JWT_SECRET` via `web/.env` before local use. Server lives in Next.js only (no Express).
 
 ## Tone / copy
 

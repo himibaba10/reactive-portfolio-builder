@@ -34,6 +34,6 @@ export async function getPublishedPortfolio(
     slug: portfolio.slug,
     paletteId: portfolio.paletteId,
     sections,
-    publishedAt: portfolio.publishedAt,
+    publishedAt: portfolio.publishedAt ?? null,
   };
 }

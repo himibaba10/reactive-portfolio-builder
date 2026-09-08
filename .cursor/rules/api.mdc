@@ -15,7 +15,7 @@ alwaysApply: false
 
 ## Today
 
-Foundations landed: MongoDB connect helper, User/Portfolio models, auth/slug/section server utilities, `GET /api/health`. Auth and portfolio Route Handlers come next.
+Auth, portfolio CRUD, public slug APIs, and pages are implemented under `web/src/app/api` and App Router routes. Set `MONGODB_URI` and `JWT_SECRET` in `web/.env`.
 
 ## Stack
 

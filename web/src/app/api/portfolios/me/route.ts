@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { z } from "zod";
 import { connectDb } from "@/lib/db/connect";
-import { Portfolio } from "@/lib/db/models/portfolio";
+import { Portfolio, type PortfolioDocument } from "@/lib/db/models/portfolio";
 import { requireSessionUser } from "@/lib/server/auth";
 import { serializePortfolio } from "@/lib/server/portfolio";
 import { createDefaultSections, paletteIdSchema } from "@/lib/sections";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 import { handleRouteError } from "@/lib/server/http";
+import { NextResponse } from "next/server";
+import { z } from "zod";
 
 const createSchema = z.object({
   title: z.string().trim().min(1).max(80),
@@ -147,7 +147,8 @@ export async function PATCH(request: Request) {
           { status: 400 },
         );
       }
-      portfolio.sections = body.sections;
+      portfolio.sections = body.sections as PortfolioDocument["sections"];
+      portfolio.markModified("sections");
     }
 
     await portfolio.save();
