@@ -44,7 +44,7 @@ import {
 import { isValidSlug, normalizeSlug } from '@/lib/slug';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -55,6 +55,24 @@ function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
     }))
     .sort((a, b) => a.order - b.order);
 }
+
+function editorSnapshot(input: {
+  title: string;
+  slug: string;
+  paletteId: string;
+  customPalette: PaletteTokens;
+  sections: PortfolioSection[];
+}) {
+  return JSON.stringify({
+    title: input.title,
+    slug: input.slug,
+    paletteId: input.paletteId,
+    customPalette: input.customPalette,
+    sections: input.sections,
+  });
+}
+
+const AUTOSAVE_MS = 5000;
 
 export function EditorClient() {
   const router = useRouter();
@@ -72,6 +90,18 @@ export function EditorClient() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [autosaveReady, setAutosaveReady] = useState(false);
+
+  const baselineRef = useRef('');
+  const savingRef = useRef(false);
+  const draftRef = useRef({
+    title,
+    slug,
+    paletteId,
+    customPalette,
+    sections,
+  });
+  draftRef.current = { title, slug, paletteId, customPalette, sections };
 
   useEffect(() => {
     (async () => {
@@ -106,6 +136,27 @@ export function EditorClient() {
       }
     })();
   }, [router]);
+
+  useEffect(() => {
+    if (loading || !portfolio || autosaveReady) return;
+    baselineRef.current = editorSnapshot({
+      title,
+      slug,
+      paletteId,
+      customPalette,
+      sections,
+    });
+    setAutosaveReady(true);
+  }, [
+    loading,
+    portfolio,
+    autosaveReady,
+    title,
+    slug,
+    paletteId,
+    customPalette,
+    sections,
+  ]);
 
   const active = sections.find((s) => s.id === activeId) || null;
   const missingTypes = SECTION_TYPES.filter(
@@ -163,48 +214,90 @@ export function EditorClient() {
     });
   }
 
-  async function save() {
+  const save = useCallback(async (source: 'manual' | 'auto' = 'manual') => {
+    if (savingRef.current) return false;
+    savingRef.current = true;
     setSaving(true);
     setError(null);
-    setMessage(null);
+    if (source === 'manual') setMessage(null);
+
+    const draft = draftRef.current;
     try {
-      const normalized = normalizeSlug(slug);
+      const normalized = normalizeSlug(draft.slug);
       if (!isValidSlug(normalized)) {
         throw new Error('Invalid or reserved slug.');
       }
       const result = await api<{ portfolio: Portfolio }>('/portfolios/me', {
         method: 'PATCH',
         body: {
-          title,
+          title: draft.title,
           slug: normalized,
-          paletteId,
-          customPalette,
-          sections: sections.map((s, order) => ({
+          paletteId: draft.paletteId,
+          customPalette: draft.customPalette,
+          sections: draft.sections.map((s, order) => ({
             ...s,
             order,
             variant: clampSectionVariant(s.type, s.variant),
           })),
         },
       });
+      const nextCustom = sanitizePaletteTokens(
+        result.portfolio.customPalette ?? draft.customPalette,
+      );
+      const nextSections = normalizeSections(result.portfolio.sections);
       setPortfolio(result.portfolio);
       setSlug(result.portfolio.slug);
       setPaletteId(result.portfolio.paletteId);
-      setCustomPalette(
-        sanitizePaletteTokens(
-          result.portfolio.customPalette ?? customPalette,
-        ),
-      );
-      setSections(normalizeSections(result.portfolio.sections));
-      setMessage('Saved.');
+      setCustomPalette(nextCustom);
+      setSections(nextSections);
+      baselineRef.current = editorSnapshot({
+        title: result.portfolio.title,
+        slug: result.portfolio.slug,
+        paletteId: result.portfolio.paletteId,
+        customPalette: nextCustom,
+        sections: nextSections,
+      });
+      setMessage(source === 'auto' ? 'Autosaved.' : 'Saved.');
+      return true;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed');
+      return false;
     } finally {
+      savingRef.current = false;
       setSaving(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!autosaveReady || loading || saving) return;
+    const snap = editorSnapshot({
+      title,
+      slug,
+      paletteId,
+      customPalette,
+      sections,
+    });
+    if (snap === baselineRef.current) return;
+
+    const timer = window.setTimeout(() => {
+      void save('auto');
+    }, AUTOSAVE_MS);
+    return () => window.clearTimeout(timer);
+  }, [
+    autosaveReady,
+    loading,
+    saving,
+    title,
+    slug,
+    paletteId,
+    customPalette,
+    sections,
+    save,
+  ]);
 
   async function publish() {
-    await save();
+    const ok = await save('manual');
+    if (!ok) return;
     try {
       const result = await api<{ portfolio: Portfolio }>(
         '/portfolios/me/publish',
@@ -258,30 +351,33 @@ export function EditorClient() {
               Compose
             </h1>
           </div>
-          <div className='flex flex-wrap gap-3'>
-            <button
-              type='button'
-              onClick={() => void save()}
-              disabled={saving}
-              className='rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink disabled:opacity-60'
-            >
-              {saving ? 'Saving…' : 'Save'}
-            </button>
-            <button
-              type='button'
-              onClick={() => void publish()}
-              className='rounded-full border border-line px-5 py-2.5 text-sm'
-            >
-              Publish
-            </button>
-            {portfolio?.status === 'published' ? (
-              <Link
-                href={`/${portfolio.slug}`}
+          <div className='flex flex-col items-end gap-2'>
+            <div className='flex flex-wrap gap-3'>
+              <button
+                type='button'
+                onClick={() => void save('manual')}
+                disabled={saving}
+                className='rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink disabled:opacity-60'
+              >
+                {saving ? 'Saving…' : 'Save'}
+              </button>
+              <button
+                type='button'
+                onClick={() => void publish()}
                 className='rounded-full border border-line px-5 py-2.5 text-sm'
               >
-                View live
-              </Link>
-            ) : null}
+                Publish
+              </button>
+              {portfolio?.status === 'published' ? (
+                <Link
+                  href={`/${portfolio.slug}`}
+                  className='rounded-full border border-line px-5 py-2.5 text-sm'
+                >
+                  View live
+                </Link>
+              ) : null}
+            </div>
+            <p className='text-xs text-muted'>Autosaves 5s after edits</p>
           </div>
         </div>
 
@@ -351,15 +447,22 @@ export function EditorClient() {
                 <div className='flex flex-wrap items-center justify-between gap-3'>
                   <h2 className='font-display text-2xl'>
                     {SECTION_LABELS[active.type]}
+                    {!active.visible ? (
+                      <span className='ml-2 text-sm font-sans font-normal tracking-normal text-muted'>
+                        Hidden
+                      </span>
+                    ) : null}
                   </h2>
                   <div className='flex gap-3'>
-                    <button
-                      type='button'
-                      onClick={() => toggleVisible(active.id)}
-                      className='text-sm text-muted hover:text-foam'
-                    >
-                      {active.visible ? 'Hide' : 'Show'}
-                    </button>
+                    {active.visible ? (
+                      <button
+                        type='button'
+                        onClick={() => toggleVisible(active.id)}
+                        className='text-sm text-muted hover:text-foam'
+                      >
+                        Hide
+                      </button>
+                    ) : null}
                     <button
                       type='button'
                       onClick={() => removeSection(active.id)}
@@ -369,94 +472,121 @@ export function EditorClient() {
                     </button>
                   </div>
                 </div>
-                {active.type === 'Hero' ? (
-                  <HeroLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'About' ? (
-                  <AboutLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'Skills' ? (
-                  <SkillsLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'Projects' ? (
-                  <ProjectsLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'CTA' ? (
-                  <CtaLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'Experience' ? (
-                  <ExperienceLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'Education' ? (
-                  <EducationLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : active.type === 'Contact' ? (
-                  <ContactLayoutPicker
-                    section={active}
-                    paletteId={paletteId}
-                    customPalette={customPalette}
-                    portfolioTitle={title || 'Portfolio'}
-                    portfolioSlug={slug || 'your-slug'}
-                    value={active.variant}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : isVariantSectionType(active.type) ? (
-                  <LayoutPicker
-                    value={active.variant}
-                    count={sectionVariantCount(active.type)}
-                    onChange={(v) => setVariant(active.id, v)}
-                  />
-                ) : null}
-                <SectionFields section={active} onChange={updateActiveData} />
+
+                {!active.visible ? (
+                  <div className='flex flex-col items-center justify-center gap-4 rounded-2xl border border-line bg-ink/50 px-6 py-14 text-center'>
+                    <p className='font-display text-2xl tracking-[-0.03em] text-foam'>
+                      This section is hidden
+                    </p>
+                    <p className='max-w-sm text-sm text-muted'>
+                      It won&apos;t appear on your public page until you show it
+                      again.
+                    </p>
+                    <button
+                      type='button'
+                      onClick={() => toggleVisible(active.id)}
+                      className='rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink'
+                    >
+                      Show Section
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    {active.type === 'Hero' ? (
+                      <HeroLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'About' ? (
+                      <AboutLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'Skills' ? (
+                      <SkillsLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'Projects' ? (
+                      <ProjectsLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'CTA' ? (
+                      <CtaLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'Experience' ? (
+                      <ExperienceLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'Education' ? (
+                      <EducationLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : active.type === 'Contact' ? (
+                      <ContactLayoutPicker
+                        section={active}
+                        paletteId={paletteId}
+                        customPalette={customPalette}
+                        portfolioTitle={title || 'Portfolio'}
+                        portfolioSlug={slug || 'your-slug'}
+                        value={active.variant}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : isVariantSectionType(active.type) ? (
+                      <LayoutPicker
+                        value={active.variant}
+                        count={sectionVariantCount(active.type)}
+                        onChange={(v) => setVariant(active.id, v)}
+                      />
+                    ) : null}
+                    <div className='mt-4'>
+                      <SectionFields
+                        section={active}
+                        onChange={updateActiveData}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </section>
