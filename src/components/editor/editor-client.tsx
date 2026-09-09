@@ -42,6 +42,7 @@ import {
   clampSectionVariant,
   defaultSectionData,
   isAlwaysVisibleSectionType,
+  isPinnedSectionType,
   isVariantSectionType,
   SECTION_LABELS,
   SECTION_TYPES,
@@ -204,16 +205,6 @@ export function EditorClient() {
     };
     setSections((prev) => [...prev, section]);
     setActiveId(section.id);
-  }
-
-  function removeSection(id: string) {
-    setSections((prev) => {
-      const next = prev
-        .filter((s) => s.id !== id)
-        .map((s, order) => ({ ...s, order }));
-      if (activeId === id) setActiveId(next[0]?.id ?? null);
-      return next;
-    });
   }
 
   const save = useCallback(async (source: 'manual' | 'auto' = 'manual') => {
@@ -516,7 +507,8 @@ export function EditorClient() {
                         </h2>
                         <div className='flex gap-3'>
                           {active.visible &&
-                          !isAlwaysVisibleSectionType(active.type) ? (
+                          !isAlwaysVisibleSectionType(active.type) &&
+                          !isPinnedSectionType(active.type) ? (
                             <button
                               type='button'
                               onClick={() => toggleVisible(active.id)}
@@ -525,13 +517,6 @@ export function EditorClient() {
                               Hide
                             </button>
                           ) : null}
-                          <button
-                            type='button'
-                            onClick={() => removeSection(active.id)}
-                            className='text-sm text-red-300'
-                          >
-                            Remove
-                          </button>
                         </div>
                       </div>
 
