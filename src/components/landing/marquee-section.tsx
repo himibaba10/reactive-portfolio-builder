@@ -9,7 +9,7 @@ export function MarqueeSection() {
       aria-label="Product highlights"
       className="relative border-y border-line bg-panel py-5 overflow-hidden"
     >
-      <div data-marquee-track className="flex w-max gap-10 whitespace-nowrap will-change-transform">
+      <div data-marquee-track className="flex w-max gap-10 whitespace-nowrap">
         {loop.map((item, index) => (
           <span
             key={`${item}-${index}`}

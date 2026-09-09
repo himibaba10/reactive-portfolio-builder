@@ -8,7 +8,7 @@ export function SiteHeader() {
       data-landing-header
       className="pointer-events-none fixed inset-x-0 top-0 z-50 opacity-0"
     >
-      <div className="border-b border-line bg-ink/95 backdrop-blur-md">
+      <div className="border-b border-line bg-ink/95">
         <div
           data-landing-header-inner
           className="mx-auto flex w-full max-w-site flex-col gap-2 px-5 py-3 md:px-8 md:py-4"

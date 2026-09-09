@@ -19,7 +19,7 @@ export function CtaPrimaryBanner({ cta }: { cta: CtaFlags }) {
       ) : (
         <div
           aria-hidden
-          className='pointer-events-none absolute -left-8 bottom-0 h-40 w-40 rounded-full bg-(--p-accent) opacity-40 blur-2xl'
+          className='pointer-events-none absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-(--p-accent) opacity-35 blur-xl'
         />
       )}
       <div className='relative max-w-2xl space-y-4'>

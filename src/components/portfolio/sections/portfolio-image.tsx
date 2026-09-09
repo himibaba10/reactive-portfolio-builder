@@ -35,6 +35,13 @@ export function PortfolioImage({
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={src} alt={alt} className={className} />
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      loading={priority ? "eager" : "lazy"}
+      decoding="async"
+      fetchPriority={priority ? "high" : "auto"}
+    />
   );
 }

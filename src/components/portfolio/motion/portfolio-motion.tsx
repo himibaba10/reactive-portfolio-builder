@@ -16,22 +16,9 @@ function revealTargets(block: HTMLElement): HTMLElement[] {
       ? block
       : (block.querySelector("section") ?? block);
 
-  const direct = gsap.utils.toArray<HTMLElement>(":scope > *", section);
-  if (!direct.length) return [section as HTMLElement];
-
-  const expanded: HTMLElement[] = [];
-  for (const node of direct) {
-    const display = getComputedStyle(node).display;
-    const kids = gsap.utils.toArray<HTMLElement>(":scope > *", node);
-    const isCluster =
-      (display.includes("grid") || display.includes("flex")) && kids.length > 1;
-    if (isCluster) {
-      expanded.push(...kids);
-    } else {
-      expanded.push(node);
-    }
-  }
-  return expanded;
+  // Prefer explicit children — avoid getComputedStyle thrash at init.
+  const kids = gsap.utils.toArray<HTMLElement>(":scope > *", section);
+  return kids.length ? kids.slice(0, 12) : [section as HTMLElement];
 }
 
 export function PortfolioMotion() {

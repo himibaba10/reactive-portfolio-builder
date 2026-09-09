@@ -13,11 +13,13 @@ type CursorFollowerProps = {
 function resolveThemeColors(theme: "brand" | "palette") {
   if (theme === "palette") {
     const root = document.querySelector<HTMLElement>("[data-portfolio-root]");
-    const styles = root ? getComputedStyle(root) : getComputedStyle(document.documentElement);
+    const styles = root
+      ? getComputedStyle(root)
+      : getComputedStyle(document.documentElement);
     const accent = styles.getPropertyValue("--p-accent").trim() || "#d6ff3f";
     const light = styles.getPropertyValue("--p-text-light").trim() || "#f4f5f0";
     return {
-      ringIdle: `color-mix(in oklab, ${light} 55%, transparent)`,
+      ringIdle: light,
       ringActive: accent,
       dotIdle: light,
       dotActive: accent,
@@ -25,19 +27,19 @@ function resolveThemeColors(theme: "brand" | "palette") {
   }
 
   return {
-    ringIdle: "rgba(244, 245, 240, 0.55)",
-    ringActive: "rgba(214, 255, 63, 0.85)",
+    ringIdle: "#f4f5f0",
+    ringActive: "#d6ff3f",
     dotIdle: "#f4f5f0",
     dotActive: "#d6ff3f",
   };
 }
 
 /**
- * Soft custom cursor that eases toward the pointer (GSAP quickTo).
- * Desktop / fine pointer only — skipped for touch and reduced motion.
+ * Soft custom cursor (GSAP quickTo). Desktop / fine pointer only.
+ * Blend mode is scoped to the cursor glyphs — not a full-viewport layer.
  */
 export function CursorFollower({
-  ambientSelector = "[data-hero-orb]",
+  ambientSelector = null,
   theme = "brand",
 }: CursorFollowerProps) {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -49,9 +51,7 @@ export function CursorFollower({
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const sync = () => {
-      setEnabled(fine.matches && !reduced.matches);
-    };
+    const sync = () => setEnabled(fine.matches && !reduced.matches);
     sync();
 
     fine.addEventListener("change", sync);
@@ -73,26 +73,48 @@ export function CursorFollower({
     const colors = resolveThemeColors(theme);
     document.documentElement.classList.add("has-cursor-follower");
 
-    const xRing = gsap.quickTo(ring, "x", { duration: 0.55, ease: "power3.out" });
-    const yRing = gsap.quickTo(ring, "y", { duration: 0.55, ease: "power3.out" });
-    const xDot = gsap.quickTo(dot, "x", { duration: 0.18, ease: "power3.out" });
-    const yDot = gsap.quickTo(dot, "y", { duration: 0.18, ease: "power3.out" });
+    const xRing = gsap.quickTo(ring, "x", {
+      duration: 0.45,
+      ease: "power3.out",
+    });
+    const yRing = gsap.quickTo(ring, "y", {
+      duration: 0.45,
+      ease: "power3.out",
+    });
+    const xDot = gsap.quickTo(dot, "x", {
+      duration: 0.12,
+      ease: "power3.out",
+    });
+    const yDot = gsap.quickTo(dot, "y", {
+      duration: 0.12,
+      ease: "power3.out",
+    });
+    const scaleRing = gsap.quickTo(ring, "scale", {
+      duration: 0.28,
+      ease: "power3.out",
+    });
+    const scaleDot = gsap.quickTo(dot, "scale", {
+      duration: 0.28,
+      ease: "power3.out",
+    });
 
-    gsap.set([ring, dot], { xPercent: -50, yPercent: -50 });
-    gsap.set(ring, { borderColor: colors.ringIdle });
+    gsap.set([ring, dot], { xPercent: -50, yPercent: -50, force3D: true });
+    gsap.set(ring, { borderColor: colors.ringIdle, opacity: 0.7 });
     gsap.set(dot, { backgroundColor: colors.dotIdle });
 
     let visible = false;
+    let active = false;
+    let pressed = false;
 
     const show = () => {
       if (visible) return;
       visible = true;
-      gsap.to(root, { opacity: 1, duration: 0.35, ease: "power2.out" });
+      gsap.to(root, { opacity: 1, duration: 0.25, ease: "power2.out" });
     };
 
     const hide = () => {
       visible = false;
-      gsap.to(root, { opacity: 0, duration: 0.25, ease: "power2.out" });
+      gsap.to(root, { opacity: 0, duration: 0.2, ease: "power2.out" });
     };
 
     const isInteractive = (target: EventTarget | null) => {
@@ -104,6 +126,36 @@ export function CursorFollower({
       );
     };
 
+    const applyState = (nextActive: boolean, nextPressed: boolean) => {
+      const ringScale = nextPressed ? 0.85 : nextActive ? 2.2 : 1;
+      const dotScale = nextPressed ? 0.55 : nextActive ? 0.35 : 1;
+      scaleRing(ringScale);
+      scaleDot(dotScale);
+
+      if (nextActive !== active) {
+        active = nextActive;
+        gsap.set(ring, {
+          borderColor: nextActive ? colors.ringActive : colors.ringIdle,
+          opacity: nextActive ? 0.95 : 0.7,
+        });
+        gsap.set(dot, {
+          backgroundColor: nextActive ? colors.dotActive : colors.dotIdle,
+        });
+      }
+    };
+
+    const orb = ambientSelector
+      ? document.querySelector<HTMLElement>(ambientSelector)
+      : null;
+    const xOrb = orb
+      ? gsap.quickTo(orb, "x", { duration: 1, ease: "power3.out" })
+      : null;
+    const yOrb = orb
+      ? gsap.quickTo(orb, "y", { duration: 1, ease: "power3.out" })
+      : null;
+
+    let lastHoverTarget: EventTarget | null = null;
+
     const onMove = (event: MouseEvent) => {
       show();
       xRing(event.clientX);
@@ -111,40 +163,29 @@ export function CursorFollower({
       xDot(event.clientX);
       yDot(event.clientY);
 
-      const active = isInteractive(event.target);
-      gsap.to(ring, {
-        scale: active ? 2.4 : 1,
-        borderColor: active ? colors.ringActive : colors.ringIdle,
-        duration: 0.35,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
-      gsap.to(dot, {
-        scale: active ? 0.35 : 1,
-        backgroundColor: active ? colors.dotActive : colors.dotIdle,
-        duration: 0.3,
-        ease: "power3.out",
-        overwrite: "auto",
-      });
+      // Avoid closest() thrash — only re-evaluate when the hit target changes.
+      if (event.target !== lastHoverTarget || pressed) {
+        lastHoverTarget = event.target;
+        const nextActive = isInteractive(event.target);
+        if (nextActive !== active || pressed) {
+          applyState(nextActive, pressed);
+        }
+      }
+
+      if (xOrb && yOrb) {
+        xOrb((event.clientX - window.innerWidth / 2) * 0.03);
+        yOrb((event.clientY - window.innerHeight / 2) * 0.03);
+      }
     };
 
     const onDown = () => {
-      gsap.to(ring, { scale: 0.85, duration: 0.15, ease: "power2.out" });
-      gsap.to(dot, { scale: 0.6, duration: 0.15, ease: "power2.out" });
+      pressed = true;
+      applyState(active, true);
     };
 
     const onUp = (event: MouseEvent) => {
-      const active = isInteractive(event.target);
-      gsap.to(ring, {
-        scale: active ? 2.4 : 1,
-        duration: 0.35,
-        ease: "power3.out",
-      });
-      gsap.to(dot, {
-        scale: active ? 0.35 : 1,
-        duration: 0.3,
-        ease: "power3.out",
-      });
+      pressed = false;
+      applyState(isInteractive(event.target), false);
     };
 
     window.addEventListener("mousemove", onMove, { passive: true });
@@ -160,30 +201,9 @@ export function CursorFollower({
       window.removeEventListener("mouseup", onUp);
       document.removeEventListener("mouseleave", hide);
       document.removeEventListener("mouseenter", show);
+      if (orb) gsap.set(orb, { clearProps: "x,y" });
     };
-  }, [enabled, theme]);
-
-  useEffect(() => {
-    if (!enabled || !ambientSelector) return;
-    const orb = document.querySelector<HTMLElement>(ambientSelector);
-    if (!orb) return;
-
-    const xTo = gsap.quickTo(orb, "x", { duration: 1.1, ease: "power3.out" });
-    const yTo = gsap.quickTo(orb, "y", { duration: 1.1, ease: "power3.out" });
-
-    const onMove = (event: MouseEvent) => {
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
-      xTo((event.clientX - cx) * 0.045);
-      yTo((event.clientY - cy) * 0.045);
-    };
-
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      gsap.set(orb, { clearProps: "x,y" });
-    };
-  }, [enabled, ambientSelector]);
+  }, [enabled, theme, ambientSelector]);
 
   if (!enabled) return null;
 
@@ -191,15 +211,15 @@ export function CursorFollower({
     <div
       ref={rootRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-100 opacity-0 mix-blend-difference"
+      className="pointer-events-none fixed top-0 left-0 z-100 size-0 opacity-0"
     >
       <div
         ref={ringRef}
-        className="absolute top-0 left-0 size-10 rounded-full border border-white/55"
+        className="absolute top-0 left-0 size-9 rounded-full border border-white/70 mix-blend-difference will-change-transform"
       />
       <div
         ref={dotRef}
-        className="absolute top-0 left-0 size-1.5 rounded-full bg-white"
+        className="absolute top-0 left-0 size-1.5 rounded-full bg-white mix-blend-difference will-change-transform"
       />
     </div>
   );

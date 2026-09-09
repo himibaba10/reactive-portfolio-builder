@@ -22,7 +22,7 @@ export function HeroSection() {
       <div
         aria-hidden
         data-hero-orb
-        className='pointer-events-none absolute top-[18%] right-[8%] h-[42vw] max-h-105 w-[42vw] max-w-105 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(214,255,63,0.55),rgba(91,140,255,0.12)_45%,transparent_70%)] blur-2xl'
+        className='pointer-events-none absolute top-[18%] right-[8%] h-[36vw] max-h-90 w-[36vw] max-w-90 rounded-full bg-[radial-gradient(circle_at_30%_30%,rgba(214,255,63,0.45),rgba(91,140,255,0.1)_45%,transparent_70%)] blur-xl'
       />
 
       <div className='relative z-10 mx-auto w-full max-w-site'>

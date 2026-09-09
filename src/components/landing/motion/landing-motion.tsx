@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { Preloader } from "@/components/landing/motion/preloader";
 import { CursorFollower } from "@/components/motion/cursor-follower";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useCallback, useState } from "react";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -17,7 +17,9 @@ export function LandingMotion() {
     () => {
       if (!ready) return;
 
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
       const mm = gsap.matchMedia();
 
       gsap.to("[data-landing-header]", {
@@ -41,15 +43,20 @@ export function LandingMotion() {
           ],
           { clearProps: "all", y: 0, opacity: 1 },
         );
-        return;
+        return () => {
+          mm.revert();
+        };
       }
 
       gsap.set(["[data-hero-brand]", "[data-hero-copy]", "[data-hero-cta]"], {
         y: 28,
       });
-      gsap.set(["[data-cta-eyebrow]", "[data-cta-copy]", "[data-cta-actions]"], {
-        y: 28,
-      });
+      gsap.set(
+        ["[data-cta-eyebrow]", "[data-cta-copy]", "[data-cta-actions]"],
+        {
+          y: 28,
+        },
+      );
 
       const heroTl = gsap.timeline({ defaults: { ease: "power4.out" } });
       heroTl
@@ -69,21 +76,12 @@ export function LandingMotion() {
           "-=0.35",
         );
 
+      // Single scrub on orb only — grid stays static (cheaper paint).
       gsap.to("[data-hero-orb]", {
-        yPercent: 18,
-        xPercent: -8,
+        yPercent: 14,
+        xPercent: -6,
         ease: "none",
-        scrollTrigger: {
-          trigger: "[data-hero]",
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.1,
-        },
-      });
-
-      gsap.to("[data-hero-grid]", {
-        yPercent: 12,
-        ease: "none",
+        force3D: true,
         scrollTrigger: {
           trigger: "[data-hero]",
           start: "top top",
@@ -92,22 +90,35 @@ export function LandingMotion() {
         },
       });
 
-      const marquee = document.querySelector<HTMLElement>("[data-marquee-track]");
+      const marquee = document.querySelector<HTMLElement>(
+        "[data-marquee-track]",
+      );
       if (marquee) {
         const distance = marquee.scrollWidth / 2;
-        gsap.to(marquee, {
+        const marqueeTween = gsap.to(marquee, {
           x: -distance,
           duration: 28,
           ease: "none",
           repeat: -1,
+          force3D: true,
+        });
+
+        ScrollTrigger.create({
+          trigger: "[data-marquee]",
+          start: "top bottom",
+          end: "bottom top",
+          onEnter: () => marqueeTween.play(),
+          onEnterBack: () => marqueeTween.play(),
+          onLeave: () => marqueeTween.pause(),
+          onLeaveBack: () => marqueeTween.pause(),
         });
       }
 
       gsap.from("[data-process-card]", {
         opacity: 0,
-        y: 64,
-        duration: 0.9,
-        stagger: 0.18,
+        y: 48,
+        duration: 0.8,
+        stagger: 0.14,
         ease: "power3.out",
         immediateRender: false,
         scrollTrigger: {
@@ -117,33 +128,52 @@ export function LandingMotion() {
         },
       });
 
-      // Desktop only: pinned horizontal scrub (mobile uses native swipe)
       mm.add("(min-width: 768px)", () => {
-        const sectionsPin = document.querySelector<HTMLElement>("[data-sections-pin]");
-        const sectionsTrack = document.querySelector<HTMLElement>("[data-sections-track]");
-        const header = document.querySelector<HTMLElement>("[data-landing-header]");
+        const sectionsPin = document.querySelector<HTMLElement>(
+          "[data-sections-pin]",
+        );
+        const sectionsTrack = document.querySelector<HTMLElement>(
+          "[data-sections-track]",
+        );
+        const header = document.querySelector<HTMLElement>(
+          "[data-landing-header]",
+        );
         if (!sectionsPin || !sectionsTrack) return;
 
-        const headerOffset = () => Math.ceil(header?.getBoundingClientRect().height ?? 72) + 28;
+        let cachedHeader = Math.ceil(header?.offsetHeight ?? 72) + 28;
+        let cachedScroll = Math.max(
+          0,
+          sectionsTrack.scrollWidth - window.innerWidth + 32,
+        );
 
-        const getScroll = () =>
-          Math.max(0, sectionsTrack.scrollWidth - window.innerWidth + 32);
+        const refreshMetrics = () => {
+          cachedHeader = Math.ceil(header?.offsetHeight ?? 72) + 28;
+          cachedScroll = Math.max(
+            0,
+            sectionsTrack.scrollWidth - window.innerWidth + 32,
+          );
+        };
+
+        sectionsTrack.classList.add("will-change-transform");
 
         const tween = gsap.to(sectionsTrack, {
-          x: () => -getScroll(),
+          x: () => -cachedScroll,
           ease: "none",
+          force3D: true,
           scrollTrigger: {
             trigger: sectionsPin,
-            start: () => `top top+=${headerOffset()}`,
-            end: () => `+=${getScroll()}`,
+            start: () => `top top+=${cachedHeader}`,
+            end: () => `+=${cachedScroll}`,
             pin: true,
-            scrub: 1.1,
+            scrub: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            onRefresh: refreshMetrics,
           },
         });
 
         return () => {
+          sectionsTrack.classList.remove("will-change-transform");
           tween.scrollTrigger?.kill();
           tween.kill();
           gsap.set(sectionsTrack, { clearProps: "transform" });
@@ -152,9 +182,9 @@ export function LandingMotion() {
 
       gsap.from("[data-palette-card]", {
         opacity: 0,
-        y: 40,
-        duration: 0.75,
-        stagger: 0.08,
+        y: 32,
+        duration: 0.65,
+        stagger: 0.06,
         ease: "power2.out",
         immediateRender: false,
         scrollTrigger: {
@@ -173,8 +203,8 @@ export function LandingMotion() {
         })
         .to("[data-cta-line] > span", {
           y: 0,
-          duration: 1,
-          stagger: 0.12,
+          duration: 0.9,
+          stagger: 0.1,
           ease: "power4.out",
         })
         .to(
@@ -182,41 +212,46 @@ export function LandingMotion() {
           {
             opacity: 1,
             y: 0,
-            duration: 0.65,
-            stagger: 0.08,
+            duration: 0.55,
+            stagger: 0.06,
             ease: "power2.out",
           },
-          "-=0.45",
+          "-=0.4",
         );
 
-      // Magnetic only on fine pointers (skip touch)
       mm.add("(hover: hover) and (pointer: fine)", () => {
         const magnetics = gsap.utils.toArray<HTMLElement>("[data-magnetic]");
         const cleanups = magnetics.map((el) => {
+          let rect = el.getBoundingClientRect();
+          const xTo = gsap.quickTo(el, "x", {
+            duration: 0.28,
+            ease: "power3.out",
+          });
+          const yTo = gsap.quickTo(el, "y", {
+            duration: 0.28,
+            ease: "power3.out",
+          });
+
+          const onEnter = () => {
+            rect = el.getBoundingClientRect();
+          };
           const onMove = (event: MouseEvent) => {
-            const rect = el.getBoundingClientRect();
-            const x = event.clientX - rect.left - rect.width / 2;
-            const y = event.clientY - rect.top - rect.height / 2;
-            gsap.to(el, {
-              x: x * 0.28,
-              y: y * 0.28,
-              duration: 0.35,
-              ease: "power3.out",
-            });
+            xTo((event.clientX - rect.left - rect.width / 2) * 0.22);
+            yTo((event.clientY - rect.top - rect.height / 2) * 0.22);
           };
           const onLeave = () => {
-            gsap.to(el, {
-              x: 0,
-              y: 0,
-              duration: 0.55,
-              ease: "elastic.out(1, 0.4)",
-            });
+            xTo(0);
+            yTo(0);
           };
-          el.addEventListener("mousemove", onMove);
+
+          el.addEventListener("mouseenter", onEnter);
+          el.addEventListener("mousemove", onMove, { passive: true });
           el.addEventListener("mouseleave", onLeave);
           return () => {
+            el.removeEventListener("mouseenter", onEnter);
             el.removeEventListener("mousemove", onMove);
             el.removeEventListener("mouseleave", onLeave);
+            gsap.set(el, { clearProps: "x,y" });
           };
         });
 

@@ -34,7 +34,7 @@ export function SectionsGallery() {
         >
           <ul
             data-sections-track
-            className="flex w-max gap-5 px-5 pb-2 will-change-transform md:gap-6 md:px-8"
+            className="flex w-max gap-5 px-5 pb-2 md:gap-6 md:px-8"
           >
             {sectionTypes.map((section, index) => (
               <li

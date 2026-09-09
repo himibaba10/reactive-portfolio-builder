@@ -21,7 +21,7 @@ export function AppHeader({ email }: { email?: string }) {
       : "hover:text-foam";
 
   return (
-    <header className="border-b border-line bg-ink/95 backdrop-blur-md">
+    <header className="border-b border-line bg-ink/95">
       <div className="mx-auto flex w-full max-w-site items-center justify-between gap-4 px-5 py-4 md:px-8">
         <Link href="/dashboard">
           <BrandLogo className="h-7 w-auto" sizes="140px" />

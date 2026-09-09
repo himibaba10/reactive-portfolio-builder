@@ -20,7 +20,7 @@ export function ButtonLink({
     <Link
       href={href}
       className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold tracking-wide no-underline transition-[transform,background-color,color,border-color] duration-300",
+        "inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold tracking-wide no-underline transition-[background-color,color,border-color] duration-300",
         variant === "primary" &&
           "bg-signal text-ink hover:bg-signal-soft",
         variant === "ghost" && "bg-transparent text-foam hover:text-signal",
