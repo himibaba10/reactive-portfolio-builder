@@ -1,4 +1,4 @@
-import { ButtonLink } from "@/components/ui/button-link";
+import { AuthCtaLink } from "@/components/landing/auth-cta-link";
 
 export function CtaSection() {
   return (
@@ -33,9 +33,12 @@ export function CtaSection() {
           your path — no billing in the MVP.
         </p>
         <div data-cta-actions className="opacity-0">
-          <ButtonLink href="/signup" className="px-8 py-4 text-base" data-magnetic>
-            Create your portfolio
-          </ButtonLink>
+          <AuthCtaLink
+            className="px-8 py-4 text-base"
+            guestLabel="Create your portfolio"
+            memberLabel="Open dashboard"
+            data-magnetic
+          />
         </div>
       </div>
     </section>

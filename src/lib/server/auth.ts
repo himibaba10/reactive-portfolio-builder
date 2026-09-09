@@ -15,24 +15,30 @@ export function publicUser(user: UserDocument) {
   };
 }
 
+function sessionCookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: serverConfig.cookieSecure,
+    sameSite: "lax" as const,
+    path: "/",
+    maxAge,
+    expires: new Date(Date.now() + maxAge * 1000),
+  };
+}
+
 export function setSessionCookie(res: NextResponse, userId: string) {
   const token = signSession(userId);
-  res.cookies.set(serverConfig.cookieName, token, {
-    httpOnly: true,
-    secure: serverConfig.isProd,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60,
-  });
+  res.cookies.set(
+    serverConfig.cookieName,
+    token,
+    sessionCookieOptions(serverConfig.sessionMaxAgeSec),
+  );
 }
 
 export function clearSessionCookie(res: NextResponse) {
   res.cookies.set(serverConfig.cookieName, "", {
-    httpOnly: true,
-    secure: serverConfig.isProd,
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
+    ...sessionCookieOptions(0),
+    expires: new Date(0),
   });
 }
 

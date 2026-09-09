@@ -9,7 +9,7 @@ export type SessionPayload = {
 
 export function signSession(userId: string) {
   return jwt.sign({ sub: userId } satisfies SessionPayload, serverConfig.jwtSecret, {
-    expiresIn: serverConfig.sessionTtl,
+    expiresIn: serverConfig.sessionMaxAgeSec,
   });
 }
 

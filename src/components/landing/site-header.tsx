@@ -1,6 +1,6 @@
 import { navLinks } from "@/lib/landing-content";
 import { BrandLogo } from "@/components/brand-logo";
-import { ButtonLink } from "@/components/ui/button-link";
+import { AuthCtaLink } from "@/components/landing/auth-cta-link";
 
 export function SiteHeader() {
   return (
@@ -29,14 +29,11 @@ export function SiteHeader() {
               ))}
             </nav>
             <div className="pointer-events-auto">
-              <ButtonLink
-                href="/signup"
+              <AuthCtaLink
                 variant="outline"
                 className="px-3 py-2 text-xs sm:px-4"
                 data-magnetic
-              >
-                Start free
-              </ButtonLink>
+              />
             </div>
           </div>
           <nav className="pointer-events-auto flex items-center justify-between gap-3 md:hidden">

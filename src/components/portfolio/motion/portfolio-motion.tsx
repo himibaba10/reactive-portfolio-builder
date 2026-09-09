@@ -3,6 +3,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { CursorFollower } from "@/components/motion/cursor-follower";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -89,5 +90,5 @@ export function PortfolioMotion() {
     }
   }, []);
 
-  return null;
+  return <CursorFollower theme="palette" ambientSelector={null} />;
 }

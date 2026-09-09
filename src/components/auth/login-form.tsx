@@ -23,7 +23,15 @@ export function LoginForm() {
         password: String(data.get("password") || ""),
       },
     });
-    router.push("/dashboard");
+    const next =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("next")
+        : null;
+    router.push(
+      next && next.startsWith("/") && !next.startsWith("//")
+        ? next
+        : "/dashboard",
+    );
     router.refresh();
   });
 

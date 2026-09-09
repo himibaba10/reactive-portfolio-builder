@@ -1,4 +1,5 @@
 import { BrandLogo } from '@/components/brand-logo';
+import { AuthCtaLink } from '@/components/landing/auth-cta-link';
 import { ButtonLink } from '@/components/ui/button-link';
 import { site } from '@/lib/landing-content';
 
@@ -34,7 +35,7 @@ export function HeroSection() {
           />
         </div>
 
-        <div className='mt-8 flex max-w-3xl flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between'>
+        <div className='mt-8 flex max-w-4xl flex-col gap-6 md:mt-10 md:flex-row md:items-end md:justify-between'>
           <p
             data-hero-copy
             className='max-w-md text-base leading-relaxed text-muted opacity-0 md:text-lg'
@@ -45,9 +46,7 @@ export function HeroSection() {
             data-hero-cta
             className='flex w-full flex-col gap-3 opacity-0 sm:w-auto sm:flex-row'
           >
-            <ButtonLink href='/signup' data-magnetic>
-              Start free
-            </ButtonLink>
+            <AuthCtaLink data-magnetic />
             <ButtonLink href='#process' variant='outline' data-magnetic>
               See the process
             </ButtonLink>

@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Preloader } from "@/components/landing/motion/preloader";
+import { CursorFollower } from "@/components/motion/cursor-follower";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -229,5 +230,10 @@ export function LandingMotion() {
     { dependencies: [ready] },
   );
 
-  return <Preloader onComplete={onPreloaderComplete} />;
+  return (
+    <>
+      <Preloader onComplete={onPreloaderComplete} />
+      {ready ? <CursorFollower /> : null}
+    </>
+  );
 }

@@ -88,3 +88,10 @@ a {
     animation: none;
   }
 }
+
+@media (hover: hover) and (pointer: fine) {
+  html.has-cursor-follower,
+  html.has-cursor-follower * {
+    cursor: none !important;
+  }
+}
