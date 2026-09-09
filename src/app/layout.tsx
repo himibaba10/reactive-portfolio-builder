@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Syne, Instrument_Sans } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/landing-content";
+import { clerkAppearance } from "@/lib/clerk-appearance";
 
 const display = Syne({
   variable: "--font-display",
@@ -23,11 +24,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${display.variable} ${body.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${display.variable} ${body.variable} h-full antialiased`}
+      style={{ colorScheme: "dark" }}
+    >
       <body className="min-h-full bg-ink text-foam">
-        <ClerkProvider>
-          {children}
-        </ClerkProvider>
+        <ClerkProvider appearance={clerkAppearance}>{children}</ClerkProvider>
       </body>
     </html>
   );

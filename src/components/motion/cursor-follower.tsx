@@ -90,14 +90,11 @@ export function CursorFollower({
       duration: 0.12,
       ease: "power3.out",
     });
-    const scaleRing = gsap.quickTo(ring, "scale", {
-      duration: 0.28,
-      ease: "power3.out",
-    });
-    const scaleDot = gsap.quickTo(dot, "scale", {
-      duration: 0.28,
-      ease: "power3.out",
-    });
+    const scaleOpts = { duration: 0.28, ease: "power3.out" } as const;
+    const scaleRingX = gsap.quickTo(ring, "scaleX", scaleOpts);
+    const scaleRingY = gsap.quickTo(ring, "scaleY", scaleOpts);
+    const scaleDotX = gsap.quickTo(dot, "scaleX", scaleOpts);
+    const scaleDotY = gsap.quickTo(dot, "scaleY", scaleOpts);
 
     gsap.set([ring, dot], { xPercent: -50, yPercent: -50, force3D: true });
     gsap.set(ring, { borderColor: colors.ringIdle, opacity: 0.7 });
@@ -130,8 +127,10 @@ export function CursorFollower({
     const applyState = (nextActive: boolean, nextPressed: boolean) => {
       const ringScale = nextPressed ? 0.85 : nextActive ? 2.2 : 1;
       const dotScale = nextPressed ? 0.55 : nextActive ? 0.35 : 1;
-      scaleRing(ringScale);
-      scaleDot(dotScale);
+      scaleRingX(ringScale);
+      scaleRingY(ringScale);
+      scaleDotX(dotScale);
+      scaleDotY(dotScale);
 
       if (nextActive !== active) {
         active = nextActive;
