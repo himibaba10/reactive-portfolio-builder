@@ -1,5 +1,5 @@
 import {
-  HeroCta,
+  HeroActions,
   HeroDescription,
   type HeroFlags,
 } from './shared';
@@ -43,7 +43,7 @@ export function HeroCinematicBleed({
           hero={hero}
           className='max-w-lg text-sm leading-relaxed text-white/60 md:text-base'
         />
-        <HeroCta hero={hero} />
+        <HeroActions hero={hero} />
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import {
-  HeroCta,
+  HeroActions,
   HeroDescription,
   type HeroFlags,
 } from './shared';
@@ -34,7 +34,7 @@ export function HeroEditorialSpread({
           hero={hero}
           className='max-w-md text-sm leading-relaxed text-white/55 md:text-base'
         />
-        <HeroCta hero={hero} />
+        <HeroActions hero={hero} />
       </div>
       {photo ? (
         <div className='md:col-span-5 md:pt-8'>

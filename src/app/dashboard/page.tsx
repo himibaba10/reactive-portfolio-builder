@@ -7,6 +7,11 @@ import { api, ApiError, type Portfolio, type User } from "@/lib/api-client";
 import { isValidSlug, normalizeSlug } from "@/lib/slug";
 import { AppChrome } from "@/components/app/app-chrome";
 import {
+  CreateModeChooser,
+  PrebuiltCreateForm,
+  type CreateMode,
+} from "@/components/dashboard/create-portfolio-flow";
+import {
   Field,
   FormError,
   FormInput,
@@ -25,6 +30,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [loading, setLoading] = useState(true);
+  const [createMode, setCreateMode] = useState<CreateMode>("choose");
   const [createTitle, setCreateTitle] = useState("");
   const [createSlug, setCreateSlug] = useState("");
   const [slugEdited, setSlugEdited] = useState(false);
@@ -87,6 +93,15 @@ export default function DashboardPage() {
     };
   }, [router]);
 
+  async function createPortfolio(body: Record<string, unknown>) {
+    const result = await api<{ portfolio: Portfolio }>("/portfolios/me", {
+      method: "POST",
+      body,
+    });
+    setPortfolio(result.portfolio);
+    router.push("/editor");
+  }
+
   const createForm = useFormSubmit(async (_form) => {
     const slug = normalizeSlug(createSlug);
     if (!isValidSlug(slug)) {
@@ -96,19 +111,15 @@ export default function DashboardPage() {
     if (!title) {
       throw new Error("Title is required.");
     }
-    const result = await api<{ portfolio: Portfolio }>("/portfolios/me", {
-      method: "POST",
-      body: {
-        title,
-        slug,
-        paletteId: createPaletteId || "signal",
-        ...(createPaletteId === CUSTOM_PALETTE_ID
-          ? { customPalette: createCustomPalette }
-          : {}),
-      },
+    await createPortfolio({
+      starter: "scratch",
+      title,
+      slug,
+      paletteId: createPaletteId || "signal",
+      ...(createPaletteId === CUSTOM_PALETTE_ID
+        ? { customPalette: createCustomPalette }
+        : {}),
     });
-    setPortfolio(result.portfolio);
-    router.push("/editor");
   });
 
   async function resendVerification() {
@@ -149,6 +160,7 @@ export default function DashboardPage() {
     if (!confirm("Delete this portfolio? This cannot be undone.")) return;
     await api("/portfolios/me", { method: "DELETE" });
     setPortfolio(null);
+    setCreateMode("choose");
     setBanner("Portfolio deleted.");
   }
 
@@ -184,6 +196,12 @@ export default function DashboardPage() {
 
   return (
     <AppChrome email={user?.email}>
+      <CreateModeChooser
+        open={!portfolio && createMode === "choose"}
+        onChoosePrebuilt={() => setCreateMode("prebuilt")}
+        onChooseScratch={() => setCreateMode("scratch")}
+      />
+
       <div className="flex flex-col gap-8">
         <div>
           <p className="text-xs tracking-[0.2em] text-signal uppercase">
@@ -283,14 +301,31 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
-        ) : (
+        ) : createMode === "prebuilt" ? (
+          <PrebuiltCreateForm
+            onBack={() => setCreateMode("choose")}
+            onCreated={() => undefined}
+            create={createPortfolio}
+          />
+        ) : createMode === "scratch" ? (
           <div className="rounded-2xl border border-line bg-panel p-6">
-            <h2 className="font-display text-2xl tracking-[-0.03em]">
-              Title, slug, palette
-            </h2>
-            <p className="mt-2 max-w-xl text-sm text-muted">
-              Presets or your own five tokens. You can create exactly one portfolio.
-            </p>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-2xl tracking-[-0.03em]">
+                  From scratch
+                </h2>
+                <p className="mt-2 max-w-xl text-sm text-muted">
+                  Title, slug, palette. You can create exactly one portfolio.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCreateMode("choose")}
+                className="text-sm text-muted hover:text-foam"
+              >
+                Back
+              </button>
+            </div>
             <form
               onSubmit={createForm.onSubmit}
               className="mt-6 grid gap-4 md:grid-cols-2"
@@ -337,6 +372,19 @@ export default function DashboardPage() {
                 </SubmitButton>
               </div>
             </form>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-line bg-panel/50 p-8 text-center">
+            <p className="text-sm text-muted">
+              Choose how you want to start in the dialog.
+            </p>
+            <button
+              type="button"
+              onClick={() => setCreateMode("choose")}
+              className="mt-4 text-sm text-signal hover:underline"
+            >
+              Open choices
+            </button>
           </div>
         )}
       </div>

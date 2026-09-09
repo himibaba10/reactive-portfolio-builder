@@ -9,7 +9,9 @@ import {
 import {
   clampSectionVariant,
   createDefaultSections,
+  createPrebuiltSections,
   customPaletteSchema,
+  emailSchema,
   isAlwaysVisibleSectionType,
   paletteIdSchema,
   sectionTypeSchema,
@@ -23,12 +25,39 @@ import { z } from "zod";
 
 const createSchema = z
   .object({
+    starter: z.enum(["scratch", "prebuilt"]).optional().default("scratch"),
     title: z.string().trim().min(1).max(80),
-    slug: z.string().trim().min(2).max(48),
+    slug: z.string().trim().min(2).max(48).optional(),
     paletteId: paletteIdSchema.optional(),
     customPalette: customPaletteSchema.optional().nullable(),
+    designation: z.string().trim().min(1).max(120).optional(),
+    email: emailSchema.optional(),
+    phone: z.string().trim().max(40).optional(),
   })
   .superRefine((body, ctx) => {
+    if (body.starter === "prebuilt") {
+      if (!body.designation) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Designation is required",
+          path: ["designation"],
+        });
+      }
+      if (!body.email) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Email is required",
+          path: ["email"],
+        });
+      }
+    } else if (!body.slug) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Slug is required",
+        path: ["slug"],
+      });
+    }
+
     if (body.paletteId === CUSTOM_PALETTE_ID && !body.customPalette) {
       ctx.addIssue({
         code: "custom",
@@ -56,7 +85,11 @@ export async function POST(request: Request) {
   try {
     const user = await requireSessionUser();
     const body = createSchema.parse(await request.json());
-    const slug = normalizeSlug(body.slug);
+    const slug = normalizeSlug(
+      body.starter === "prebuilt"
+        ? body.slug || body.title
+        : body.slug || "",
+    );
 
     if (!isValidSlug(slug)) {
       return NextResponse.json(
@@ -88,13 +121,23 @@ export async function POST(request: Request) {
           ? sanitizePaletteTokens(body.customPalette)
           : null;
 
+    const sections =
+      body.starter === "prebuilt"
+        ? createPrebuiltSections({
+            title: body.title,
+            designation: body.designation || "",
+            email: body.email || "",
+            phone: body.phone,
+          })
+        : createDefaultSections();
+
     const portfolio = await Portfolio.create({
       userId: user._id,
       title: body.title,
       slug,
       paletteId,
       customPalette,
-      sections: createDefaultSections(),
+      sections,
       status: "draft",
     });
 

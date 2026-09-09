@@ -1,5 +1,5 @@
 import {
-  HeroCta,
+  HeroActions,
   HeroDescription,
   type HeroFlags,
 } from './shared';
@@ -46,7 +46,7 @@ export function HeroAsymmetricDock({
         ) : (
           <span />
         )}
-        <HeroCta hero={hero} className='shrink-0 self-start sm:self-auto' />
+        <HeroActions hero={hero} className='shrink-0 self-start sm:self-auto' />
       </div>
     </section>
   );

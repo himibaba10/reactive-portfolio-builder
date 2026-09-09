@@ -3,6 +3,12 @@ import type { SectionProps } from "./shared";
 
 export function HeaderSection({ section, portfolio, navItems = [] }: SectionProps) {
   const logoUrl = String(section.data.logoUrl || "");
+  const preferLogo =
+    section.data.showLogo === true ||
+    (section.data.showLogo == null && Boolean(logoUrl));
+  const useLogo = preferLogo && Boolean(logoUrl);
+  const brandName =
+    String(section.data.brandName || "").trim() || portfolio.title;
 
   return (
     <header
@@ -12,18 +18,18 @@ export function HeaderSection({ section, portfolio, navItems = [] }: SectionProp
     >
       <div className="flex w-full items-center justify-between gap-4 px-5 py-4 md:px-8">
         <a href="#hero" className="min-w-0 shrink-0">
-          {logoUrl ? (
+          {useLogo ? (
             <div className="h-9 w-auto max-w-40">
               <PortfolioImage
                 src={logoUrl}
-                alt={portfolio.title}
+                alt={brandName}
                 className="h-9 w-auto max-w-full object-contain object-left"
                 sizes="160px"
               />
             </div>
           ) : (
             <span className="font-display text-lg tracking-tight">
-              {portfolio.title}
+              {brandName}
             </span>
           )}
         </a>

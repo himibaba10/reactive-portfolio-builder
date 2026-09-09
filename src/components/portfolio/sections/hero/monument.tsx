@@ -1,5 +1,5 @@
 import {
-  HeroCta,
+  HeroActions,
   HeroDescription,
   type HeroFlags,
 } from './shared';
@@ -25,7 +25,7 @@ export function HeroMonument({
           </p>
         ) : null}
         <HeroDescription hero={hero} />
-        <HeroCta hero={hero} />
+        <HeroActions hero={hero} />
       </div>
       {photo ? (
         <div className='aspect-21/9 overflow-hidden rounded-[1.75rem] border border-white/10 bg-black/25 md:rounded-4xl'>

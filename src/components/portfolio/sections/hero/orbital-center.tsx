@@ -1,5 +1,5 @@
 import {
-  HeroCta,
+  HeroActions,
   HeroDescription,
   HeroPhoto,
   type HeroFlags,
@@ -45,7 +45,7 @@ export function HeroOrbitalCenter({ hero }: { hero: HeroFlags }) {
         align='center'
         className='max-w-xl text-sm leading-relaxed text-white/55 md:text-base'
       />
-      <HeroCta hero={hero} />
+      <HeroActions hero={hero} align='center' />
     </section>
   );
 }

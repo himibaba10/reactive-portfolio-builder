@@ -858,23 +858,46 @@ function SectionFields({
   const data = section.data;
 
   if (section.type === 'Header') {
+    const showLogo =
+      data.showLogo === true ||
+      (data.showLogo == null && Boolean(data.logoUrl));
+
     return (
       <>
-        <ImageField
-          label='Logo'
-          valueUrl={String(data.logoUrl || '')}
-          valuePublicId={String(data.logoPublicId || '')}
-          onChange={(img) =>
-            onChange({
-              ...data,
-              logoUrl: img?.url || '',
-              logoPublicId: img?.publicId || '',
-            })
-          }
-        />
+        <OptionalField
+          label='Logo image'
+          enabled={showLogo}
+          onEnabledChange={(v) => onChange({ ...data, showLogo: v })}
+        >
+          <ImageField
+            label=''
+            valueUrl={String(data.logoUrl || '')}
+            valuePublicId={String(data.logoPublicId || '')}
+            onChange={(img) =>
+              onChange({
+                ...data,
+                showLogo: true,
+                logoUrl: img?.url || '',
+                logoPublicId: img?.publicId || '',
+              })
+            }
+          />
+        </OptionalField>
+        {!showLogo ? (
+          <Field label='Name' hint='Shown in the header instead of a logo.'>
+            <FormInput
+              value={String(data.brandName || '')}
+              onChange={(e) =>
+                onChange({ ...data, brandName: e.target.value })
+              }
+              placeholder='Your name'
+            />
+          </Field>
+        ) : null}
         <p className='text-xs text-muted'>
-          Logo on the left. Visible section names link on the right
-          automatically.
+          {showLogo
+            ? 'Logo on the left. Visible section names link on the right automatically.'
+            : 'Name on the left. Visible section names link on the right automatically. Leave blank to use your portfolio title.'}
         </p>
       </>
     );
@@ -951,6 +974,32 @@ function SectionFields({
             onChange={(e) => onChange({ ...data, description: e.target.value })}
             disabled={!showDescription}
             placeholder='A short paragraph under the tagline'
+          />
+        </OptionalField>
+        <OptionalField
+          label='Email'
+          enabled={data.showEmail !== false}
+          onEnabledChange={(v) => onChange({ ...data, showEmail: v })}
+        >
+          <FormInput
+            type='email'
+            value={String(data.email || '')}
+            onChange={(e) => onChange({ ...data, email: e.target.value })}
+            disabled={data.showEmail === false}
+            placeholder='you@example.com'
+          />
+        </OptionalField>
+        <OptionalField
+          label='Phone'
+          enabled={data.showPhone !== false}
+          onEnabledChange={(v) => onChange({ ...data, showPhone: v })}
+        >
+          <FormInput
+            type='tel'
+            value={String(data.phone || '')}
+            onChange={(e) => onChange({ ...data, phone: e.target.value })}
+            disabled={data.showPhone === false}
+            placeholder='+880…'
           />
         </OptionalField>
         <OptionalField

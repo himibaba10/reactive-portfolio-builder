@@ -104,6 +104,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
   switch (type) {
     case "Header":
       return {
+        showLogo: false,
+        brandName: "",
         logoUrl: "",
         logoPublicId: "",
       };
@@ -115,6 +117,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
           "A short line about what you build and who you build it for.",
         ctaLabel: "See work",
         ctaHref: "#projects",
+        email: "",
+        phone: "",
         imageUrl: "",
         imagePublicId: "",
         imageAlt: "",
@@ -124,6 +128,8 @@ export function defaultSectionData(type: SectionType): Record<string, unknown> {
         showImage: true,
         showCtaLabel: true,
         showCtaHref: true,
+        showEmail: true,
+        showPhone: true,
       };
     case "About":
       return {
@@ -273,6 +279,64 @@ export function createDefaultSections() {
     variant: 1,
     data: defaultSectionData(type),
   }));
+}
+
+export function createPrebuiltSections(input: {
+  title: string;
+  designation: string;
+  email: string;
+  phone?: string;
+}) {
+  const title = input.title.trim();
+  const designation = input.designation.trim();
+  const email = input.email.trim();
+  const phone = (input.phone || "").trim();
+
+  return [
+    {
+      id: crypto.randomUUID(),
+      type: "Header" as const,
+      order: 0,
+      visible: true,
+      variant: 1,
+      data: {
+        ...defaultSectionData("Header"),
+        showLogo: false,
+        brandName: title,
+      },
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "Hero" as const,
+      order: 1,
+      visible: true,
+      variant: 1,
+      data: {
+        ...defaultSectionData("Hero"),
+        name: title,
+        tagline: designation,
+        description: "",
+        email,
+        phone,
+        ctaLabel: "",
+        ctaHref: "#",
+        showDescription: false,
+        showImage: false,
+        showCtaLabel: false,
+        showCtaHref: false,
+        showEmail: Boolean(email),
+        showPhone: Boolean(phone),
+      },
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "Footer" as const,
+      order: 2,
+      visible: true,
+      variant: 1,
+      data: defaultSectionData("Footer"),
+    },
+  ];
 }
 
 export function normalizePortfolioSection<T extends {

@@ -1,5 +1,5 @@
 import {
-  HeroCta,
+  HeroActions,
   HeroDescription,
   type HeroFlags,
 } from './shared';
@@ -31,7 +31,7 @@ export function HeroSplitFrame({
           hero={hero}
           className='max-w-md text-sm leading-relaxed text-white/55 md:text-base'
         />
-        <HeroCta hero={hero} />
+        <HeroActions hero={hero} />
       </div>
       {photo ? (
         <div className='relative'>
