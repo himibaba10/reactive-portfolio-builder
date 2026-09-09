@@ -16,6 +16,12 @@ import {
   FormInput,
   FormTextarea,
 } from '@/components/ui/form';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { ImageField } from '@/components/ui/image-field';
 import { PalettePicker } from '@/components/ui/palette-picker';
 import { SlugField } from '@/components/ui/slug-field';
@@ -91,6 +97,7 @@ export function EditorClient() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [openPanel, setOpenPanel] = useState<string | null>('sections');
 
   const baselineRef = useRef<string | null>(null);
   const savingRef = useRef(false);
@@ -378,216 +385,254 @@ export function EditorClient() {
         <FormError message={error} />
         {message ? <p className='text-sm text-signal'>{message}</p> : null}
 
-        <div className='grid gap-4 rounded-2xl border border-line bg-panel p-5 md:grid-cols-3'>
-          <Field label='Title'>
-            <FormInput
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </Field>
-          <SlugField
-            value={slug}
-            onChange={setSlug}
-            excludeCurrent={portfolio?.slug}
-          />
-          <div className='flex w-full flex-col gap-2 text-left md:col-span-3'>
-            <span className='text-xs tracking-[0.18em] text-muted uppercase'>
-              Palette
-            </span>
-            <PalettePicker
-              value={paletteId}
-              onChange={setPaletteId}
-              customValue={customPalette}
-              onCustomChange={setCustomPalette}
-            />
-          </div>
-        </div>
-
-        <div className='grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]'>
-          <aside className='rounded-2xl border border-line bg-panel p-4'>
-            <p className='mb-3 text-xs tracking-[0.18em] text-muted uppercase'>
-              Sections
-            </p>
-            <SectionList
-              sections={sections}
-              activeId={activeId}
-              onSelect={setActiveId}
-              onReorder={reorderSections}
-            />
-            {missingTypes.length ? (
-              <div className='mt-4 border-t border-line pt-4'>
-                <p className='mb-2 text-xs text-muted'>Add section</p>
-                <div className='flex flex-wrap gap-2'>
-                  {missingTypes.map((type) => (
-                    <button
-                      key={type}
-                      type='button'
-                      onClick={() => addSection(type)}
-                      className='rounded-full border border-line px-3 py-1 text-xs'
-                    >
-                      {SECTION_LABELS[type]}
-                    </button>
-                  ))}
+        <Accordion value={openPanel} onValueChange={setOpenPanel}>
+          <AccordionItem value='portfolio'>
+            <AccordionTrigger>
+              <div className='min-w-0'>
+                <p className='text-xs tracking-[0.18em] text-muted uppercase'>
+                  Portfolio
+                </p>
+                <p className='mt-1 truncate font-display text-lg tracking-[-0.03em] text-foam'>
+                  {title || 'Untitled'}
+                  <span className='ml-2 font-sans text-sm font-normal tracking-normal text-muted'>
+                    /{slug || 'your-slug'}
+                  </span>
+                </p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <div className='grid gap-4 md:grid-cols-3'>
+                <Field label='Title'>
+                  <FormInput
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                </Field>
+                <SlugField
+                  value={slug}
+                  onChange={setSlug}
+                  excludeCurrent={portfolio?.slug}
+                />
+                <div className='flex w-full flex-col gap-2 text-left md:col-span-3'>
+                  <span className='text-xs tracking-[0.18em] text-muted uppercase'>
+                    Palette
+                  </span>
+                  <PalettePicker
+                    value={paletteId}
+                    onChange={setPaletteId}
+                    customValue={customPalette}
+                    onCustomChange={setCustomPalette}
+                  />
                 </div>
               </div>
-            ) : null}
-          </aside>
+            </AccordionContent>
+          </AccordionItem>
 
-          <section className='rounded-2xl border border-line bg-panel p-5'>
-            {!active ? (
-              <p className='text-muted'>Select a section.</p>
-            ) : (
-              <div className='flex flex-col gap-4'>
-                <div className='flex flex-wrap items-center justify-between gap-3'>
-                  <h2 className='font-display text-2xl'>
-                    {SECTION_LABELS[active.type]}
-                    {!active.visible &&
-                    !isAlwaysVisibleSectionType(active.type) ? (
-                      <span className='ml-2 text-sm font-sans font-normal tracking-normal text-muted'>
-                        Hidden
-                      </span>
-                    ) : null}
-                  </h2>
-                  <div className='flex gap-3'>
-                    {active.visible &&
-                    !isAlwaysVisibleSectionType(active.type) ? (
-                      <button
-                        type='button'
-                        onClick={() => toggleVisible(active.id)}
-                        className='text-sm text-muted hover:text-foam'
-                      >
-                        Hide
-                      </button>
-                    ) : null}
-                    <button
-                      type='button'
-                      onClick={() => removeSection(active.id)}
-                      className='text-sm text-red-300'
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
-
-                {!active.visible &&
-                !isAlwaysVisibleSectionType(active.type) ? (
-                  <div className='flex flex-col items-center justify-center gap-4 rounded-2xl border border-line bg-ink/50 px-6 py-14 text-center'>
-                    <p className='font-display text-2xl tracking-[-0.03em] text-foam'>
-                      This section is hidden
-                    </p>
-                    <p className='max-w-sm text-sm text-muted'>
-                      It won&apos;t appear on your public page until you show it
-                      again.
-                    </p>
-                    <button
-                      type='button'
-                      onClick={() => toggleVisible(active.id)}
-                      className='rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink'
-                    >
-                      Show Section
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {active.type === 'Hero' ? (
-                      <HeroLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'About' ? (
-                      <AboutLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'Skills' ? (
-                      <SkillsLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'Projects' ? (
-                      <ProjectsLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'CTA' ? (
-                      <CtaLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'Experience' ? (
-                      <ExperienceLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'Education' ? (
-                      <EducationLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : active.type === 'Contact' ? (
-                      <ContactLayoutPicker
-                        section={active}
-                        paletteId={paletteId}
-                        customPalette={customPalette}
-                        portfolioTitle={title || 'Portfolio'}
-                        portfolioSlug={slug || 'your-slug'}
-                        value={active.variant}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : isVariantSectionType(active.type) ? (
-                      <LayoutPicker
-                        value={active.variant}
-                        count={sectionVariantCount(active.type)}
-                        onChange={(v) => setVariant(active.id, v)}
-                      />
-                    ) : null}
-                    <div className='mt-4'>
-                      <SectionFields
-                        section={active}
-                        onChange={updateActiveData}
-                      />
+          <AccordionItem value='sections'>
+            <AccordionTrigger>
+              <div className='min-w-0'>
+                <p className='text-xs tracking-[0.18em] text-muted uppercase'>
+                  Sections
+                </p>
+                <p className='mt-1 font-display text-lg tracking-[-0.03em] text-foam'>
+                  {active
+                    ? `Editing ${SECTION_LABELS[active.type]}`
+                    : 'Compose your page'}
+                </p>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent className='px-4 py-4 md:px-5 md:py-5'>
+              <div className='grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]'>
+                <aside className='rounded-xl border border-line bg-ink/40 p-4'>
+                  <p className='mb-3 text-xs tracking-[0.18em] text-muted uppercase'>
+                    Order
+                  </p>
+                  <SectionList
+                    sections={sections}
+                    activeId={activeId}
+                    onSelect={(id) => {
+                      setActiveId(id);
+                      setOpenPanel('sections');
+                    }}
+                    onReorder={reorderSections}
+                  />
+                  {missingTypes.length ? (
+                    <div className='mt-4 border-t border-line pt-4'>
+                      <p className='mb-2 text-xs text-muted'>Add section</p>
+                      <div className='flex flex-wrap gap-2'>
+                        {missingTypes.map((type) => (
+                          <button
+                            key={type}
+                            type='button'
+                            onClick={() => addSection(type)}
+                            className='rounded-full border border-line px-3 py-1 text-xs'
+                          >
+                            {SECTION_LABELS[type]}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </>
-                )}
+                  ) : null}
+                </aside>
+
+                <section className='rounded-xl border border-line bg-ink/40 p-5'>
+                  {!active ? (
+                    <p className='text-muted'>Select a section.</p>
+                  ) : (
+                    <div className='flex flex-col gap-4'>
+                      <div className='flex flex-wrap items-center justify-between gap-3'>
+                        <h2 className='font-display text-2xl'>
+                          {SECTION_LABELS[active.type]}
+                          {!active.visible &&
+                          !isAlwaysVisibleSectionType(active.type) ? (
+                            <span className='ml-2 text-sm font-sans font-normal tracking-normal text-muted'>
+                              Hidden
+                            </span>
+                          ) : null}
+                        </h2>
+                        <div className='flex gap-3'>
+                          {active.visible &&
+                          !isAlwaysVisibleSectionType(active.type) ? (
+                            <button
+                              type='button'
+                              onClick={() => toggleVisible(active.id)}
+                              className='text-sm text-muted hover:text-foam'
+                            >
+                              Hide
+                            </button>
+                          ) : null}
+                          <button
+                            type='button'
+                            onClick={() => removeSection(active.id)}
+                            className='text-sm text-red-300'
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+
+                      {!active.visible &&
+                      !isAlwaysVisibleSectionType(active.type) ? (
+                        <div className='flex flex-col items-center justify-center gap-4 rounded-2xl border border-line bg-ink/50 px-6 py-14 text-center'>
+                          <p className='font-display text-2xl tracking-[-0.03em] text-foam'>
+                            This section is hidden
+                          </p>
+                          <p className='max-w-sm text-sm text-muted'>
+                            It won&apos;t appear on your public page until you
+                            show it again.
+                          </p>
+                          <button
+                            type='button'
+                            onClick={() => toggleVisible(active.id)}
+                            className='rounded-full bg-signal px-5 py-2.5 text-sm font-semibold text-ink'
+                          >
+                            Show Section
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          {active.type === 'Hero' ? (
+                            <HeroLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'About' ? (
+                            <AboutLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'Skills' ? (
+                            <SkillsLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'Projects' ? (
+                            <ProjectsLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'CTA' ? (
+                            <CtaLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'Experience' ? (
+                            <ExperienceLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'Education' ? (
+                            <EducationLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : active.type === 'Contact' ? (
+                            <ContactLayoutPicker
+                              section={active}
+                              paletteId={paletteId}
+                              customPalette={customPalette}
+                              portfolioTitle={title || 'Portfolio'}
+                              portfolioSlug={slug || 'your-slug'}
+                              value={active.variant}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : isVariantSectionType(active.type) ? (
+                            <LayoutPicker
+                              value={active.variant}
+                              count={sectionVariantCount(active.type)}
+                              onChange={(v) => setVariant(active.id, v)}
+                            />
+                          ) : null}
+                          <div className='mt-4'>
+                            <SectionFields
+                              section={active}
+                              onChange={updateActiveData}
+                            />
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </section>
               </div>
-            )}
-          </section>
-        </div>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
     </AppChrome>
   );
