@@ -1,5 +1,6 @@
 import { getPalette, paletteCssVars } from "@/lib/palette";
 import type { PublicPortfolio } from "@/lib/server/public-portfolio";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import {
   buildNavItems,
   RenderPortfolioSection,
@@ -94,6 +95,7 @@ export function PublicPortfolioView({
           </>
         )}
       </div>
+      <ScrollToTop theme="palette" />
     </main>
   );
 }

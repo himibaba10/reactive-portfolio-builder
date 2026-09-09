@@ -7,6 +7,7 @@ import { PalettesSection } from "@/components/landing/palettes-section";
 import { CtaSection } from "@/components/landing/cta-section";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { LandingMotion } from "@/components/landing/motion/landing-motion";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 
 export function LandingPage() {
   return (
@@ -20,6 +21,7 @@ export function LandingPage() {
       <PalettesSection />
       <CtaSection />
       <SiteFooter />
+      <ScrollToTop theme="brand" />
     </main>
   );
 }
