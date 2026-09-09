@@ -311,6 +311,20 @@ export function EditorClient() {
     }
   }
 
+  async function unpublish() {
+    setError(null);
+    try {
+      const result = await api<{ portfolio: Portfolio }>(
+        '/portfolios/me/unpublish',
+        { method: 'POST' },
+      );
+      setPortfolio(result.portfolio);
+      setMessage('Unpublished — back to draft.');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unpublish failed');
+    }
+  }
+
   if (loading) {
     return (
       <AppChrome>
@@ -362,13 +376,23 @@ export function EditorClient() {
               >
                 {saving ? 'Saving…' : 'Save'}
               </button>
-              <button
-                type='button'
-                onClick={() => void publish()}
-                className='rounded-full border border-line px-5 py-2.5 text-sm'
-              >
-                Publish
-              </button>
+              {portfolio?.status === 'published' ? (
+                <button
+                  type='button'
+                  onClick={() => void unpublish()}
+                  className='rounded-full border border-line px-5 py-2.5 text-sm'
+                >
+                  Unpublish
+                </button>
+              ) : (
+                <button
+                  type='button'
+                  onClick={() => void publish()}
+                  className='rounded-full border border-line px-5 py-2.5 text-sm'
+                >
+                  Publish
+                </button>
+              )}
               {portfolio?.status === 'published' ? (
                 <Link
                   href={`/${portfolio.slug}`}
