@@ -7,7 +7,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import {
   Field,
   FormError,
-  FormInput,
+  PasswordInput,
   SubmitButton,
   useFormSubmit,
 } from "@/components/ui/form";
@@ -50,9 +50,8 @@ export function ResetPasswordForm() {
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <FormError message={error} />
         <Field label="New password">
-          <FormInput
+          <PasswordInput
             name="password"
-            type="password"
             required
             minLength={8}
             autoComplete="new-password"

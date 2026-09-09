@@ -8,6 +8,7 @@ import {
   Field,
   FormError,
   FormInput,
+  PasswordInput,
   SubmitButton,
   useFormSubmit,
 } from "@/components/ui/form";
@@ -43,9 +44,8 @@ export function LoginForm() {
           <FormInput name="email" type="email" autoComplete="email" required />
         </Field>
         <Field label="Password">
-          <FormInput
+          <PasswordInput
             name="password"
-            type="password"
             autoComplete="current-password"
             required
             minLength={8}

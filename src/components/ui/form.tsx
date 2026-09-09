@@ -1,5 +1,6 @@
 "use client";
 
+import { Eye, EyeOff } from "lucide-react";
 import { FormEvent, ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -35,6 +36,40 @@ export function FormInput({
       )}
       {...props}
     />
+  );
+}
+
+export function PasswordInput({
+  className,
+  ...props
+}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "type">) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <div className="relative">
+      <input
+        {...props}
+        type={visible ? "text" : "password"}
+        className={cn(
+          "w-full rounded-xl border border-line bg-panel py-3 pr-12 pl-4 text-foam outline-none transition focus:border-signal",
+          className,
+        )}
+      />
+      <button
+        type="button"
+        onClick={() => setVisible((v) => !v)}
+        className="absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-1.5 text-muted transition hover:text-foam"
+        aria-label={visible ? "Hide password" : "Show password"}
+        aria-pressed={visible}
+        tabIndex={-1}
+      >
+        {visible ? (
+          <EyeOff className="size-4" aria-hidden />
+        ) : (
+          <Eye className="size-4" aria-hidden />
+        )}
+      </button>
+    </div>
   );
 }
 

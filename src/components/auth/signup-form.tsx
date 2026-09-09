@@ -8,6 +8,7 @@ import {
   Field,
   FormError,
   FormInput,
+  PasswordInput,
   SubmitButton,
   useFormSubmit,
 } from "@/components/ui/form";
@@ -47,9 +48,8 @@ export function SignupForm() {
           />
         </Field>
         <Field label="Password" hint="At least 8 characters.">
-          <FormInput
+          <PasswordInput
             name="password"
-            type="password"
             autoComplete="new-password"
             required
             minLength={8}
