@@ -3,7 +3,11 @@ import { Portfolio } from "@/lib/db/models/portfolio";
 import { normalizeSlug } from "@/lib/slug";
 import type { PortfolioSection } from "@/lib/api-client";
 import { sanitizePaletteTokens, type PaletteTokens } from "@/lib/palette";
-import { clampSectionVariant, type SectionType } from "@/lib/sections";
+import {
+  clampSectionVariant,
+  isAlwaysVisibleSectionType,
+  type SectionType,
+} from "@/lib/sections";
 
 export type PublicPortfolio = {
   title: string;
@@ -29,13 +33,18 @@ export async function getPublishedPortfolio(
   if (!portfolio) return null;
 
   const sections = [...(portfolio.sections || [])]
-    .filter((s) => s.visible)
+    .filter(
+      (s) =>
+        s.visible || isAlwaysVisibleSectionType(s.type as SectionType),
+    )
     .sort((a, b) => a.order - b.order)
     .map((s) => ({
       id: s.id,
       type: s.type as SectionType,
       order: s.order,
-      visible: s.visible,
+      visible: isAlwaysVisibleSectionType(s.type as SectionType)
+        ? true
+        : s.visible,
       variant: clampSectionVariant(
         s.type as SectionType,
         (s as { variant?: number }).variant,

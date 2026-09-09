@@ -10,6 +10,7 @@ import {
   clampSectionVariant,
   createDefaultSections,
   customPaletteSchema,
+  isAlwaysVisibleSectionType,
   paletteIdSchema,
   sectionTypeSchema,
   sectionVariantSchema,
@@ -202,6 +203,9 @@ export async function PATCH(request: Request) {
       }
       portfolio.sections = body.sections.map((section) => ({
         ...section,
+        visible: isAlwaysVisibleSectionType(section.type as SectionType)
+          ? true
+          : section.visible,
         variant: clampSectionVariant(
           section.type as SectionType,
           section.variant,

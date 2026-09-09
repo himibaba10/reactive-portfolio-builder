@@ -28,7 +28,6 @@ import {
   type User,
 } from '@/lib/api-client';
 import {
-  CUSTOM_PALETTE_ID,
   DEFAULT_CUSTOM_PALETTE,
   sanitizePaletteTokens,
   type PaletteTokens,
@@ -36,6 +35,7 @@ import {
 import {
   clampSectionVariant,
   defaultSectionData,
+  isAlwaysVisibleSectionType,
   isVariantSectionType,
   SECTION_LABELS,
   SECTION_TYPES,
@@ -52,6 +52,7 @@ function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
       ...s,
       variant: clampSectionVariant(s.type, s.variant),
       data: s.data || {},
+      visible: isAlwaysVisibleSectionType(s.type) ? true : s.visible,
     }))
     .sort((a, b) => a.order - b.order);
 }
@@ -90,9 +91,8 @@ export function EditorClient() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [autosaveReady, setAutosaveReady] = useState(false);
 
-  const baselineRef = useRef('');
+  const baselineRef = useRef<string | null>(null);
   const savingRef = useRef(false);
   const draftRef = useRef({
     title,
@@ -101,7 +101,10 @@ export function EditorClient() {
     customPalette,
     sections,
   });
-  draftRef.current = { title, slug, paletteId, customPalette, sections };
+
+  useEffect(() => {
+    draftRef.current = { title, slug, paletteId, customPalette, sections };
+  }, [title, slug, paletteId, customPalette, sections]);
 
   useEffect(() => {
     (async () => {
@@ -121,6 +124,15 @@ export function EditorClient() {
         const sorted = normalizeSections(mine.portfolio.sections);
         setSections(sorted);
         setActiveId(sorted[0]?.id ?? null);
+        baselineRef.current = editorSnapshot({
+          title: mine.portfolio.title,
+          slug: mine.portfolio.slug,
+          paletteId: mine.portfolio.paletteId,
+          customPalette: sanitizePaletteTokens(
+            mine.portfolio.customPalette ?? DEFAULT_CUSTOM_PALETTE,
+          ),
+          sections: sorted,
+        });
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
           router.replace('/login');
@@ -136,27 +148,6 @@ export function EditorClient() {
       }
     })();
   }, [router]);
-
-  useEffect(() => {
-    if (loading || !portfolio || autosaveReady) return;
-    baselineRef.current = editorSnapshot({
-      title,
-      slug,
-      paletteId,
-      customPalette,
-      sections,
-    });
-    setAutosaveReady(true);
-  }, [
-    loading,
-    portfolio,
-    autosaveReady,
-    title,
-    slug,
-    paletteId,
-    customPalette,
-    sections,
-  ]);
 
   const active = sections.find((s) => s.id === activeId) || null;
   const missingTypes = SECTION_TYPES.filter(
@@ -186,7 +177,11 @@ export function EditorClient() {
 
   function toggleVisible(id: string) {
     setSections((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, visible: !s.visible } : s)),
+      prev.map((s) => {
+        if (s.id !== id) return s;
+        if (isAlwaysVisibleSectionType(s.type)) return { ...s, visible: true };
+        return { ...s, visible: !s.visible };
+      }),
     );
   }
 
@@ -269,7 +264,7 @@ export function EditorClient() {
   }, []);
 
   useEffect(() => {
-    if (!autosaveReady || loading || saving) return;
+    if (baselineRef.current === null || loading || saving) return;
     const snap = editorSnapshot({
       title,
       slug,
@@ -284,7 +279,6 @@ export function EditorClient() {
     }, AUTOSAVE_MS);
     return () => window.clearTimeout(timer);
   }, [
-    autosaveReady,
     loading,
     saving,
     title,
@@ -447,14 +441,16 @@ export function EditorClient() {
                 <div className='flex flex-wrap items-center justify-between gap-3'>
                   <h2 className='font-display text-2xl'>
                     {SECTION_LABELS[active.type]}
-                    {!active.visible ? (
+                    {!active.visible &&
+                    !isAlwaysVisibleSectionType(active.type) ? (
                       <span className='ml-2 text-sm font-sans font-normal tracking-normal text-muted'>
                         Hidden
                       </span>
                     ) : null}
                   </h2>
                   <div className='flex gap-3'>
-                    {active.visible ? (
+                    {active.visible &&
+                    !isAlwaysVisibleSectionType(active.type) ? (
                       <button
                         type='button'
                         onClick={() => toggleVisible(active.id)}
@@ -473,7 +469,8 @@ export function EditorClient() {
                   </div>
                 </div>
 
-                {!active.visible ? (
+                {!active.visible &&
+                !isAlwaysVisibleSectionType(active.type) ? (
                   <div className='flex flex-col items-center justify-center gap-4 rounded-2xl border border-line bg-ink/50 px-6 py-14 text-center'>
                     <p className='font-display text-2xl tracking-[-0.03em] text-foam'>
                       This section is hidden

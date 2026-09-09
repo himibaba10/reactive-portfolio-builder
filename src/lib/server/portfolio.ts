@@ -2,6 +2,7 @@ import "server-only";
 import type { PortfolioDocument } from "@/lib/db/models/portfolio";
 import {
   clampSectionVariant,
+  isAlwaysVisibleSectionType,
   type SectionType,
 } from "@/lib/sections";
 import { sanitizePaletteTokens, type PaletteTokens } from "@/lib/palette";
@@ -26,7 +27,9 @@ export function serializePortfolio(doc: PortfolioDocument) {
       id: section.id,
       type: section.type,
       order: section.order,
-      visible: section.visible,
+      visible: isAlwaysVisibleSectionType(section.type as SectionType)
+        ? true
+        : section.visible,
       variant: clampSectionVariant(
         section.type as SectionType,
         section.variant,

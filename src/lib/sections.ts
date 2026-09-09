@@ -55,12 +55,19 @@ export const SECTION_ANCHORS: Partial<Record<SectionType, string>> = {
 
 export const PINNED_SECTION_TYPES = ["Header", "Footer"] as const;
 
+/** Always shown on the public page — hide toggle is disabled in the editor. */
+export const ALWAYS_VISIBLE_SECTION_TYPES = ["Hero", "About"] as const;
+
 export function isVariantSectionType(type: SectionType): type is VariantSectionType {
   return (VARIANT_SECTION_TYPES as readonly string[]).includes(type);
 }
 
 export function isPinnedSectionType(type: SectionType): boolean {
   return (PINNED_SECTION_TYPES as readonly string[]).includes(type);
+}
+
+export function isAlwaysVisibleSectionType(type: SectionType): boolean {
+  return (ALWAYS_VISIBLE_SECTION_TYPES as readonly string[]).includes(type);
 }
 
 export const PALETTE_IDS = [

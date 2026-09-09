@@ -11,7 +11,7 @@ export function HeaderSection({ section, portfolio, navItems = [] }: SectionProp
       className="sticky top-0 z-20 w-full border-b border-white/10 bg-(--p-secondary)/92 backdrop-blur-sm"
     >
       <div className="flex w-full items-center justify-between gap-4 px-5 py-4 md:px-8">
-        <a href="#header" className="min-w-0 shrink-0">
+        <a href="#hero" className="min-w-0 shrink-0">
           {logoUrl ? (
             <div className="h-9 w-auto max-w-40">
               <PortfolioImage
