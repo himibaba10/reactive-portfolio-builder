@@ -47,6 +47,19 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+button:not(:disabled),
+[type="submit"]:not(:disabled),
+[type="button"]:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[type="submit"]:disabled,
+[type="button"]:disabled {
+  cursor: not-allowed;
+}
+
 /* Cheap grain: CSS dots only — no SVG filters / blend modes on a fixed layer. */
 body::before {
   content: "";

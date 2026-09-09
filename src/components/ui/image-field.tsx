@@ -86,40 +86,53 @@ export function ImageField({
           {label}
         </span>
       ) : null}
-      {valueUrl ? (
-        <div className="overflow-hidden rounded-xl border border-line bg-ink">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+      <button
+        type="button"
+        disabled={pending}
+        onClick={() => inputRef.current?.click()}
+        className="group relative w-full cursor-pointer overflow-hidden rounded-xl border border-dashed border-line bg-ink/50 text-left transition hover:border-foam/40 disabled:cursor-not-allowed disabled:opacity-60"
+        aria-label={valueUrl ? "Replace image" : "Upload image"}
+      >
+        {valueUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={valueUrl}
             alt=""
             className="max-h-48 w-full object-cover"
           />
-        </div>
-      ) : (
-        <div className="flex h-28 items-center justify-center rounded-xl border border-dashed border-line bg-ink/50 text-xs text-muted">
-          No image yet
-        </div>
-      )}
-      <div className="flex flex-wrap gap-2">
+        ) : (
+          <div className="flex h-28 flex-col items-center justify-center gap-1 px-4 text-center">
+            <span className="text-xs text-muted">
+              {pending ? "Uploading…" : "No image yet"}
+            </span>
+            {!pending ? (
+              <span className="text-[11px] text-muted/80">
+                Click to upload
+              </span>
+            ) : null}
+          </div>
+        )}
+        {valueUrl && !pending ? (
+          <span className="pointer-events-none absolute inset-0 flex items-center justify-center bg-ink/0 text-xs text-foam opacity-0 transition group-hover:bg-ink/55 group-hover:opacity-100">
+            Click to replace
+          </span>
+        ) : null}
+        {pending && valueUrl ? (
+          <span className="absolute inset-0 flex items-center justify-center bg-ink/60 text-xs text-foam">
+            Uploading…
+          </span>
+        ) : null}
+      </button>
+      {valueUrl ? (
         <button
           type="button"
           disabled={pending}
-          onClick={() => inputRef.current?.click()}
-          className="rounded-full border border-line px-4 py-2 text-xs disabled:opacity-60"
+          onClick={() => void remove()}
+          className="self-start rounded-full border border-red-500/40 px-4 py-2 text-xs text-red-200 disabled:opacity-60"
         >
-          {pending ? "Uploading…" : valueUrl ? "Replace" : "Upload"}
+          Remove
         </button>
-        {valueUrl ? (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={() => void remove()}
-            className="rounded-full border border-red-500/40 px-4 py-2 text-xs text-red-200 disabled:opacity-60"
-          >
-            Remove
-          </button>
-        ) : null}
-      </div>
+      ) : null}
       <input
         ref={inputRef}
         type="file"
