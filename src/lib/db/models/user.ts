@@ -3,6 +3,12 @@ import mongoose, { Schema, type HydratedDocument, type Model } from "mongoose";
 
 const userSchema = new Schema(
   {
+    clerkId: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
     email: {
       type: String,
       required: true,
@@ -10,12 +16,7 @@ const userSchema = new Schema(
       lowercase: true,
       trim: true,
     },
-    passwordHash: { type: String, required: true },
     isEmailVerified: { type: Boolean, default: false },
-    emailVerificationTokenHash: { type: String, default: null },
-    emailVerificationExpiresAt: { type: Date, default: null },
-    passwordResetTokenHash: { type: String, default: null },
-    passwordResetExpiresAt: { type: Date, default: null },
     deletedAt: { type: Date, default: null },
   },
   { timestamps: true },
@@ -24,13 +25,9 @@ const userSchema = new Schema(
 userSchema.index({ deletedAt: 1 });
 
 export type UserDocument = HydratedDocument<{
+  clerkId: string;
   email: string;
-  passwordHash: string;
   isEmailVerified: boolean;
-  emailVerificationTokenHash: string | null;
-  emailVerificationExpiresAt: Date | null;
-  passwordResetTokenHash: string | null;
-  passwordResetExpiresAt: Date | null;
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;

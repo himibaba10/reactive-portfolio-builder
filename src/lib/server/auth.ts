@@ -1,10 +1,8 @@
-import "server-only";
-import { cookies } from "next/headers";
-import { NextResponse } from "next/server";
-import { connectDb } from "@/lib/db/connect";
-import { User, type UserDocument } from "@/lib/db/models/user";
-import { serverConfig } from "@/lib/server/config";
-import { signSession, verifySession } from "@/lib/server/tokens";
+import { connectDb } from '@/lib/db/connect';
+import { User, type UserDocument } from '@/lib/db/models/user';
+import { auth, clerkClient, currentUser } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
+import 'server-only';
 
 export function publicUser(user: UserDocument) {
   return {
@@ -15,55 +13,105 @@ export function publicUser(user: UserDocument) {
   };
 }
 
-function sessionCookieOptions(maxAge: number) {
-  return {
-    httpOnly: true,
-    secure: serverConfig.cookieSecure,
-    sameSite: "lax" as const,
-    path: "/",
-    maxAge,
-    expires: new Date(Date.now() + maxAge * 1000),
-  };
+function primaryEmail(clerkUser: {
+  primaryEmailAddressId: string | null;
+  emailAddresses: {
+    id: string;
+    emailAddress: string;
+    verification?: { status?: string | null } | null;
+  }[];
+}) {
+  const primary =
+    clerkUser.emailAddresses.find(
+      (entry) => entry.id === clerkUser.primaryEmailAddressId,
+    ) ?? clerkUser.emailAddresses[0];
+  return primary ?? null;
 }
 
-export function setSessionCookie(res: NextResponse, userId: string) {
-  const token = signSession(userId);
-  res.cookies.set(
-    serverConfig.cookieName,
-    token,
-    sessionCookieOptions(serverConfig.sessionMaxAgeSec),
+function isClerkEmailVerified(clerkUser: {
+  emailAddresses: {
+    verification?: { status?: string | null } | null;
+  }[];
+}) {
+  return clerkUser.emailAddresses.some(
+    (entry) => entry.verification?.status === 'verified',
   );
 }
 
-export function clearSessionCookie(res: NextResponse) {
-  res.cookies.set(serverConfig.cookieName, "", {
-    ...sessionCookieOptions(0),
-    expires: new Date(0),
+async function upsertLocalUser(
+  clerkId: string,
+  email: string,
+  isEmailVerified: boolean,
+): Promise<UserDocument | null> {
+  await connectDb();
+
+  const softDeleted = await User.findOne({
+    clerkId,
+    deletedAt: { $ne: null },
+  });
+  if (softDeleted) return null;
+
+  const user = await User.findOne({ clerkId, deletedAt: null });
+  if (user) {
+    let dirty = false;
+    if (user.email !== email) {
+      user.email = email;
+      dirty = true;
+    }
+    if (user.isEmailVerified !== isEmailVerified) {
+      user.isEmailVerified = isEmailVerified;
+      dirty = true;
+    }
+    if (dirty) await user.save();
+    return user;
+  }
+
+  const emailTaken = await User.findOne({ email, deletedAt: null });
+  if (emailTaken) {
+    if (emailTaken.clerkId && emailTaken.clerkId !== clerkId) {
+      return null;
+    }
+    emailTaken.clerkId = clerkId;
+    emailTaken.isEmailVerified = isEmailVerified;
+    await emailTaken.save();
+    return emailTaken;
+  }
+
+  return User.create({
+    clerkId,
+    email,
+    isEmailVerified,
   });
 }
 
 export async function getSessionUser(): Promise<UserDocument | null> {
-  const jar = await cookies();
-  const token = jar.get(serverConfig.cookieName)?.value;
-  if (!token) return null;
+  const { userId } = await auth();
+  if (!userId) return null;
 
-  try {
-    const payload = verifySession(token);
-    await connectDb();
-    const user = await User.findById(payload.sub);
-    if (!user || user.deletedAt) return null;
-    return user;
-  } catch {
-    return null;
-  }
+  const clerkUser = await currentUser();
+  if (!clerkUser) return null;
+
+  const emailEntry = primaryEmail(clerkUser);
+  if (!emailEntry?.emailAddress) return null;
+
+  return upsertLocalUser(
+    userId,
+    emailEntry.emailAddress.toLowerCase(),
+    isClerkEmailVerified(clerkUser),
+  );
 }
 
 export async function requireSessionUser(): Promise<UserDocument> {
   const user = await getSessionUser();
   if (!user) {
-    throw Object.assign(new Error("Unauthorized"), { status: 401 });
+    throw Object.assign(new Error('Unauthorized'), { status: 401 });
   }
   return user;
+}
+
+export async function banClerkUser(clerkId: string) {
+  const client = await clerkClient();
+  await client.users.banUser(clerkId);
 }
 
 export function jsonError(message: string, status: number, extra?: object) {

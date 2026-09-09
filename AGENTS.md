@@ -11,13 +11,13 @@ Read this file first in every new chat. It is the source of truth for product, a
 
 ### Locked MVP rules
 
-1. Auth: email + password only; email verification before publish; password reset; account soft-delete
+1. Auth: **Clerk** (email/password + Google); email verification before publish; account soft-delete
 2. Exactly **one portfolio** per user (second create → 409)
 3. Sections: **prebuilt only** (Header, Hero, About, Skills, Projects/Portfolio, CTA, Experience, Education, Contact, Footer) — no custom section types; each type at most once; reorder + hide allowed. Hero through Contact offer **6 layout variants**; Header is fixed (logo + section nav); Footer is fixed (centered copyright). Header & Footer are pinned.
 4. Public URL: `/{slug}` on the same Next.js host (e.g. `…/daniel-portfolio`)
 5. One-page public portfolios only
 6. Themes: five-token palettes — presets plus optional **Custom** (`primary`, `secondary`, `accent`, `textDark`, `textLight`)
-7. Out of scope for now: OAuth, billing, custom domains, custom sections, multi-page, admin panel, analytics, contact-form backend, PDF export
+7. Out of scope for now: billing, custom domains, custom sections, multi-page, admin panel, analytics, contact-form backend, PDF export
 
 ### User journey (target)
 
@@ -40,8 +40,9 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
 | --- | --- |
 | App | Next.js (App Router) — UI + Route Handlers / Server Actions |
 | UI | React 19, Tailwind CSS 4, GSAP + `@gsap/react`, shadcn-ready primitives |
+| Auth | Clerk (email/password + Google) |
 | DB | MongoDB Atlas |
-| Email | Resend (console fallback locally) |
+| Email | Clerk for auth mail; Resend optional for app mail |
 | Rate limit | Upstash Redis (in-memory fallback locally) |
 | Hosting (planned) | Vercel · DB → Atlas |
 
@@ -53,7 +54,7 @@ Sign up → verify email → create portfolio (title + slug + palette) → compo
 - Auth (email/password, verify, reset, soft-delete) via Route Handlers
 - One portfolio per user · sections editor · publish/unpublish
 - Public SSR page at `/{slug}`
-- Requires MongoDB (`MONGODB_URI`) + `JWT_SECRET` in `.env`
+- Requires MongoDB (`MONGODB_URI`) + Clerk keys (`NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`)
 
 ## Commands
 

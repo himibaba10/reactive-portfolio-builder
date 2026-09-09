@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
 import { BrandLogo } from "@/components/brand-logo";
-import { api } from "@/lib/api-client";
 
 export function AppHeader({ email }: { email?: string }) {
-  const router = useRouter();
   const pathname = usePathname();
-
-  async function logout() {
-    await api("/auth/logout", { method: "POST" });
-    router.push("/");
-    router.refresh();
-  }
+  const { signOut } = useClerk();
 
   const linkClass = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`)
@@ -39,7 +33,7 @@ export function AppHeader({ email }: { email?: string }) {
           </Link>
           <button
             type="button"
-            onClick={() => void logout()}
+            onClick={() => void signOut({ redirectUrl: "/" })}
             className="hover:text-foam"
           >
             Log out

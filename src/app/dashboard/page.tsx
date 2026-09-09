@@ -38,10 +38,6 @@ export default function DashboardPage() {
   const [createCustomPalette, setCreateCustomPalette] = useState(
     () => ({ ...DEFAULT_CUSTOM_PALETTE }),
   );
-  const [verifyUrl, setVerifyUrl] = useState<string | null>(() => {
-    if (typeof window === "undefined") return null;
-    return sessionStorage.getItem("reactive_verify_url");
-  });
   const [banner, setBanner] = useState<string | null>(null);
 
   function handleTitleChange(next: string) {
@@ -79,7 +75,7 @@ export default function DashboardPage() {
       } catch (err) {
         if (cancelled) return;
         if (err instanceof ApiError && err.status === 401) {
-          router.replace("/login");
+          router.replace("/sign-in");
           return;
         }
         setBanner(err instanceof Error ? err.message : "Failed to load");
@@ -121,18 +117,6 @@ export default function DashboardPage() {
         : {}),
     });
   });
-
-  async function resendVerification() {
-    const result = await api<{ verifyUrl?: string }>(
-      "/auth/resend-verification",
-      { method: "POST" },
-    );
-    if (result.verifyUrl) {
-      setVerifyUrl(result.verifyUrl);
-      sessionStorage.setItem("reactive_verify_url", result.verifyUrl);
-    }
-    setBanner("Verification link issued.");
-  }
 
   async function publish() {
     try {
@@ -230,20 +214,9 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-signal/30 bg-panel p-5">
             <p className="font-medium text-foam">Verify your email</p>
             <p className="mt-2 text-sm text-muted">
-              Publishing requires a verified address.
+              Publishing requires a verified address. Check your inbox for the
+              Clerk verification email, then refresh this page.
             </p>
-            {verifyUrl ? (
-              <p className="mt-3 break-all text-sm text-signal">
-                <Link href={verifyUrl}>{verifyUrl}</Link>
-              </p>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => void resendVerification()}
-              className="mt-4 text-sm text-signal hover:underline"
-            >
-              Resend verification
-            </button>
           </div>
         ) : null}
 

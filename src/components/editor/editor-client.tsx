@@ -143,7 +143,7 @@ export function EditorClient() {
         });
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
-          router.replace('/login');
+          router.replace('/sign-in');
           return;
         }
         if (err instanceof ApiError && err.status === 404) {

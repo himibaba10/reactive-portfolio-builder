@@ -1,26 +1,26 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 
-const PROTECTED = ["/dashboard", "/editor", "/settings"];
-
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`),
+function isProtectedPath(pathname: string) {
+  return (
+    pathname === "/dashboard" ||
+    pathname.startsWith("/dashboard/") ||
+    pathname === "/editor" ||
+    pathname.startsWith("/editor/") ||
+    pathname === "/settings" ||
+    pathname.startsWith("/settings/")
   );
-
-  if (!isProtected) return NextResponse.next();
-
-  const session = request.cookies.get("reactive_session");
-  if (!session?.value) {
-    const login = new URL("/login", request.url);
-    login.searchParams.set("next", pathname);
-    return NextResponse.redirect(login);
-  }
-
-  return NextResponse.next();
 }
 
+export default clerkMiddleware(async (auth, request) => {
+  if (isProtectedPath(request.nextUrl.pathname)) {
+    await auth.protect();
+  }
+});
+
 export const config = {
-  matcher: ["/dashboard/:path*", "/editor/:path*", "/settings/:path*"],
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/:path*",
+  ],
 };

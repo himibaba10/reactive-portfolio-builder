@@ -1,5 +1,6 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, ApiError, type User } from "@/lib/api-client";
@@ -7,6 +8,7 @@ import { AppChrome } from "@/components/app/app-chrome";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { signOut } = useClerk();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export default function SettingsPage() {
         setUser(me.user);
       } catch (err) {
         if (err instanceof ApiError && err.status === 401) {
-          router.replace("/login");
+          router.replace("/sign-in");
           return;
         }
         setError(err instanceof Error ? err.message : "Failed to load");
@@ -41,8 +43,7 @@ export default function SettingsPage() {
     setError(null);
     try {
       await api("/auth/account", { method: "DELETE" });
-      router.push("/");
-      router.refresh();
+      await signOut({ redirectUrl: "/" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed");
       setPending(false);

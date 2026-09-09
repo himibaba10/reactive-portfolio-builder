@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import { VerifyEmailClient } from "@/components/auth/verify-email-client";
+import { redirect } from "next/navigation";
 
-export default function VerifyPage() {
-  return (
-    <Suspense fallback={<main className="min-h-svh bg-ink" />}>
-      <VerifyEmailClient />
-    </Suspense>
-  );
+export default function VerifyRedirectPage() {
+  redirect("/dashboard");
 }

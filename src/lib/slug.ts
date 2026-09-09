@@ -1,6 +1,8 @@
 export const RESERVED_SLUGS = [
   "login",
   "signup",
+  "sign-in",
+  "sign-up",
   "dashboard",
   "editor",
   "api",

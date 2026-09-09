@@ -10,8 +10,9 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 ## Non-negotiables
 
 - Free only — no billing UI or Stripe until product asks
-- Email/password auth only (when implementing auth)
+- Auth via Clerk: email/password + Google; email verification before publish
 - Soft-delete users (`deletedAt`); soft-deleted users cannot log in
+- Local Mongo `User` synced by `clerkId` (portfolios still own via Mongo `userId`)
 - One portfolio per user (unique `userId`); reject a second create
 - Prebuilt section types only: Header, Hero, About, Skills, Projects (UI: Portfolio), CTA, Experience, Education, Contact, Footer
 - Each section type at most once; allow reorder + visibility toggle (Header/Footer pinned)
@@ -19,13 +20,11 @@ You are working on **Reactive Portfolio Builder**, a free MVP portfolio builder.
 - All section layouts must use the five palette CSS tokens only
 - Public portfolios are one page at `/{slug}`
 - Palettes: five-token presets, plus an optional **Custom** palette with the same five tokens (`primary`, `secondary`, `accent`, `textDark`, `textLight`)
-- Slug: lowercase hyphenated, unique, reserved app routes blocked (`login`, `signup`, `dashboard`, `editor`, `api`, …)
+- Slug: lowercase hyphenated, unique, reserved app routes blocked (`sign-in`, `sign-up`, `dashboard`, `editor`, `api`, …)
 
 ## Current status
 
-## Current status
-
-MVP app is implemented (auth, one portfolio, editor, public `/{slug}`). Ship checklist: set Atlas + JWT in `.env`; for production add Resend + Upstash and deploy the repo root on Vercel. Server lives in Next.js only (no Express).
+MVP app is implemented (Clerk auth, one portfolio, editor, public `/{slug}`). Ship checklist: set Atlas + Clerk keys in `.env` / `.env.local`; for production claim Clerk app, add Google OAuth credentials, optional Upstash, deploy repo root on Vercel. Server lives in Next.js only (no Express).
 
 ## Tone / copy
 

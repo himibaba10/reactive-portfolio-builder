@@ -15,7 +15,7 @@ export async function AuthCtaLink({
   variant = "primary",
   className,
   guestLabel = "Start free",
-  guestHref = "/signup",
+  guestHref = "/sign-up",
   memberLabel = "Dashboard",
   memberHref = "/dashboard",
   ...rest

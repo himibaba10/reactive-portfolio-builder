@@ -15,15 +15,15 @@ alwaysApply: false
 
 ## Today
 
-Auth, portfolio CRUD, public slug APIs, and pages are implemented. Set `MONGODB_URI` and `JWT_SECRET` in `.env`.
+Clerk owns authentication (email/password + Google). Local Mongo `User` syncs by `clerkId`. Set `MONGODB_URI` + Clerk keys.
 
 ## Stack
 
-Next.js Route Handlers + Mongoose + MongoDB Atlas · JWT in httpOnly cookies · Resend email · Upstash rate limits (optional)
+Next.js Route Handlers + Mongoose + MongoDB Atlas · Clerk sessions · Upstash rate limits (optional)
 
 ## Collections
 
-**users:** email (unique), passwordHash, isEmailVerified, verification/reset tokens, deletedAt, timestamps  
+**users:** clerkId (unique), email (unique), isEmailVerified, deletedAt, timestamps  
 
 **portfolios:** userId (unique), title, slug (unique), status `draft|published`, paletteId, optional customPalette (5 hex tokens), embedded `sections[]` (`id`, `type`, `order`, `visible`, `variant` 1–6, `data`), publishedAt, timestamps
 
@@ -31,14 +31,14 @@ Section types: Header, Hero, About, Skills, Projects, CTA, Experience, Education
 
 ## Endpoints
 
-- Auth: signup, login, logout, verify-email, forgot/reset password, soft-delete account
+- Auth: `GET /api/auth/me`, `DELETE /api/auth/account` (soft-delete + Clerk ban); sign-in/up via Clerk UI
 - Portfolio: get/create (409 if exists), patch, delete, slug availability/change, publish/unpublish
 - Public: published portfolio by slug (for `/{slug}` SSR)
 
 ## Rules
 
 - Validate inputs (Zod)
-- Rate-limit auth + slug checks
+- Rate-limit slug checks
 - Soft-deleted users cannot authenticate; free their slug on account delete
 - One portfolio per user enforced at DB unique index + application layer
 - Do not reintroduce a separate `api/` Express package
