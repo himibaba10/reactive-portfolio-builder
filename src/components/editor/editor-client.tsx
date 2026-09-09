@@ -44,7 +44,7 @@ import {
 import { isValidSlug, normalizeSlug } from '@/lib/slug';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function normalizeSections(sections: PortfolioSection[]): PortfolioSection[] {
   return [...sections]
@@ -572,6 +572,57 @@ function LayoutThumb({ variant }: { variant: number }) {
   );
 }
 
+function SkillsItemsInput({
+  items,
+  onCommit,
+  disabled,
+}: {
+  items: string[];
+  onCommit: (items: string[]) => void;
+  disabled?: boolean;
+}) {
+  const [text, setText] = useState(() => items.join(', '));
+  const focusedRef = useRef(false);
+
+  useEffect(() => {
+    // Don't rewrite mid-typing — join/trim would eat trailing commas and spaces.
+    if (!focusedRef.current) {
+      setText(items.join(', '));
+    }
+  }, [items]);
+
+  const parse = (raw: string) =>
+    raw
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+  return (
+    <>
+      <FormInput
+        value={text}
+        disabled={disabled}
+        placeholder='React, Design systems, Product'
+        onFocus={() => {
+          focusedRef.current = true;
+        }}
+        onBlur={() => {
+          focusedRef.current = false;
+          const next = parse(text);
+          onCommit(next);
+          setText(next.join(', '));
+        }}
+        onChange={(e) => {
+          const raw = e.target.value;
+          setText(raw);
+          onCommit(parse(raw));
+        }}
+      />
+      <p className='mt-1 text-xs text-muted'>Comma-separated</p>
+    </>
+  );
+}
+
 function OptionalField({
   label,
   enabled,
@@ -844,21 +895,11 @@ function SectionFields({
           enabled={showItems}
           onEnabledChange={(v) => onChange({ ...data, showItems: v })}
         >
-          <FormInput
-            value={items.join(', ')}
-            onChange={(e) =>
-              onChange({
-                ...data,
-                items: e.target.value
-                  .split(',')
-                  .map((s) => s.trim())
-                  .filter(Boolean),
-              })
-            }
+          <SkillsItemsInput
+            items={items}
             disabled={!showItems}
-            placeholder='React, Design systems, Product'
+            onCommit={(next) => onChange({ ...data, items: next })}
           />
-          <p className='mt-1 text-xs text-muted'>Comma-separated</p>
         </OptionalField>
       </>
     );

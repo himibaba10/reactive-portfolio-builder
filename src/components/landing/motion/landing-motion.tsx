@@ -2,6 +2,7 @@
 
 import { Preloader } from "@/components/landing/motion/preloader";
 import { CursorFollower } from "@/components/motion/cursor-follower";
+import { attachGsapVisibilityGuard } from "@/lib/motion/gsap-tab-visibility";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -43,7 +44,9 @@ export function LandingMotion() {
           ],
           { clearProps: "all", y: 0, opacity: 1 },
         );
+        const detachVisibility = attachGsapVisibilityGuard();
         return () => {
+          detachVisibility();
           mm.revert();
         };
       }
@@ -90,12 +93,14 @@ export function LandingMotion() {
         },
       });
 
+      let marqueeInView = false;
+      let marqueeTween: gsap.core.Tween | null = null;
       const marquee = document.querySelector<HTMLElement>(
         "[data-marquee-track]",
       );
       if (marquee) {
         const distance = marquee.scrollWidth / 2;
-        const marqueeTween = gsap.to(marquee, {
+        marqueeTween = gsap.to(marquee, {
           x: -distance,
           duration: 28,
           ease: "none",
@@ -103,16 +108,45 @@ export function LandingMotion() {
           force3D: true,
         });
 
+        const syncMarquee = () => {
+          if (!marqueeTween) return;
+          if (document.hidden || !marqueeInView) marqueeTween.pause();
+          else marqueeTween.play();
+        };
+
         ScrollTrigger.create({
           trigger: "[data-marquee]",
           start: "top bottom",
           end: "bottom top",
-          onEnter: () => marqueeTween.play(),
-          onEnterBack: () => marqueeTween.play(),
-          onLeave: () => marqueeTween.pause(),
-          onLeaveBack: () => marqueeTween.pause(),
+          onEnter: () => {
+            marqueeInView = true;
+            syncMarquee();
+          },
+          onEnterBack: () => {
+            marqueeInView = true;
+            syncMarquee();
+          },
+          onLeave: () => {
+            marqueeInView = false;
+            syncMarquee();
+          },
+          onLeaveBack: () => {
+            marqueeInView = false;
+            syncMarquee();
+          },
         });
       }
+
+      const detachVisibility = attachGsapVisibilityGuard({
+        onHide: () => {
+          marqueeTween?.pause();
+        },
+        onShow: () => {
+          if (marqueeTween && marqueeInView && !document.hidden) {
+            marqueeTween.play();
+          }
+        },
+      });
 
       gsap.from("[data-process-card]", {
         opacity: 0,
@@ -236,6 +270,7 @@ export function LandingMotion() {
             rect = el.getBoundingClientRect();
           };
           const onMove = (event: MouseEvent) => {
+            if (document.hidden) return;
             xTo((event.clientX - rect.left - rect.width / 2) * 0.22);
             yTo((event.clientY - rect.top - rect.height / 2) * 0.22);
           };
@@ -259,6 +294,7 @@ export function LandingMotion() {
       });
 
       return () => {
+        detachVisibility();
         mm.revert();
       };
     },

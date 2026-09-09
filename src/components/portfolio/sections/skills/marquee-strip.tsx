@@ -25,16 +25,28 @@ export function SkillsMarqueeStrip({
     const root = track.parentElement;
     if (!root) return;
 
+    const syncPlayState = () => {
+      const inView = track.dataset.inView === "1";
+      track.style.animationPlayState =
+        !document.hidden && inView ? "running" : "paused";
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
-        track.style.animationPlayState = entry?.isIntersecting
-          ? "running"
-          : "paused";
+        track.dataset.inView = entry?.isIntersecting ? "1" : "0";
+        syncPlayState();
       },
       { rootMargin: "10% 0px" },
     );
+
+    const onVisibility = () => syncPlayState();
+    document.addEventListener("visibilitychange", onVisibility);
+
     io.observe(root);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, [empty]);
 
   return (

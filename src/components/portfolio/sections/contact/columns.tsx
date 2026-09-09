@@ -11,7 +11,7 @@ export function ColumnsContact({ contact }: { contact: ContactFlags }) {
   return (
     <section
       id="contact"
-      className="grid gap-8 border-y border-white/10 py-10 md:grid-cols-2 md:gap-12"
+      className="grid gap-8 py-2 md:grid-cols-2 md:gap-12"
     >
       <div className="space-y-4">
         <ContactHeader contact={contact} />

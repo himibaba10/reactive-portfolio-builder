@@ -10,7 +10,7 @@ export function CtaCenteredManifesto({
   return (
     <section
       id='cta'
-      className='space-y-5 border-y border-white/15 py-10 text-center'
+      className='space-y-5 py-2 text-center'
     >
       {media ? <div className='mx-auto max-w-lg'>{media}</div> : null}
       {cta.showHeadline && cta.headline ? (

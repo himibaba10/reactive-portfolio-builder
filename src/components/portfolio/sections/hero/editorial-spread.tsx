@@ -14,7 +14,7 @@ export function HeroEditorialSpread({
   return (
     <section
       id='hero'
-      className='grid gap-8 border-y border-white/10 py-10 md:grid-cols-12 md:gap-6 md:py-14'
+      className='grid gap-8 py-2 md:grid-cols-12 md:gap-6 md:py-4'
     >
       <div className='space-y-5 md:col-span-7 md:space-y-6'>
         <p className='text-xs tracking-[0.28em] text-(--p-accent) uppercase'>

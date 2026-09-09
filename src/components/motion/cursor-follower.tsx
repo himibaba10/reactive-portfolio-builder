@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { attachGsapVisibilityGuard } from "@/lib/motion/gsap-tab-visibility";
 
 type CursorFollowerProps = {
   /** Soft parallax target (landing hero orb). Pass null to disable. */
@@ -155,13 +156,32 @@ export function CursorFollower({
       : null;
 
     let lastHoverTarget: EventTarget | null = null;
+    let lastX = window.innerWidth / 2;
+    let lastY = window.innerHeight / 2;
+    let snapOnShow = false;
+
+    const snapCursor = (x: number, y: number) => {
+      gsap.set(ring, { x, y });
+      gsap.set(dot, { x, y });
+    };
 
     const onMove = (event: MouseEvent) => {
+      lastX = event.clientX;
+      lastY = event.clientY;
+
+      // Tab hidden: ignore moves so we don't queue a catch-up storm.
+      if (document.hidden) return;
+
+      if (snapOnShow) {
+        snapOnShow = false;
+        snapCursor(lastX, lastY);
+      }
+
       show();
-      xRing(event.clientX);
-      yRing(event.clientY);
-      xDot(event.clientX);
-      yDot(event.clientY);
+      xRing(lastX);
+      yRing(lastY);
+      xDot(lastX);
+      yDot(lastY);
 
       // Avoid closest() thrash — only re-evaluate when the hit target changes.
       if (event.target !== lastHoverTarget || pressed) {
@@ -173,20 +193,33 @@ export function CursorFollower({
       }
 
       if (xOrb && yOrb) {
-        xOrb((event.clientX - window.innerWidth / 2) * 0.03);
-        yOrb((event.clientY - window.innerHeight / 2) * 0.03);
+        xOrb((lastX - window.innerWidth / 2) * 0.03);
+        yOrb((lastY - window.innerHeight / 2) * 0.03);
       }
     };
 
     const onDown = () => {
+      if (document.hidden) return;
       pressed = true;
       applyState(active, true);
     };
 
     const onUp = (event: MouseEvent) => {
+      if (document.hidden) return;
       pressed = false;
       applyState(isInteractive(event.target), false);
     };
+
+    const detachVisibility = attachGsapVisibilityGuard({
+      onHide: () => {
+        visible = false;
+        gsap.set(root, { opacity: 0 });
+      },
+      onShow: () => {
+        snapOnShow = true;
+        snapCursor(lastX, lastY);
+      },
+    });
 
     window.addEventListener("mousemove", onMove, { passive: true });
     window.addEventListener("mousedown", onDown);
@@ -195,6 +228,7 @@ export function CursorFollower({
     document.addEventListener("mouseenter", show);
 
     return () => {
+      detachVisibility();
       document.documentElement.classList.remove("has-cursor-follower");
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mousedown", onDown);

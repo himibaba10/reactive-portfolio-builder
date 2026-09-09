@@ -4,6 +4,9 @@ export const site = {
   tagline: "One page. Your slug. Strictly beautiful.",
   description:
     "Compose a one-page portfolio from prebuilt sections, lock a five-token palette, and publish at your own directory URL — free.",
+  heroHeadline: "Build your portfolio website in minutes — free.",
+  heroSupport:
+    "Prebuilt sections, a five-token palette, publish at your own slug. No billing maze.",
 } as const;
 
 export const navLinks = [

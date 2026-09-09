@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { CursorFollower } from "@/components/motion/cursor-follower";
+import { attachGsapVisibilityGuard } from "@/lib/motion/gsap-tab-visibility";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -34,6 +35,8 @@ export function PortfolioMotion() {
       });
       return;
     }
+
+    const detachVisibility = attachGsapVisibilityGuard();
 
     if (header) {
       gsap.from(header, {
@@ -75,6 +78,10 @@ export function PortfolioMotion() {
         },
       });
     }
+
+    return () => {
+      detachVisibility();
+    };
   }, []);
 
   return <CursorFollower theme="palette" ambientSelector={null} />;

@@ -16,7 +16,7 @@ export function AboutDisplay({
   return (
     <section
       id="about"
-      className="space-y-8 border-y border-white/10 py-10 md:py-14"
+      className="space-y-8 py-2 md:py-4"
     >
       <div className="flex flex-wrap items-end justify-between gap-6">
         <div className="space-y-3">
